@@ -188,7 +188,7 @@ export class Player extends Entity {
       // Only handle manual input if not forced by arrow tile AND arrow delay expired
       // This prevents manual input from interrupting arrow tile logic
       if (!this.isMoving && this.arrowTileDelay <= 0) {
-        this.handleInput(input, levelManager);
+        this.handleInput(input, levelManager, game);
       }
     } else {
       this.updateMovement(dt, levelManager);
@@ -245,7 +245,7 @@ export class Player extends Entity {
   /**
    * Handle player input
    */
-  handleInput(input, levelManager) {
+  handleInput(input, levelManager, game = null) {
     // Block input during teleportation
     if (this.isTeleporting) {
       return;
@@ -292,7 +292,8 @@ export class Player extends Entity {
       // Check if it's a pushable block
       if (levelManager.isPushable(newGridX, newGridY)) {
         // Try to push the block in the direction we're moving
-        if (levelManager.tryPushBlock(newGridX, newGridY, this.direction)) {
+        const entityManager = game ? game.entityManager : null;
+        if (levelManager.tryPushBlock(newGridX, newGridY, this.direction, entityManager)) {
           // Block was pushed successfully, player moves into the block's position
           this.startMovement(newGridX, newGridY);
         }
@@ -461,7 +462,7 @@ export class Player extends Entity {
       if (game) {
         const powerUp = levelManager.revealPowerUpFromBlock(targetX, targetY);
         if (powerUp) {
-          powerUp.reveal(targetX, targetY, this.direction);
+          powerUp.reveal(targetX, targetY, this.direction, game.levelManager, game.entityManager);
         }
       }
     }

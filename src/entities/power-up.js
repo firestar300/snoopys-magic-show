@@ -15,7 +15,8 @@ export class PowerUp extends Entity {
     this.hidden = hidden;
     this.isRevealing = false;
     this.revealTimer = 0;
-    this.revealDuration = 1; // Duration of movement animation (2x slower)
+    this.revealDuration = 1; // Will be calculated based on distance
+    this.revealSpeedPerTile = 0.2; // Time per tile (seconds) - constant speed
     this.startX = this.x;
     this.startY = this.y;
     this.targetX = this.x;
@@ -80,14 +81,36 @@ export class PowerUp extends Entity {
       }
     }
 
-    // Handle reveal animation (movement)
+    // Handle reveal animation (movement - horizontal then vertical, no diagonal)
     if (this.isRevealing) {
       this.revealTimer += dt;
       const progress = Math.min(this.revealTimer / this.revealDuration, 1);
 
-      // Linear movement (no easing)
-      this.x = this.startX + (this.targetX - this.startX) * progress;
-      this.y = this.startY + (this.targetY - this.startY) * progress;
+      const deltaX = this.targetX - this.startX;
+      const deltaY = this.targetY - this.startY;
+
+      // Calculate distance in tiles for phase split
+      const tilesX = Math.abs(deltaX) / CONFIG.TILE_SIZE;
+      const tilesY = Math.abs(deltaY) / CONFIG.TILE_SIZE;
+      const totalTiles = tilesX + tilesY;
+
+      // Calculate phase split based on actual distances
+      // Phase 1 takes proportional time for horizontal movement
+      const horizontalPhaseEnd = totalTiles > 0 ? tilesX / totalTiles : 0.5;
+
+      // Two-phase movement: horizontal first, then vertical
+      if (progress < horizontalPhaseEnd) {
+        // Phase 1: Horizontal movement only
+        const horizontalProgress = horizontalPhaseEnd > 0 ? progress / horizontalPhaseEnd : 0;
+        this.x = this.startX + deltaX * horizontalProgress;
+        this.y = this.startY; // Stay at start Y
+      } else {
+        // Phase 2: Vertical movement only (horizontal is complete)
+        const verticalPhaseLength = 1 - horizontalPhaseEnd;
+        const verticalProgress = verticalPhaseLength > 0 ? (progress - horizontalPhaseEnd) / verticalPhaseLength : 1;
+        this.x = this.targetX; // Already at target X
+        this.y = this.startY + deltaY * verticalProgress;
+      }
 
       // End reveal animation
       if (progress >= 1) {
@@ -101,7 +124,7 @@ export class PowerUp extends Entity {
   /**
    * Reveal the power-up from a block (moves 3 tiles in Snoopy's direction)
    */
-  reveal(blockGridX, blockGridY, snoopyDirection) {
+  reveal(blockGridX, blockGridY, snoopyDirection, levelManager = null, entityManager = null) {
     if (!this.hidden) return;
 
     // Direction mapping
@@ -122,6 +145,21 @@ export class PowerUp extends Entity {
     targetGridX = Math.max(0, Math.min(targetGridX, CONFIG.GRID_WIDTH - 1));
     targetGridY = Math.max(0, Math.min(targetGridY, CONFIG.GRID_HEIGHT - 1));
 
+    // Check if target position is eligible (non-solid, no entity)
+    if (levelManager && entityManager) {
+      const isTargetEligible = this.isPositionEligible(targetGridX, targetGridY, levelManager, entityManager);
+
+      if (!isTargetEligible) {
+        // Find adjacent eligible position
+        const adjacentPos = this.findAdjacentEligiblePosition(targetGridX, targetGridY, levelManager, entityManager);
+        if (adjacentPos) {
+          targetGridX = adjacentPos.x;
+          targetGridY = adjacentPos.y;
+        }
+        // If no adjacent position found, keep original (will be on solid block but at least visible)
+      }
+    }
+
     // Set up reveal animation
     this.hidden = false;
     this.isRevealing = true;
@@ -133,9 +171,77 @@ export class PowerUp extends Entity {
     this.x = this.startX;
     this.y = this.startY;
 
+    // Calculate duration based on distance (Manhattan distance in tiles)
+    const tilesX = Math.abs(targetGridX - blockGridX);
+    const tilesY = Math.abs(targetGridY - blockGridY);
+    const totalTiles = tilesX + tilesY;
+    this.revealDuration = totalTiles * this.revealSpeedPerTile;
+
+    // Minimum duration to avoid instant movement
+    if (this.revealDuration < 0.1) {
+      this.revealDuration = 0.1;
+    }
+
     // Start lifetime timer
     this.isLifetimeActive = true;
     this.lifetimeTimer = 0;
+  }
+
+  /**
+   * Check if a position is eligible (non-solid, no entity blocking)
+   */
+  isPositionEligible(gridX, gridY, levelManager, entityManager) {
+    // Check if tile is solid
+    if (levelManager.isSolid(gridX, gridY)) {
+      return false;
+    }
+
+    // Check if any entity is blocking this position
+    const entities = [
+      ...entityManager.getByType('ball'),
+      ...entityManager.getByType('woodstock'),
+      ...entityManager.getByType('powerup'),
+    ];
+
+    for (const entity of entities) {
+      const entityGridX = Math.floor(entity.x / CONFIG.TILE_SIZE);
+      const entityGridY = Math.floor(entity.y / CONFIG.TILE_SIZE);
+      if (entityGridX === gridX && entityGridY === gridY) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Find an adjacent eligible position
+   */
+  findAdjacentEligiblePosition(gridX, gridY, levelManager, entityManager) {
+    // Check all 4 adjacent positions (up, right, down, left)
+    const adjacentOffsets = [
+      { dx: 0, dy: -1 },  // up
+      { dx: 1, dy: 0 },   // right
+      { dx: 0, dy: 1 },   // down
+      { dx: -1, dy: 0 },  // left
+    ];
+
+    for (const offset of adjacentOffsets) {
+      const adjX = gridX + offset.dx;
+      const adjY = gridY + offset.dy;
+
+      // Check bounds
+      if (adjX < 0 || adjX >= CONFIG.GRID_WIDTH || adjY < 0 || adjY >= CONFIG.GRID_HEIGHT) {
+        continue;
+      }
+
+      // Check if eligible
+      if (this.isPositionEligible(adjX, adjY, levelManager, entityManager)) {
+        return { x: adjX, y: adjY };
+      }
+    }
+
+    return null; // No eligible adjacent position found
   }
 
   /**

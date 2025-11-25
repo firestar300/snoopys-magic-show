@@ -237,7 +237,7 @@ export class LevelManager {
    * Try to push a block in a direction
    * Returns true if push was successful
    */
-  tryPushBlock(gridX, gridY, direction) {
+  tryPushBlock(gridX, gridY, direction, entityManager = null) {
     const tile = this.getTileAt(gridX, gridY);
 
     // Check if tile is pushable
@@ -281,7 +281,7 @@ export class LevelManager {
     // Reveal power-up if there was one hidden in this block
     const powerUp = this.revealPowerUpFromBlock(gridX, gridY);
     if (powerUp) {
-      powerUp.reveal(gridX, gridY, direction);
+      powerUp.reveal(gridX, gridY, direction, this, entityManager);
     }
 
     // Create animation for the block
