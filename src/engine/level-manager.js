@@ -32,8 +32,8 @@ export class LevelManager {
       this.parseTiles();
     } catch (error) {
       console.error(`Failed to load level ${levelNumber}:`, error);
-      // Load default level if level file doesn't exist
-      this.loadDefaultLevel();
+      // Load fallback level if level file doesn't exist
+      await this.loadFallbackLevel();
     }
   }
 
@@ -55,18 +55,41 @@ export class LevelManager {
   }
 
   /**
-   * Load a default test level
+   * Load the fallback level when requested level doesn't exist
    */
-  loadDefaultLevel() {
+  async loadFallbackLevel() {
+    try {
+      console.warn('Loading fallback level...');
+
+      // Reset all temporary states
+      this.resetLevelState();
+
+      // Import fallback level data
+      const levelData = await import(`../levels/level-default.json`);
+      this.currentLevel = levelData.default || levelData;
+
+      // Parse tiles
+      this.parseTiles();
+    } catch (error) {
+      // If even the fallback level fails, create a minimal emergency level
+      console.error('Failed to load fallback level, creating emergency level:', error);
+      this.createEmergencyLevel();
+    }
+  }
+
+  /**
+   * Create a minimal emergency level if all else fails
+   */
+  createEmergencyLevel() {
     // Reset all temporary states
     this.resetLevelState();
 
     this.currentLevel = {
-      id: 1,
-      name: 'Test Level',
+      id: 0,
+      name: 'Emergency Level',
       width: CONFIG.GRID_WIDTH,
       height: CONFIG.GRID_HEIGHT,
-      startPosition: { x: 1, y: 1 },
+      startPosition: { x: 4, y: 4 },
       tiles: [
         '000000000',
         '000000000',
@@ -79,7 +102,6 @@ export class LevelManager {
       ],
       entities: [
         { type: 'woodstock', x: 7, y: 6 },
-        { type: 'ball', x: 4, y: 4, vx: 1, vy: 1 },
       ],
     };
 

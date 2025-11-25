@@ -81,6 +81,9 @@ export class AudioManager {
     this.loadMusic('stage-bgm-9', '/music/15-stage-bgm-9.mp3');
     this.loadMusic('stage-clear-9', '/music/15-stage-clear-9.mp3', false);
 
+    this.loadMusic('stage-bgm-10', '/music/18-stage-bgm-10.mp3');
+    this.loadMusic('stage-clear-10', '/music/18-stage-clear-10.mp3', false);
+
     // Sound effects
     this.loadSfx('teleport', '/sfx/teleportation.mp3');
   }
