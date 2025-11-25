@@ -124,11 +124,14 @@ export class AudioManager {
    * Stop current music
    */
   stopMusic() {
-    if (this.currentMusic) {
-      this.currentMusic.pause();
-      this.currentMusic.currentTime = 0;
-      this.currentMusic = null;
-    }
+    // Stop all music (not just currentMusic) to prevent race conditions
+    Object.values(this.music).forEach(audio => {
+      if (!audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    });
+    this.currentMusic = null;
   }
 
   /**

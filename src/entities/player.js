@@ -31,6 +31,7 @@ export class Player extends Entity {
     this.hasPowerUp = false;
     this.powerUpType = null;
     this.powerUpTimer = 0;
+    this.powerUpId = 0; // Unique ID to avoid race conditions
     this.blinkTimer = 0; // For invincibility blink effect
 
     // Hurt animation
@@ -46,7 +47,7 @@ export class Player extends Entity {
 
     // Arrow tile delay (to allow collectibles to be picked up first)
     this.arrowTileDelay = 0;
-    this.arrowTileDelayDuration = 0.05; // 50ms delay before arrow forces movement
+    this.arrowTileDelayDuration = 0.016; // ~1 frame delay (16ms) before arrow forces movement
 
     // Teleportation animation
     this.isTeleporting = false;
@@ -184,8 +185,9 @@ export class Player extends Entity {
         this.checkArrowTile(levelManager);
       }
 
-      // Only handle manual input if not forced by arrow tile
-      if (!this.isMoving) {
+      // Only handle manual input if not forced by arrow tile AND arrow delay expired
+      // This prevents manual input from interrupting arrow tile logic
+      if (!this.isMoving && this.arrowTileDelay <= 0) {
         this.handleInput(input, levelManager);
       }
     } else {
@@ -217,10 +219,14 @@ export class Player extends Entity {
 
     // Update power-up timer
     if (this.hasPowerUp) {
+      const currentPowerUpId = this.powerUpId; // Store ID to detect replacement
       this.powerUpTimer -= dt;
       this.blinkTimer += dt;
       if (this.powerUpTimer <= 0) {
-        this.removePowerUp(game);
+        // Only remove if it's still the same power-up instance (ID unchanged)
+        if (this.powerUpId === currentPowerUpId) {
+          this.removePowerUp(game);
+        }
       }
     }
 
@@ -465,12 +471,35 @@ export class Player extends Entity {
    * Apply a power-up
    */
   applyPowerUp(powerType, game = null) {
+    // Store previous power-up type for music handling
+    const previousPowerUpType = this.powerUpType;
+    const hadMusicPowerUp = this.hasPowerUp && (previousPowerUpType === 'invincible' || previousPowerUpType === 'time');
+    const newIsMusicPowerUp = (powerType === 'invincible' || powerType === 'time');
+
+    // If already has a power-up, clean it up first (without restarting music)
+    if (this.hasPowerUp) {
+      this.removePowerUp(game, false);
+    }
+
+    // Handle music transition based on power-up types
+    if (game && game.audioManager) {
+      if (hadMusicPowerUp && !newIsMusicPowerUp) {
+        // Music -> Non-music (e.g., invincible -> speed): restart level music
+        const levelMusic = game.levelManager.currentLevel?.music;
+        if (levelMusic) {
+          game.audioManager.playMusic(levelMusic);
+        }
+      }
+      // If music -> music OR non-music -> music, the new music will be played below
+    }
+
     this.hasPowerUp = true;
     this.powerUpType = powerType;
+    this.powerUpId++; // Increment ID to mark this as a new power-up instance
     this.blinkTimer = 0;
 
     // Set duration based on power-up type
-    const duration = powerType === 'time' ? 4 : 5; // 3s for time, 5s for others
+    const duration = powerType === 'time' ? 4 : 5; // 4s for time, 5s for others
     this.powerUpTimer = duration;
 
     switch (powerType) {
@@ -482,13 +511,13 @@ export class Player extends Entity {
         }
         break;
       case 'invincible':
-        // Play invincible music
+        // Play invincible music (this will stop any current music automatically)
         if (game && game.audioManager) {
           game.audioManager.playMusic('invincible');
         }
         break;
       case 'time':
-        // Play frozen time music
+        // Play frozen time music (this will stop any current music automatically)
         if (game && game.audioManager) {
           game.audioManager.playMusic('frozen-time');
         }
