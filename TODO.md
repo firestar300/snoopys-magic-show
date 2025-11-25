@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (8/100)
+### ✅ Niveaux Terminés (9/100)
 
 - [x] **Level 0** - Test Level (Dev only)
 - [x] **Level 1** - Ready Go!
@@ -14,20 +14,20 @@
 - [x] **Level 5** - Arrow Maze
 - [x] **Level 6** - Break Out
 - [x] **Level 7** - Toggle Timing
+- [x] **Level 8** - Block Maze
 
-### 🚧 Niveaux En Cours (2/100)
+### 🚧 Niveaux En Cours (1/100)
 
-- [ ] **Level 8** - Block Maze (pattern créé, à finaliser)
 - [ ] **Level 9** - Grand Finale (pattern créé, à finaliser)
 
-### 📝 Niveaux Planifiés (90/100)
+### 📝 Niveaux Planifiés (89/100)
 
-#### Zone 1 : Introduction (Levels 1-10) ✅ 7/10
+#### Zone 1 : Introduction (Levels 1-10) ✅ 8/10
 
 Mécaniques de base, apprentissage progressif
 
-- [x] Level 1-7
-- [ ] Level 8-10
+- [x] Level 1-8
+- [ ] Level 9-10
 
 #### Zone 2 : Toggle Blocks (Levels 11-20) 0/10
 
@@ -171,9 +171,9 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 8/100 (8%)
-- **Niveaux en cours :** 2/100 (2%)
-- **Niveaux restants :** 90/100 (90%)
+- **Niveaux complétés :** 9/100 (9%)
+- **Niveaux en cours :** 1/100 (1%)
+- **Niveaux restants :** 89/100 (89%)
 
 ---
 Dernière mise à jour : 2025-11-25
