@@ -1,0 +1,58 @@
+{
+  "id": 10,
+  "name": "The Final Battle",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-10",
+  "clearMusic": "stage-clear-10",
+  "startPosition": {
+    "x": 2,
+    "y": 4
+  },
+  "tiles": [
+    "000E1E004",
+    "010010010",
+    "001010100",
+    "000010000",
+    "000010000",
+    "001010100",
+    "010010010",
+    "400E1E000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 2,
+      "y": 6
+    },
+    {
+      "type": "woodstock",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "type": "ball",
+      "x": 2,
+      "y": 7,
+      "vx": 1,
+      "vy": 1
+    },
+    {
+      "type": "ball",
+      "x": 6,
+      "y": 0,
+      "vx": -1,
+      "vy": -1
+    }
+  ]
+}

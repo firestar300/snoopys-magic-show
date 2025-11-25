@@ -21,6 +21,9 @@ export class LevelManager {
    */
   async loadLevel(levelNumber) {
     try {
+      // Reset all temporary states before loading new level
+      this.resetLevelState();
+
       // Import level data
       const levelData = await import(`../levels/level-${levelNumber}.json`);
       this.currentLevel = levelData.default || levelData;
@@ -35,9 +38,29 @@ export class LevelManager {
   }
 
   /**
+   * Reset all temporary level states
+   */
+  resetLevelState() {
+    // Clear animating blocks
+    this.animatingBlocks = [];
+
+    // Reset toggle timer
+    this.toggleTimer = -0.1; // Start with delay
+
+    // Toggle blocks will be cleared and rebuilt by parseTiles
+    this.toggleBlocks = [];
+
+    // Clear hidden power-ups map
+    this.hiddenPowerUps = new Map();
+  }
+
+  /**
    * Load a default test level
    */
   loadDefaultLevel() {
+    // Reset all temporary states
+    this.resetLevelState();
+
     this.currentLevel = {
       id: 1,
       name: 'Test Level',
