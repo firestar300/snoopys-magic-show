@@ -54,8 +54,8 @@ export class Game {
     this.levelKeyPressed = false;
     this.hideDevInfoKeyPressed = false;
 
-    // Dev mode UI visibility
-    this.showDevInfo = true;
+    // Dev mode UI visibility (hidden by default, press H to show)
+    this.showDevInfo = false;
 
     // Game loop
     this.lastTime = 0;
