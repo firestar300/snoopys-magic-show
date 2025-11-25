@@ -50,6 +50,8 @@ export class Game {
 
     // Input tracking
     this.pauseKeyPressed = false;
+    this.godModeKeyPressed = false;
+    this.levelKeyPressed = false;
 
     // Game loop
     this.lastTime = 0;
@@ -68,6 +70,11 @@ export class Game {
    * Initialize/Reset the game
    */
   async init() {
+    // Remove power-ups from current player before resetting
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
+
     // Reset state
     this.state.score = 0;
     this.state.lives = 3;
@@ -254,11 +261,32 @@ export class Game {
 
     // Dev mode shortcuts for quick level switching
     if (CONFIG.DEV_MODE && (this.state.currentState === GameState.PLAYING || this.state.currentState === GameState.PAUSED)) {
+      // Check if any level key (0-9) is pressed
+      let levelKeyCurrentlyPressed = false;
       for (let i = 0; i <= 9; i++) {
         if (this.inputManager.keys[i.toString()]) {
-          this.loadDevLevel(i);
+          levelKeyCurrentlyPressed = true;
+          if (!this.levelKeyPressed) {
+            this.loadDevLevel(i);
+            this.levelKeyPressed = true;
+          }
           break;
         }
+      }
+
+      // Reset flag when no level key is pressed
+      if (!levelKeyCurrentlyPressed) {
+        this.levelKeyPressed = false;
+      }
+
+      // God mode toggle with G key
+      if (this.inputManager.keys['g'] || this.inputManager.keys['G']) {
+        if (!this.godModeKeyPressed) {
+          this.toggleGodMode();
+          this.godModeKeyPressed = true;
+        }
+      } else {
+        this.godModeKeyPressed = false;
       }
     }
   }
@@ -291,6 +319,12 @@ export class Game {
     // Store previous moving state
     const wasMoving = this.player.isMoving;
 
+    // Check collectibles BEFORE update if player is not moving
+    // This ensures collectibles on arrow tiles can be collected
+    if (!this.player.isMoving) {
+      this.checkCollectibleCollisions();
+    }
+
     // Check if player has time freeze power-up
     const ballsFrozen = this.player.hasPowerUp && this.player.powerUpType === 'time';
 
@@ -309,8 +343,8 @@ export class Game {
     // Always check collision with balls (dangerous)
     this.checkBallCollisions();
 
-    // Check collectibles only when player has finished moving
-    if (justStoppedMoving || !this.player.isMoving) {
+    // Check collectibles again if player just stopped moving
+    if (justStoppedMoving) {
       this.checkCollectibleCollisions();
     }
 
@@ -429,11 +463,9 @@ export class Game {
         // Stop the timer (we'll animate it during level complete screen)
         this.timer.isActive = false;
 
-        // Remove any active power-ups (which stops their music)
+        // Remove any active power-ups (stop their music without restarting level music)
         if (player.hasPowerUp) {
-          player.hasPowerUp = false;
-          player.powerUpType = null;
-          player.speed = CONFIG.PLAYER_SPEED;
+          player.removePowerUp(this, false); // false = don't restart level music
         }
 
         // Play level-specific clear music during victory animation
@@ -496,17 +528,30 @@ export class Game {
       // Restore context
       this.renderer.ctx.restore();
 
-      // Dev mode: Display level info
+      // Dev mode: Display level info and god mode
       if (CONFIG.DEV_MODE) {
         const ctx = this.renderer.ctx;
         ctx.save();
+
+        // Level info box
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(10, 10, 120, 40);
+        ctx.fillRect(10, 10, 140, 54);
         ctx.fillStyle = CONFIG.COLORS.LIGHT;
         ctx.font = 'bold 12px "Courier New", monospace';
         ctx.textAlign = 'left';
         ctx.fillText(`LEVEL: ${this.state.level}`, 20, 28);
         ctx.fillText(`Press 0-9 to jump`, 20, 42);
+        ctx.fillText(`Press G for God Mode`, 20, 56);
+
+        // God mode indicator
+        if (this.player && this.player.godMode) {
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+          ctx.fillRect(10, 70, 100, 24);
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+          ctx.font = 'bold 14px "Courier New", monospace';
+          ctx.fillText(`GOD MODE`, 20, 87);
+        }
+
         ctx.restore();
       }
     }
@@ -550,6 +595,11 @@ export class Game {
    * Respawn the player at the start position
    */
   respawnPlayer() {
+    // Remove power-ups from current player before clearing (safety check)
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
+
     // Clear all entities except the player will be removed
     this.entityManager.clear();
 
@@ -587,6 +637,11 @@ export class Game {
   async continueToNextLevel() {
     this.state.level++;
     this.state.levelReady = false;
+
+    // Remove power-ups from current player before clearing
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
 
     try {
       this.entityManager.clear();
@@ -659,10 +714,25 @@ export class Game {
   }
 
   /**
+   * Toggle god mode (dev mode only)
+   */
+  toggleGodMode() {
+    if (!CONFIG.DEV_MODE || !this.player) return;
+
+    this.player.godMode = !this.player.godMode;
+    console.log(`[DEV] God Mode: ${this.player.godMode ? 'ON' : 'OFF'}`);
+  }
+
+  /**
    * Load a specific level in dev mode
    */
   async loadDevLevel(levelNumber) {
     console.log(`[DEV] Loading level ${levelNumber}...`);
+
+    // Remove power-ups from current player before clearing
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
 
     // Stop any current music
     this.audioManager.stopMusic();

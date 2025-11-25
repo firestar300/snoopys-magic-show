@@ -44,6 +44,10 @@ export class Player extends Entity {
     // Trapped on toggle block
     this.isTrapped = false;
 
+    // Arrow tile delay (to allow collectibles to be picked up first)
+    this.arrowTileDelay = 0;
+    this.arrowTileDelayDuration = 0.05; // 50ms delay before arrow forces movement
+
     // Teleportation animation
     this.isTeleporting = false;
     this.teleportTimer = 0;
@@ -78,6 +82,9 @@ export class Player extends Entity {
       { col: 2, row: 1, frames: 6 }, // L2C3 (6 frames)
     ];
     this.defeatSequenceIndex = 0;
+
+    // God mode (dev mode only)
+    this.godMode = false;
     this.defeatFrameCount = 0;
   }
 
@@ -164,10 +171,18 @@ export class Player extends Entity {
     const gridY = this.getGridY();
     this.isTrapped = levelManager.isPlayerTrappedOnToggleBlock(gridX, gridY);
 
+    // Update arrow tile delay
+    if (this.arrowTileDelay > 0) {
+      this.arrowTileDelay -= dt;
+    }
+
     // Handle grid-based movement
     if (!this.isMoving) {
       // Check arrow tiles continuously (in case toggle blocks change state)
-      this.checkArrowTile(levelManager);
+      // But only if delay has expired (to allow collectibles to be picked up first)
+      if (this.arrowTileDelay <= 0) {
+        this.checkArrowTile(levelManager);
+      }
 
       // Only handle manual input if not forced by arrow tile
       if (!this.isMoving) {
@@ -321,11 +336,11 @@ export class Player extends Entity {
       this.vx = 0;
       this.vy = 0;
 
+      // Reset arrow tile delay to allow collectibles to be picked up first
+      this.arrowTileDelay = this.arrowTileDelayDuration;
+
       // Check if we landed on a teleport tile
       this.checkTeleportTile(levelManager, game);
-
-      // Check if we landed on an arrow tile
-      this.checkArrowTile(levelManager);
     } else {
       // Move towards target
       this.x += this.vx;
@@ -484,13 +499,23 @@ export class Player extends Entity {
   /**
    * Remove current power-up
    */
-  removePowerUp(game = null) {
-    // Stop power-up music if it was playing and restart level music
+  removePowerUp(game = null, restartLevelMusic = true) {
+    // Don't restart music if player is in victory or defeat animation
+    if (this.isVictorious || this.isDefeated) {
+      restartLevelMusic = false;
+    }
+
+    // Stop power-up music if it was playing
     if (game && game.audioManager && (this.powerUpType === 'invincible' || this.powerUpType === 'time')) {
-      // Restart level music
-      const levelMusic = game.levelManager.currentLevel?.music;
-      if (levelMusic) {
-        game.audioManager.playMusic(levelMusic);
+      // Only restart level music if explicitly requested
+      if (restartLevelMusic) {
+        const levelMusic = game.levelManager.currentLevel?.music;
+        if (levelMusic) {
+          game.audioManager.playMusic(levelMusic);
+        }
+      } else {
+        // Just stop the current power-up music
+        game.audioManager.stopMusic();
       }
     }
 
@@ -521,6 +546,11 @@ export class Player extends Entity {
    * Start defeat animation
    */
   startDefeatAnimation(game = null) {
+    // God mode prevents defeat
+    if (this.godMode) {
+      return;
+    }
+
     // Remove any active power-ups and stop their music
     if (this.hasPowerUp) {
       this.removePowerUp(game);

@@ -20,7 +20,7 @@ export class UIManager {
     this.timeBonusAnimation = {
       active: false,
       timer: 0,
-      segmentSpeed: 0.1, // Time per segment (100ms)
+      segmentSpeed: 0.05, // Time per segment (50ms - 2x faster)
       gameInstance: null
     };
   }

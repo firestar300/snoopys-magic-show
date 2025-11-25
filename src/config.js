@@ -35,7 +35,7 @@ export const CONFIG = {
   },
 
   // Developer mode
-  DEV_MODE: false,
+  DEV_MODE: true,
 
   // Game settings
   FPS: 60,
