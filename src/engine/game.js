@@ -52,6 +52,10 @@ export class Game {
     this.pauseKeyPressed = false;
     this.godModeKeyPressed = false;
     this.levelKeyPressed = false;
+    this.hideDevInfoKeyPressed = false;
+
+    // Dev mode UI visibility
+    this.showDevInfo = true;
 
     // Game loop
     this.lastTime = 0;
@@ -287,6 +291,16 @@ export class Game {
         }
       } else {
         this.godModeKeyPressed = false;
+      }
+
+      // Toggle dev info visibility with H key
+      if (this.inputManager.keys['h'] || this.inputManager.keys['H']) {
+        if (!this.hideDevInfoKeyPressed) {
+          this.showDevInfo = !this.showDevInfo;
+          this.hideDevInfoKeyPressed = true;
+        }
+      } else {
+        this.hideDevInfoKeyPressed = false;
       }
     }
   }
@@ -529,27 +543,37 @@ export class Game {
       this.renderer.ctx.restore();
 
       // Dev mode: Display level info and god mode
-      if (CONFIG.DEV_MODE) {
+      if (CONFIG.DEV_MODE && this.showDevInfo) {
         const ctx = this.renderer.ctx;
         ctx.save();
 
         // Level info box
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(10, 10, 140, 54);
+        ctx.fillRect(10, 10, 180, 98);
         ctx.fillStyle = CONFIG.COLORS.LIGHT;
         ctx.font = 'bold 12px "Courier New", monospace';
         ctx.textAlign = 'left';
         ctx.fillText(`LEVEL: ${this.state.level}`, 20, 28);
-        ctx.fillText(`Press 0-9 to jump`, 20, 42);
-        ctx.fillText(`Press G for God Mode`, 20, 56);
+
+        // Snoopy position
+        if (this.player) {
+          const snoopyX = this.player.getGridX();
+          const snoopyY = this.player.getGridY();
+          ctx.fillText(`SNOOPY: (${snoopyX}, ${snoopyY})`, 20, 42);
+        }
+
+        ctx.fillText(`Press 0-9 to jump`, 20, 56);
+        ctx.fillText(`Press G for God Mode`, 20, 70);
+        ctx.fillText(`Press H to hide`, 20, 84);
+        ctx.fillText(``, 20, 98);
 
         // God mode indicator
         if (this.player && this.player.godMode) {
           ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
-          ctx.fillRect(10, 70, 100, 24);
+          ctx.fillRect(10, 104, 100, 24);
           ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
           ctx.font = 'bold 14px "Courier New", monospace';
-          ctx.fillText(`GOD MODE`, 20, 87);
+          ctx.fillText(`GOD MODE`, 20, 121);
         }
 
         ctx.restore();

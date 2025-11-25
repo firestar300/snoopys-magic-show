@@ -12,6 +12,7 @@ Incarnez Snoopy dans ce jeu de puzzle/action où vous devez collecter tous les W
 ## ✨ Fonctionnalités
 
 ### Mécaniques de Jeu
+
 - ✅ **Mouvement sur grille** (9x8 cases)
 - ✅ **Collectibles** - Récupérez tous les Woodstock pour terminer le niveau
 - ✅ **Ennemis** - Boules rebondissantes qui vous font perdre une vie
@@ -24,6 +25,7 @@ Incarnez Snoopy dans ce jeu de puzzle/action où vous devez collecter tous les W
   - 🟡 Invincible - Protection temporaire contre les boules
 
 ### Interface & Expérience
+
 - ✅ **Écran de menu** avec instructions
 - ✅ **Écran Game Over** avec score final
 - ✅ **Écran de victoire** pour finir tous les niveaux
@@ -33,6 +35,7 @@ Incarnez Snoopy dans ce jeu de puzzle/action où vous devez collecter tous les W
 - ✅ **Support mobile/tactile** avec contrôles virtuels
 
 ### Niveaux
+
 - 🎯 **7 niveaux** avec difficulté progressive
   1. Welcome to the Show! - Introduction
   2. Bouncing Around - Blocs poussables et flèches
@@ -45,11 +48,13 @@ Incarnez Snoopy dans ce jeu de puzzle/action où vous devez collecter tous les W
 ## 🎯 Contrôles
 
 ### Clavier
+
 - **Flèches / WASD** - Déplacement
 - **Espace / Entrée** - Action (casser les blocs, menu)
 - **P** - Pause
 
 ### Mobile/Tactile
+
 - **D-Pad virtuel** - Déplacement
 - **Bouton A** - Action
 
@@ -114,7 +119,7 @@ Les niveaux sont définis en JSON avec un système de caractères :
 
 - `0` - Vide
 - `1` - Mur (collision)
-- `2` - Bloc poussable
+- `2` - Bloc poussable (toutes directions)
 - `3` - Bloc cassable
 - `4` - Téléporteur A
 - `5` - Téléporteur B
@@ -122,6 +127,11 @@ Les niveaux sont définis en JSON avec un système de caractères :
 - `7` - Flèche Droite
 - `8` - Flèche Bas
 - `9` - Flèche Gauche
+- `A` - Bloc poussable Haut uniquement
+- `B` - Bloc poussable Bas uniquement
+- `C` - Bloc poussable Gauche uniquement
+- `D` - Bloc poussable Droite uniquement
+- `E` - Bloc Toggle (alterne entre solide et passable)
 
 ### Exemple de niveau
 
@@ -145,14 +155,44 @@ Les niveaux sont définis en JSON avec un système de caractères :
   "entities": [
     { "type": "woodstock", "x": 7, "y": 6 },
     { "type": "ball", "x": 4, "y": 4, "vx": 1, "vy": 1 },
-    { "type": "powerup", "x": 2, "y": 4, "powerType": "speed" }
+    { "type": "powerup", "x": 2, "y": 4, "powerType": "speed" },
+    {
+      "type": "powerup",
+      "x": 1,
+      "y": 1,
+      "powerType": "time",
+      "hidden": true,
+      "blockX": 3,
+      "blockY": 2,
+      "targets": {
+        "up": { "x": 3, "y": 0 },
+        "down": { "x": 5, "y": 5 },
+        "left": { "x": 0, "y": 2 },
+        "right": { "x": 8, "y": 2 }
+      }
+    }
   ]
 }
+```
+
+### Power-ups cachés
+
+Les power-ups peuvent être cachés dans des blocs cassables (`3`) ou poussables (`2`, `A`, `B`, `C`, `D`). Paramètres disponibles :
+
+- `"hidden": true` - Le power-up est caché
+- `"blockX"` et `"blockY"` - Position du bloc contenant le power-up
+- `"targets"` (optionnel) - Positions cibles selon la direction de Snoopy
+  - Format: `{ "up": {x, y}, "down": {x, y}, "left": {x, y}, "right": {x, y} }`
+  - Si non spécifié : le power-up se déplace automatiquement de 3 cases dans la direction de Snoopy
+  - Si spécifié : le power-up se déplace vers les coordonnées correspondant à la direction depuis laquelle Snoopy a cassé/poussé le bloc
+  - Exemple : Si Snoopy casse par le bas (`down`), le power-up ira vers `targets.down`
+
 ```
 
 ## 🎨 Palette de Couleurs Game Boy
 
 Le jeu utilise une palette authentique Game Boy :
+
 - **#0f380f** - Vert foncé
 - **#306230** - Vert moyen foncé
 - **#8bac0f** - Vert moyen clair

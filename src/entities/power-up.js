@@ -5,7 +5,7 @@ import { CONFIG } from '../config.js';
  * Power-up collectible
  */
 export class PowerUp extends Entity {
-  constructor(gridX, gridY, powerType = 'speed', hidden = false) {
+  constructor(gridX, gridY, powerType = 'speed', hidden = false, customTargets = null) {
     super(gridX, gridY, CONFIG.TILE_SIZE, CONFIG.TILE_SIZE);
 
     this.type = 'powerup';
@@ -17,10 +17,15 @@ export class PowerUp extends Entity {
     this.revealTimer = 0;
     this.revealDuration = 1; // Will be calculated based on distance
     this.revealSpeedPerTile = 0.2; // Time per tile (seconds) - constant speed
+    this.revealDirection = null; // Direction of reveal (up/down/left/right)
     this.startX = this.x;
     this.startY = this.y;
     this.targetX = this.x;
     this.targetY = this.y;
+
+    // Custom target positions (optional, direction-based)
+    // Format: { up: {x, y}, down: {x, y}, left: {x, y}, right: {x, y} }
+    this.customTargets = customTargets;
 
     // Blink animation (active during reveal and normal state)
     this.blinkTimer = 0;
@@ -81,7 +86,7 @@ export class PowerUp extends Entity {
       }
     }
 
-    // Handle reveal animation (movement - horizontal then vertical, no diagonal)
+    // Handle reveal animation (movement follows Snoopy's direction first)
     if (this.isRevealing) {
       this.revealTimer += dt;
       const progress = Math.min(this.revealTimer / this.revealDuration, 1);
@@ -94,22 +99,41 @@ export class PowerUp extends Entity {
       const tilesY = Math.abs(deltaY) / CONFIG.TILE_SIZE;
       const totalTiles = tilesX + tilesY;
 
-      // Calculate phase split based on actual distances
-      // Phase 1 takes proportional time for horizontal movement
-      const horizontalPhaseEnd = totalTiles > 0 ? tilesX / totalTiles : 0.5;
+      // Determine movement order based on Snoopy's direction
+      const isVerticalFirst = this.revealDirection === 'up' || this.revealDirection === 'down';
 
-      // Two-phase movement: horizontal first, then vertical
-      if (progress < horizontalPhaseEnd) {
-        // Phase 1: Horizontal movement only
-        const horizontalProgress = horizontalPhaseEnd > 0 ? progress / horizontalPhaseEnd : 0;
-        this.x = this.startX + deltaX * horizontalProgress;
-        this.y = this.startY; // Stay at start Y
+      if (isVerticalFirst) {
+        // Vertical movement first (up/down direction), then horizontal
+        const verticalPhaseEnd = totalTiles > 0 ? tilesY / totalTiles : 0.5;
+
+        if (progress < verticalPhaseEnd) {
+          // Phase 1: Vertical movement only
+          const verticalProgress = verticalPhaseEnd > 0 ? progress / verticalPhaseEnd : 0;
+          this.x = this.startX; // Stay at start X
+          this.y = this.startY + deltaY * verticalProgress;
+        } else {
+          // Phase 2: Horizontal movement only (vertical is complete)
+          const horizontalPhaseLength = 1 - verticalPhaseEnd;
+          const horizontalProgress = horizontalPhaseLength > 0 ? (progress - verticalPhaseEnd) / horizontalPhaseLength : 1;
+          this.x = this.startX + deltaX * horizontalProgress;
+          this.y = this.targetY; // Already at target Y
+        }
       } else {
-        // Phase 2: Vertical movement only (horizontal is complete)
-        const verticalPhaseLength = 1 - horizontalPhaseEnd;
-        const verticalProgress = verticalPhaseLength > 0 ? (progress - horizontalPhaseEnd) / verticalPhaseLength : 1;
-        this.x = this.targetX; // Already at target X
-        this.y = this.startY + deltaY * verticalProgress;
+        // Horizontal movement first (left/right direction), then vertical
+        const horizontalPhaseEnd = totalTiles > 0 ? tilesX / totalTiles : 0.5;
+
+        if (progress < horizontalPhaseEnd) {
+          // Phase 1: Horizontal movement only
+          const horizontalProgress = horizontalPhaseEnd > 0 ? progress / horizontalPhaseEnd : 0;
+          this.x = this.startX + deltaX * horizontalProgress;
+          this.y = this.startY; // Stay at start Y
+        } else {
+          // Phase 2: Vertical movement only (horizontal is complete)
+          const verticalPhaseLength = 1 - horizontalPhaseEnd;
+          const verticalProgress = verticalPhaseLength > 0 ? (progress - horizontalPhaseEnd) / verticalPhaseLength : 1;
+          this.x = this.targetX; // Already at target X
+          this.y = this.startY + deltaY * verticalProgress;
+        }
       }
 
       // End reveal animation
@@ -122,41 +146,50 @@ export class PowerUp extends Entity {
   }
 
   /**
-   * Reveal the power-up from a block (moves 3 tiles in Snoopy's direction)
+   * Reveal the power-up from a block (moves 3 tiles in Snoopy's direction, or to custom target)
    */
   reveal(blockGridX, blockGridY, snoopyDirection, levelManager = null, entityManager = null) {
     if (!this.hidden) return;
 
-    // Direction mapping
-    const directionMap = {
-      'up': { dx: 0, dy: -1 },
-      'down': { dx: 0, dy: 1 },
-      'left': { dx: -1, dy: 0 },
-      'right': { dx: 1, dy: 0 },
-    };
+    let targetGridX, targetGridY;
 
-    const dir = directionMap[snoopyDirection] || { dx: 1, dy: 0 };
+    // Check if custom targets are defined for this direction
+    if (this.customTargets && this.customTargets[snoopyDirection]) {
+      targetGridX = this.customTargets[snoopyDirection].x;
+      targetGridY = this.customTargets[snoopyDirection].y;
+    } else {
+      // Otherwise, use automatic behavior (3 tiles in Snoopy's direction)
+      // Direction mapping
+      const directionMap = {
+        'up': { dx: 0, dy: -1 },
+        'down': { dx: 0, dy: 1 },
+        'left': { dx: -1, dy: 0 },
+        'right': { dx: 1, dy: 0 },
+      };
 
-    // Calculate target position: 3 tiles in Snoopy's direction
-    let targetGridX = blockGridX + (dir.dx * 3);
-    let targetGridY = blockGridY + (dir.dy * 3);
+      const dir = directionMap[snoopyDirection] || { dx: 1, dy: 0 };
 
-    // Clamp to grid bounds
-    targetGridX = Math.max(0, Math.min(targetGridX, CONFIG.GRID_WIDTH - 1));
-    targetGridY = Math.max(0, Math.min(targetGridY, CONFIG.GRID_HEIGHT - 1));
+      // Calculate target position: 3 tiles in Snoopy's direction
+      targetGridX = blockGridX + (dir.dx * 3);
+      targetGridY = blockGridY + (dir.dy * 3);
 
-    // Check if target position is eligible (non-solid, no entity)
-    if (levelManager && entityManager) {
-      const isTargetEligible = this.isPositionEligible(targetGridX, targetGridY, levelManager, entityManager);
+      // Clamp to grid bounds
+      targetGridX = Math.max(0, Math.min(targetGridX, CONFIG.GRID_WIDTH - 1));
+      targetGridY = Math.max(0, Math.min(targetGridY, CONFIG.GRID_HEIGHT - 1));
 
-      if (!isTargetEligible) {
-        // Find adjacent eligible position
-        const adjacentPos = this.findAdjacentEligiblePosition(targetGridX, targetGridY, levelManager, entityManager);
-        if (adjacentPos) {
-          targetGridX = adjacentPos.x;
-          targetGridY = adjacentPos.y;
+      // Check if target position is eligible (non-solid, no entity)
+      if (levelManager && entityManager) {
+        const isTargetEligible = this.isPositionEligible(targetGridX, targetGridY, levelManager, entityManager);
+
+        if (!isTargetEligible) {
+          // Find adjacent eligible position
+          const adjacentPos = this.findAdjacentEligiblePosition(targetGridX, targetGridY, levelManager, entityManager);
+          if (adjacentPos) {
+            targetGridX = adjacentPos.x;
+            targetGridY = adjacentPos.y;
+          }
+          // If no adjacent position found, keep original (will be on solid block but at least visible)
         }
-        // If no adjacent position found, keep original (will be on solid block but at least visible)
       }
     }
 
@@ -164,6 +197,7 @@ export class PowerUp extends Entity {
     this.hidden = false;
     this.isRevealing = true;
     this.revealTimer = 0;
+    this.revealDirection = snoopyDirection; // Store direction for animation
     this.startX = blockGridX * CONFIG.TILE_SIZE;
     this.startY = blockGridY * CONFIG.TILE_SIZE;
     this.targetX = targetGridX * CONFIG.TILE_SIZE;

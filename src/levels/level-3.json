@@ -6,48 +6,61 @@
   "music": "stage-bgm-5",
   "clearMusic": "stage-clear-5",
   "startPosition": {
-    "x": 1,
-    "y": 1
+    "x": 4,
+    "y": 4
   },
   "tiles": [
-    "020000000",
-    "002020200",
     "000000000",
-    "002020200",
-    "000000000",
-    "002020200",
-    "000000000",
+    "0C00A00D0",
+    "000C0D000",
+    "00C000D00",
+    "00C000D00",
+    "000C0D000",
+    "0C00B00D0",
     "000000000"
   ],
   "entities": [
     {
       "type": "woodstock",
-      "x": 7,
-      "y": 1
+      "x": 0,
+      "y": 0
     },
     {
       "type": "woodstock",
-      "x": 7,
-      "y": 3
+      "x": 8,
+      "y": 0
     },
     {
       "type": "woodstock",
-      "x": 7,
-      "y": 5
+      "x": 0,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
     },
     {
       "type": "ball",
       "x": 4,
-      "y": 1,
+      "y": 0,
       "vx": 1,
       "vy": 0
     },
     {
-      "type": "ball",
+      "type": "powerup",
       "x": 4,
-      "y": 5,
-      "vx": -1,
-      "vy": 0
+      "y": 6,
+      "powerType": "time",
+      "hidden": true,
+      "blockX": 4,
+      "blockY": 6,
+      "targets": {
+        "up": { "x": 2, "y": 7 },
+        "down": { "x": 2, "y": 7 },
+        "left": { "x": 2, "y": 7 },
+        "right": { "x": 2, "y": 7 }
+      }
     }
   ]
 }

@@ -40,7 +40,6 @@ export class Player extends Entity {
 
     // Action cooldown
     this.actionCooldown = 0;
-    this.previousActionState = false; // Track previous action button state
 
     // Trapped on toggle block
     this.isTrapped = false;
@@ -194,14 +193,11 @@ export class Player extends Entity {
       this.updateMovement(dt, levelManager);
     }
 
-    // Allow breaking blocks even while moving
-    // Detect "just pressed" ourselves
-    const actionJustPressed = input.action && !this.previousActionState;
-    this.previousActionState = input.action;
-
-    if (actionJustPressed && this.actionCooldown <= 0) {
+    // Break blocks only when player is not moving and action button is held
+    // This ensures Snoopy is fully on a tile before breaking adjacent blocks
+    if (!this.isMoving && input.action && this.actionCooldown <= 0) {
       this.performAction(levelManager, game);
-      this.actionCooldown = 0.3; // 300ms cooldown
+      this.actionCooldown = 0.3; // 300ms cooldown between each block break
     }
 
     // Update hurt timer

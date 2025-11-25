@@ -81,7 +81,8 @@ export class EntityManager {
 
       case 'powerup':
         const hidden = data.hidden || false;
-        entity = new PowerUp(data.x, data.y, data.powerType || 'speed', hidden);
+        const customTargets = data.targets || null;
+        entity = new PowerUp(data.x, data.y, data.powerType || 'speed', hidden, customTargets);
 
         // If power-up is hidden in a block, register it with the level manager
         if (hidden && data.blockX !== undefined && data.blockY !== undefined && levelManager) {
