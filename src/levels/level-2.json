@@ -1,0 +1,54 @@
+{
+  "id": 2,
+  "name": "Bouncing Around",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-3",
+  "clearMusic": "stage-clear-3",
+  "startPosition": {
+    "x": 1,
+    "y": 6
+  },
+  "tiles": [
+    "000020000",
+    "006000700",
+    "000020000",
+    "002000200",
+    "000020000",
+    "000000000",
+    "000000000",
+    "000000000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "type": "woodstock",
+      "x": 7,
+      "y": 6
+    },
+    {
+      "type": "ball",
+      "x": 2,
+      "y": 2,
+      "vx": 1,
+      "vy": 1
+    },
+    {
+      "type": "ball",
+      "x": 6,
+      "y": 5,
+      "vx": -1,
+      "vy": -1
+    },
+    {
+      "type": "powerup",
+      "x": 4,
+      "y": 6,
+      "powerType": "time"
+    }
+  ]
+}

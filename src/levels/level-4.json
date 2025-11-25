@@ -1,0 +1,47 @@
+{
+  "id": 4,
+  "name": "Teleport Maze",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-7",
+  "clearMusic": "stage-clear-7",
+  "startPosition": {
+    "x": 1,
+    "y": 6
+  },
+  "tiles": [
+    "040000050",
+    "011111100",
+    "000000000",
+    "001111110",
+    "050000040",
+    "000000000",
+    "000000000",
+    "000000000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 7,
+      "y": 1
+    },
+    {
+      "type": "woodstock",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "type": "ball",
+      "x": 4,
+      "y": 3,
+      "vx": 1,
+      "vy": 1
+    },
+    {
+      "type": "powerup",
+      "x": 4,
+      "y": 6,
+      "powerType": "speed"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": 1,
+  "name": "Welcome to the Show!",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-2",
+  "clearMusic": "stage-clear-2",
+  "startPosition": {
+    "x": 1,
+    "y": 1
+  },
+  "tiles": [
+    "000000000",
+    "001020100",
+    "000000000",
+    "001000100",
+    "000030000",
+    "001000100",
+    "000000000",
+    "000000000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 7,
+      "y": 6
+    },
+    {
+      "type": "woodstock",
+      "x": 4,
+      "y": 2
+    },
+    {
+      "type": "ball",
+      "x": 4,
+      "y": 4,
+      "vx": 1,
+      "vy": 1
+    },
+    {
+      "type": "powerup",
+      "x": 2,
+      "y": 4,
+      "powerType": "speed"
+    }
+  ]
+}

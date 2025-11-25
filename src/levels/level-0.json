@@ -1,0 +1,71 @@
+{
+  "id": 0,
+  "name": "🧪 Test Level - All Blocks",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-1",
+  "clearMusic": "stage-clear-1",
+  "startPosition": {
+    "x": 4,
+    "y": 7
+  },
+  "tiles": [
+    "400000005",
+    "012220330",
+    "000A00000",
+    "00B0C0D00",
+    "00E000E00",
+    "006678900",
+    "00E000E00",
+    "400000005"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 1,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 7,
+      "y": 0
+    },
+    {
+      "type": "ball",
+      "x": 7,
+      "y": 3,
+      "vx": 0,
+      "vy": 1
+    },
+    {
+      "type": "powerup",
+      "x": 2,
+      "y": 7,
+      "powerType": "invincible"
+    },
+    {
+      "type": "powerup",
+      "x": 6,
+      "y": 7,
+      "powerType": "time"
+    },
+    {
+      "type": "powerup",
+      "x": 6,
+      "y": 1,
+      "powerType": "speed",
+      "hidden": true,
+      "blockX": 6,
+      "blockY": 1
+    },
+    {
+      "type": "powerup",
+      "x": 3,
+      "y": 1,
+      "powerType": "invincible",
+      "hidden": true,
+      "blockX": 3,
+      "blockY": 1
+    }
+  ]
+}

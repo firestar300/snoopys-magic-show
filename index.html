@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snoopy's Magic Show</title>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg">
+</head>
+<body>
+  <div id="app">
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
+      <div id="score">Score: 0</div>
+      <div id="lives">Lives: 3</div>
+      <div id="level">Level: 1</div>
+    </div>
+
+    <!-- Touch Controls (Mobile Only) -->
+    <div id="touch-controls" class="touch-controls hidden">
+      <div class="dpad">
+        <button class="touch-btn touch-up" data-direction="up">▲</button>
+        <button class="touch-btn touch-down" data-direction="down">▼</button>
+        <button class="touch-btn touch-left" data-direction="left">◄</button>
+        <button class="touch-btn touch-right" data-direction="right">►</button>
+        <div class="dpad-center"></div>
+      </div>
+      <div class="action-buttons">
+        <button class="touch-btn touch-action" data-direction="action">A</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "id": 6,
+  "name": "Break Out",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-9",
+  "clearMusic": "stage-clear-9",
+  "startPosition": {
+    "x": 4,
+    "y": 6
+  },
+  "tiles": [
+    "003333300",
+    "003000300",
+    "003020300",
+    "003020300",
+    "003000300",
+    "000000000",
+    "000000000",
+    "000000000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "type": "woodstock",
+      "x": 3,
+      "y": 4
+    },
+    {
+      "type": "woodstock",
+      "x": 5,
+      "y": 4
+    },
+    {
+      "type": "ball",
+      "x": 2,
+      "y": 2,
+      "vx": 1,
+      "vy": 1
+    },
+    {
+      "type": "ball",
+      "x": 6,
+      "y": 2,
+      "vx": -1,
+      "vy": 1
+    }
+  ]
+}
