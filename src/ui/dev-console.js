@@ -281,7 +281,7 @@ export class DevConsole {
     ctx.fillStyle = CONFIG.COLORS.LIGHT;
     ctx.font = 'bold 12px "Courier New", monospace';
     ctx.textAlign = 'left';
-    ctx.fillText('DEV CONSOLE - Press CMD/CTRL to close, ESC to cancel', 10, y + 20);
+    ctx.fillText('DEV CONSOLE', 10, y + 20);
 
     // Output
     let outputY = y + 40;
@@ -302,6 +302,8 @@ export class DevConsole {
     // Help text
     ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
     ctx.font = '10px "Courier New", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('ESC to cancel', 10, y + height - 10);
     ctx.textAlign = 'right';
     ctx.fillText('Type /help for commands', width - 10, y + height - 10);
   }

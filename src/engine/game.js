@@ -38,8 +38,10 @@ export class Game {
       let consoleKeyPressed = false;
 
       window.addEventListener('keydown', (e) => {
-        // Toggle console with CMD (Mac) or CTRL (Windows/Linux)
-        if ((e.key === 'Meta' || e.key === 'Control') && !consoleKeyPressed) {
+        // Toggle console with CMD+Shift (Mac) or CTRL+Shift (Windows/Linux)
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && !consoleKeyPressed) {
+          e.preventDefault();
+          this.devConsole.toggle();
           consoleKeyPressed = true;
           return;
         }
@@ -51,9 +53,8 @@ export class Game {
       });
 
       window.addEventListener('keyup', (e) => {
-        if ((e.key === 'Meta' || e.key === 'Control') && consoleKeyPressed) {
-          e.preventDefault();
-          this.devConsole.toggle();
+        // Reset flag when modifier keys are released
+        if (e.key === 'Meta' || e.key === 'Control' || e.key === 'Shift') {
           consoleKeyPressed = false;
         }
       });
@@ -608,7 +609,7 @@ export class Game {
         ctx.fillText(`Press 0-9 to jump`, 20, 56);
         ctx.fillText(`Press G for God Mode`, 20, 70);
         ctx.fillText(`Press H to hide`, 20, 84);
-        ctx.fillText(`Press CMD/CTRL for console`, 20, 98);
+        ctx.fillText(`Press CMD+SHIFT for console`, 20, 98);
 
         // God mode indicator
         if (this.player && this.player.godMode) {
