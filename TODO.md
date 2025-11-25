@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (6/100)
+### ✅ Niveaux Terminés (8/100)
 
 - [x] **Level 0** - Test Level (Dev only)
 - [x] **Level 1** - Ready Go!
@@ -12,63 +12,73 @@
 - [x] **Level 3** - Push and Slide
 - [x] **Level 4** - Teleport Challenge
 - [x] **Level 5** - Arrow Maze
+- [x] **Level 6** - Break Out
+- [x] **Level 7** - Toggle Timing
 
-### 🚧 Niveaux En Cours (3/100)
+### 🚧 Niveaux En Cours (2/100)
 
-- [ ] **Level 6** - À définir
-- [ ] **Level 7** - À définir
 - [ ] **Level 8** - Block Maze (pattern créé, à finaliser)
 - [ ] **Level 9** - Grand Finale (pattern créé, à finaliser)
 
-### 📝 Niveaux Planifiés (91/100)
+### 📝 Niveaux Planifiés (90/100)
 
-#### Zone 1 : Introduction (Levels 1-10) ✅ 5/10
+#### Zone 1 : Introduction (Levels 1-10) ✅ 7/10
+
 Mécaniques de base, apprentissage progressif
 
-- [x] Level 1-5
-- [ ] Level 6-10
+- [x] Level 1-7
+- [ ] Level 8-10
 
 #### Zone 2 : Toggle Blocks (Levels 11-20) 0/10
+
 Focus sur les blocs qui alternent entre solide et passable
 
 - [ ] Level 11-20
 
 #### Zone 3 : Téléportation (Levels 21-30) 0/10
+
 Maîtrise des portails et téléportation
 
 - [ ] Level 21-30
 
 #### Zone 4 : Power-ups Avancés (Levels 31-40) 0/10
+
 Utilisation stratégique des power-ups
 
 - [ ] Level 31-40
 
 #### Zone 5 : Puzzles Complexes (Levels 41-50) 0/10
+
 Combinaison de plusieurs mécaniques
 
 - [ ] Level 41-50
 
 #### Zone 6 : Précision (Levels 51-60) 0/10
+
 Timing et précision requis
 
 - [ ] Level 51-60
 
 #### Zone 7 : Chaos Contrôlé (Levels 61-70) 0/10
+
 Multiples balles, situations chaotiques
 
 - [ ] Level 61-70
 
 #### Zone 8 : Maîtrise (Levels 71-80) 0/10
+
 Niveaux très difficiles
 
 - [ ] Level 71-80
 
 #### Zone 9 : Expert (Levels 81-90) 0/10
+
 Pour les joueurs expérimentés
 
 - [ ] Level 81-90
 
 #### Zone 10 : Finale (Levels 91-100) 0/10
+
 Boss finals et défis ultimes
 
 - [ ] Level 91-100
@@ -76,6 +86,7 @@ Boss finals et défis ultimes
 ## 🎯 Idées de Mécaniques par Zone
 
 ### Zone 1 (1-10) - Introduction
+
 - Blocs cassables
 - Blocs poussables
 - Flèches directionnelles
@@ -83,46 +94,55 @@ Boss finals et défis ultimes
 - Power-up invincible et speed
 
 ### Zone 2 (11-20) - Toggle Blocks
+
 - Puzzles basés sur le timing des toggle blocks
 - Combinaison toggle blocks + flèches
 - Toggle blocks + téléportation
 
 ### Zone 3 (21-30) - Téléportation
+
 - Chaînes de téléportation
 - Téléportation avec balles
 - Labyrinthes de portails
 
 ### Zone 4 (31-40) - Power-ups Avancés
+
 - Power-ups cachés avec targets directionnels
 - Utilisation obligatoire de power-ups
 - Séquences de power-ups
 
 ### Zone 5 (41-50) - Puzzles Complexes
+
 - Multiples types de blocs
 - Séquences d'actions requises
 - Chemins alternatifs
 
 ### Zone 6 (51-60) - Précision
+
 - Timer serré
 - Mouvements précis requis
 - Patterns de balles complexes
 
 ### Zone 7 (61-70) - Chaos Contrôlé
+
 - 5+ balles simultanées
 - Espaces restreints
 - Évitement pur
 
 ### Zone 8 (71-80) - Maîtrise
+
 - Combinaison de toutes les mécaniques
 - Puzzles multi-étapes
 - Niveaux longs
 
 ### Zone 9 (81-90) - Expert
+
 - Défis de vitesse
 - Perfection requise
 - Mécaniques extrêmes
 
 ### Zone 10 (91-100) - Finale
+
 - Boss levels
 - Niveaux marathon
 - Défi ultime au niveau 100
@@ -130,26 +150,30 @@ Boss finals et défis ultimes
 ## 📋 Notes de Design
 
 ### Principes de Design
+
 - Progression linéaire de difficulté
 - Introduction d'une nouvelle mécanique tous les 5-10 niveaux
 - Variété dans le gameplay
 - Récompense de la maîtrise des mécaniques
 
 ### Considérations
+
 - Chaque niveau doit être unique
 - Timer ajusté selon la difficulté
 - Placement stratégique des Woodstocks
 - Équilibre entre puzzle et action
 
 ## 🎵 Musiques Disponibles
+
 - stage-bgm-1 à stage-bgm-9
 - stage-clear-1 à stage-clear-9
 - À assigner aux niveaux selon l'ambiance
 
 ## 📈 Statistiques
-- **Niveaux complétés :** 6/100 (6%)
-- **Niveaux en cours :** 3/100 (3%)
-- **Niveaux restants :** 91/100 (91%)
+
+- **Niveaux complétés :** 8/100 (8%)
+- **Niveaux en cours :** 2/100 (2%)
+- **Niveaux restants :** 90/100 (90%)
 
 ---
 Dernière mise à jour : 2025-11-25

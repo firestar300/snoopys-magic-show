@@ -3,75 +3,49 @@
   "name": "Final Show",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-8",
-  "clearMusic": "stage-clear-8",
+  "music": "stage-bgm-7",
+  "clearMusic": "stage-clear-7",
   "startPosition": {
     "x": 4,
     "y": 6
   },
   "tiles": [
-    "040333050",
-    "067000700",
-    "000020000",
-    "088000800",
-    "050333040",
+    "010010010",
     "000000000",
-    "000000000",
-    "000000000"
+    "100101001",
+    "001000100",
+    "000010000",
+    "101000101",
+    "000101000",
+    "010000010"
   ],
   "entities": [
     {
       "type": "woodstock",
-      "x": 4,
-      "y": 1
+      "x": 0,
+      "y": 0
     },
     {
       "type": "woodstock",
-      "x": 2,
-      "y": 3
+      "x": 8,
+      "y": 0
     },
     {
       "type": "woodstock",
-      "x": 6,
-      "y": 3
+      "x": 0,
+      "y": 7
     },
     {
       "type": "woodstock",
-      "x": 4,
-      "y": 5
+      "x": 8,
+      "y": 7
     },
     {
       "type": "ball",
-      "x": 2,
-      "y": 2,
-      "vx": 1,
-      "vy": 1
-    },
-    {
-      "type": "ball",
-      "x": 6,
-      "y": 2,
-      "vx": -1,
-      "vy": 1
-    },
-    {
-      "type": "ball",
-      "x": 4,
+      "x": 5,
       "y": 4,
-      "vx": 1,
+      "vx": -1,
       "vy": -1
-    },
-    {
-      "type": "powerup",
-      "x": 1,
-      "y": 6,
-      "powerType": "invincible"
-    },
-    {
-      "type": "powerup",
-      "x": 7,
-      "y": 6,
-      "powerType": "speed"
     }
   ]
 }
