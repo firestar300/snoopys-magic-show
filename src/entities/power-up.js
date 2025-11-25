@@ -15,7 +15,7 @@ export class PowerUp extends Entity {
     this.hidden = hidden;
     this.isRevealing = false;
     this.revealTimer = 0;
-    this.revealDuration = 0.33; // Duration of movement animation (33% faster)
+    this.revealDuration = 1; // Duration of movement animation (2x slower)
     this.startX = this.x;
     this.startY = this.y;
     this.targetX = this.x;
@@ -25,6 +25,11 @@ export class PowerUp extends Entity {
     this.blinkTimer = 0;
     this.blinkSpeed = 0.05; // Speed of blinking (seconds) - faster blink
     this.isVisible = true;
+
+    // Speed power-up animation (alternate between L1C3 and L1C4)
+    this.speedAnimTimer = 0;
+    this.speedAnimSpeed = 0.1; // Alternate every 0.5 seconds (slower transition)
+    this.speedFrame = 0; // 0 or 1
 
     // Lifetime timer (disappears after 10 seconds)
     this.lifetimeTimer = 0;
@@ -52,13 +57,27 @@ export class PowerUp extends Entity {
       }
     }
 
-    // Update blink timer (always active when not hidden)
-    this.blinkTimer += dt;
+    // Update blink timer (only for non-speed power-ups)
+    if (this.powerType !== 'speed') {
+      this.blinkTimer += dt;
 
-    // Toggle visibility every blinkSpeed seconds
-    if (this.blinkTimer >= this.blinkSpeed) {
-      this.isVisible = !this.isVisible;
-      this.blinkTimer = 0;
+      // Toggle visibility every blinkSpeed seconds
+      if (this.blinkTimer >= this.blinkSpeed) {
+        this.isVisible = !this.isVisible;
+        this.blinkTimer = 0;
+      }
+    } else {
+      // Speed power-up is always visible (no blink effect)
+      this.isVisible = true;
+    }
+
+    // Update speed power-up animation
+    if (this.powerType === 'speed') {
+      this.speedAnimTimer += dt;
+      if (this.speedAnimTimer >= this.speedAnimSpeed) {
+        this.speedFrame = (this.speedFrame + 1) % 2;
+        this.speedAnimTimer = 0;
+      }
     }
 
     // Handle reveal animation (movement)
@@ -66,14 +85,9 @@ export class PowerUp extends Entity {
       this.revealTimer += dt;
       const progress = Math.min(this.revealTimer / this.revealDuration, 1);
 
-      // Smooth easing
-      const eased = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-      // Interpolate position
-      this.x = this.startX + (this.targetX - this.startX) * eased;
-      this.y = this.startY + (this.targetY - this.startY) * eased;
+      // Linear movement (no easing)
+      this.x = this.startX + (this.targetX - this.startX) * progress;
+      this.y = this.startY + (this.targetY - this.startY) * progress;
 
       // End reveal animation
       if (progress >= 1) {
@@ -85,40 +99,28 @@ export class PowerUp extends Entity {
   }
 
   /**
-   * Reveal the power-up from a block (horizontal or vertical movement)
+   * Reveal the power-up from a block (moves 3 tiles in Snoopy's direction)
    */
-  reveal(blockGridX, blockGridY, levelManager) {
+  reveal(blockGridX, blockGridY, snoopyDirection) {
     if (!this.hidden) return;
 
-    // Directions: up, down, left, right (horizontal and vertical only)
-    const directions = [
-      { dx: 0, dy: -1, name: 'up' },
-      { dx: 0, dy: 1, name: 'down' },
-      { dx: -1, dy: 0, name: 'left' },
-      { dx: 1, dy: 0, name: 'right' },
-    ];
+    // Direction mapping
+    const directionMap = {
+      'up': { dx: 0, dy: -1 },
+      'down': { dx: 0, dy: 1 },
+      'left': { dx: -1, dy: 0 },
+      'right': { dx: 1, dy: 0 },
+    };
 
-    // Find first valid position in any direction (check up to 3 tiles away)
-    let targetGridX = blockGridX;
-    let targetGridY = blockGridY;
-    let found = false;
+    const dir = directionMap[snoopyDirection] || { dx: 1, dy: 0 };
 
-    for (const dir of directions) {
-      for (let distance = 1; distance <= 3; distance++) {
-        const newGridX = blockGridX + (dir.dx * distance);
-        const newGridY = blockGridY + (dir.dy * distance);
+    // Calculate target position: 3 tiles in Snoopy's direction
+    let targetGridX = blockGridX + (dir.dx * 3);
+    let targetGridY = blockGridY + (dir.dy * 3);
 
-        // Check if position is valid (not solid and in bounds)
-        if (!levelManager.isSolid(newGridX, newGridY) &&
-            levelManager.isInBounds(newGridX, newGridY)) {
-          targetGridX = newGridX;
-          targetGridY = newGridY;
-          found = true;
-          break;
-        }
-      }
-      if (found) break;
-    }
+    // Clamp to grid bounds
+    targetGridX = Math.max(0, Math.min(targetGridX, CONFIG.GRID_WIDTH - 1));
+    targetGridY = Math.max(0, Math.min(targetGridY, CONFIG.GRID_HEIGHT - 1));
 
     // Set up reveal animation
     this.hidden = false;
@@ -145,8 +147,8 @@ export class PowerUp extends Entity {
       return;
     }
 
+    // Apply power-up effect (no score points for power-ups)
     player.applyPowerUp(this.powerType, game);
-    game.addScore(200);
     this.destroy();
   }
 
@@ -171,7 +173,8 @@ export class PowerUp extends Entity {
         this.x,
         this.y,
         this.width,
-        this.height
+        this.height,
+        this.speedFrame
       );
     } else {
       // Fallback rendering

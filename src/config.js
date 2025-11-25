@@ -34,6 +34,9 @@ export const CONFIG = {
     LIGHT: '#9bbc0f',
   },
 
+  // Developer mode
+  DEV_MODE: false,
+
   // Game settings
   FPS: 60,
   PLAYER_SPEED: 3,

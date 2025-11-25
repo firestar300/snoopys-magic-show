@@ -71,7 +71,7 @@ export class Game {
     // Reset state
     this.state.score = 0;
     this.state.lives = 3;
-    this.state.level = 0; // Start at test level (use 1 for normal game)
+    this.state.level = CONFIG.DEV_MODE ? 0 : 1; // Start at level 0 in dev mode, level 1 otherwise
     this.state.currentState = GameState.PLAYING;
     this.state.levelReady = false;
     this.uiManager.setState(GameState.PLAYING);
@@ -221,14 +221,15 @@ export class Game {
         break;
 
       case GameState.LEVEL_COMPLETE:
-        if (input.actionJustPressed) {
+        // Only allow continuing when time bonus animation is finished
+        if (input.actionJustPressed && !this.uiManager.timeBonusAnimation.active) {
           this.continueToNextLevel();
         }
         break;
 
       case GameState.PLAYING:
-        // Check for pause (P key)
-        if (this.inputManager.keys['p'] || this.inputManager.keys['P']) {
+        // Check for pause (P key or Escape)
+        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape']) {
           if (!this.pauseKeyPressed) {
             this.togglePause();
             this.pauseKeyPressed = true;
@@ -239,7 +240,8 @@ export class Game {
         break;
 
       case GameState.PAUSED:
-        if (this.inputManager.keys['p'] || this.inputManager.keys['P']) {
+        // Check for unpause (P key or Escape)
+        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape']) {
           if (!this.pauseKeyPressed) {
             this.togglePause();
             this.pauseKeyPressed = true;
@@ -248,6 +250,16 @@ export class Game {
           this.pauseKeyPressed = false;
         }
         break;
+    }
+
+    // Dev mode shortcuts for quick level switching
+    if (CONFIG.DEV_MODE && (this.state.currentState === GameState.PLAYING || this.state.currentState === GameState.PAUSED)) {
+      for (let i = 0; i <= 9; i++) {
+        if (this.inputManager.keys[i.toString()]) {
+          this.loadDevLevel(i);
+          break;
+        }
+      }
     }
   }
 
@@ -414,7 +426,7 @@ export class Game {
 
       // Start victory animation if not already started
       if (player && !player.isVictorious) {
-        // Stop the timer
+        // Stop the timer (we'll animate it during level complete screen)
         this.timer.isActive = false;
 
         // Remove any active power-ups (which stops their music)
@@ -424,7 +436,7 @@ export class Game {
           player.speed = CONFIG.PLAYER_SPEED;
         }
 
-        // Play level clear music immediately
+        // Play level-specific clear music during victory animation
         const clearMusic = this.levelManager.currentLevel?.clearMusic;
         if (clearMusic) {
           this.audioManager.playMusic(clearMusic);
@@ -483,6 +495,20 @@ export class Game {
 
       // Restore context
       this.renderer.ctx.restore();
+
+      // Dev mode: Display level info
+      if (CONFIG.DEV_MODE) {
+        const ctx = this.renderer.ctx;
+        ctx.save();
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(10, 10, 120, 40);
+        ctx.fillStyle = CONFIG.COLORS.LIGHT;
+        ctx.font = 'bold 12px "Courier New", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`LEVEL: ${this.state.level}`, 20, 28);
+        ctx.fillText(`Press 0-9 to jump`, 20, 42);
+        ctx.restore();
+      }
     }
 
     // Render UI overlays
@@ -550,7 +576,9 @@ export class Game {
    */
   levelComplete() {
     this.state.currentState = GameState.LEVEL_COMPLETE;
-    this.uiManager.setState(GameState.LEVEL_COMPLETE);
+    this.uiManager.setState(GameState.LEVEL_COMPLETE, {
+      game: this
+    });
   }
 
   /**
@@ -596,6 +624,9 @@ export class Game {
    * Game over
    */
   gameOver() {
+    // Play game over music
+    this.audioManager.playMusic('game-over');
+
     this.state.currentState = GameState.GAME_OVER;
     this.uiManager.setState(GameState.GAME_OVER);
     console.log('Game Over! Final Score:', this.state.score);
@@ -617,9 +648,63 @@ export class Game {
     if (this.state.currentState === GameState.PLAYING) {
       this.state.currentState = GameState.PAUSED;
       this.uiManager.setState(GameState.PAUSED);
+      // Pause music
+      this.audioManager.pauseMusic();
     } else if (this.state.currentState === GameState.PAUSED) {
       this.state.currentState = GameState.PLAYING;
       this.uiManager.setState(GameState.PLAYING);
+      // Resume music
+      this.audioManager.resumeMusic();
+    }
+  }
+
+  /**
+   * Load a specific level in dev mode
+   */
+  async loadDevLevel(levelNumber) {
+    console.log(`[DEV] Loading level ${levelNumber}...`);
+
+    // Stop any current music
+    this.audioManager.stopMusic();
+
+    // Clear entities
+    this.entityManager.clear();
+
+    // Update level number
+    this.state.level = levelNumber;
+    this.state.levelReady = false;
+
+    try {
+      // Load the level
+      await this.levelManager.loadLevel(levelNumber);
+
+      // Create player
+      const startPos = this.levelManager.getStartPosition();
+      this.player = new Player(startPos.x, startPos.y);
+      this.entityManager.add(this.player);
+
+      // Spawn entities from level
+      this.spawnLevelEntities();
+
+      // Mark level as ready
+      this.state.levelReady = true;
+
+      // Reset timer
+      this.initTimer();
+
+      // Set state to PLAYING (unpause if paused)
+      this.state.currentState = GameState.PLAYING;
+      this.uiManager.setState(GameState.PLAYING);
+
+      // Play level music if defined
+      const levelMusic = this.levelManager.currentLevel?.music;
+      if (levelMusic) {
+        this.audioManager.playMusic(levelMusic);
+      }
+
+      console.log(`[DEV] Level ${levelNumber} loaded successfully!`);
+    } catch (error) {
+      console.error(`[DEV] Failed to load level ${levelNumber}:`, error);
     }
   }
 

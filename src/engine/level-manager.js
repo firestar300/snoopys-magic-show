@@ -281,7 +281,7 @@ export class LevelManager {
     // Reveal power-up if there was one hidden in this block
     const powerUp = this.revealPowerUpFromBlock(gridX, gridY);
     if (powerUp) {
-      powerUp.reveal(gridX, gridY, this);
+      powerUp.reveal(gridX, gridY, direction);
     }
 
     // Create animation for the block

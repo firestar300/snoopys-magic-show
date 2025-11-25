@@ -1,47 +1,60 @@
 {
   "id": 1,
-  "name": "Welcome to the Show!",
+  "name": "Ready Go!",
   "width": 9,
   "height": 8,
   "music": "stage-bgm-2",
   "clearMusic": "stage-clear-2",
   "startPosition": {
-    "x": 1,
-    "y": 1
+    "x": 4,
+    "y": 6
   },
   "tiles": [
     "000000000",
-    "001020100",
-    "000000000",
-    "001000100",
+    "010000010",
     "000030000",
-    "001000100",
-    "000000000",
+    "000030000",
+    "000030000",
+    "000030000",
+    "010000010",
     "000000000"
   ],
   "entities": [
     {
       "type": "woodstock",
-      "x": 7,
-      "y": 6
+      "x": 0,
+      "y": 0
     },
     {
       "type": "woodstock",
-      "x": 4,
-      "y": 2
+      "x": 8,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
     },
     {
       "type": "ball",
       "x": 4,
-      "y": 4,
+      "y": 0,
       "vx": 1,
       "vy": 1
     },
     {
       "type": "powerup",
-      "x": 2,
+      "x": 4,
       "y": 4,
-      "powerType": "speed"
+      "powerType": "invincible",
+      "hidden": true,
+      "blockX": 4,
+      "blockY": 4
     }
   ]
 }

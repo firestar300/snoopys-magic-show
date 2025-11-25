@@ -180,13 +180,13 @@ export class Ball extends Entity {
     }
 
     // Check if ball is on a teleport tile
-    this.checkTeleportTile(levelManager);
+    this.checkTeleportTile(levelManager, game);
   }
 
   /**
    * Check if ball is on a teleport tile and start teleport animation
    */
-  checkTeleportTile(levelManager) {
+  checkTeleportTile(levelManager, game = null) {
     // Don't teleport if already teleporting or in cooldown
     if (this.isTeleporting || this.teleportCooldown > 0) return;
 
@@ -203,6 +203,11 @@ export class Ball extends Entity {
         this.teleportTimer = 0;
         this.teleportDestination = teleportDest;
         this.teleportPhase = 0; // Start at disappearing phase
+
+        // Play teleportation sound
+        if (game && game.audioManager) {
+          game.audioManager.playSfx('teleport');
+        }
       }
     }
   }
@@ -291,20 +296,6 @@ export class Ball extends Entity {
         displaySize / 2,
         CONFIG.COLORS.DARK
       );
-    }
-
-    // Visual indicator if frozen
-    if (this.frozen) {
-      renderer.ctx.globalAlpha = 0.5;
-      renderer.drawRectOutline(
-        displayX - 2,
-        displayY - 2,
-        displaySize + 4,
-        displaySize + 4,
-        '#00FFFF',
-        2
-      );
-      renderer.ctx.globalAlpha = 1;
     }
   }
 }

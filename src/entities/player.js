@@ -31,7 +31,6 @@ export class Player extends Entity {
     this.hasPowerUp = false;
     this.powerUpType = null;
     this.powerUpTimer = 0;
-    this.powerUpDuration = 10; // seconds
     this.blinkTimer = 0; // For invincibility blink effect
 
     // Hurt animation
@@ -323,7 +322,7 @@ export class Player extends Entity {
       this.vy = 0;
 
       // Check if we landed on a teleport tile
-      this.checkTeleportTile(levelManager);
+      this.checkTeleportTile(levelManager, game);
 
       // Check if we landed on an arrow tile
       this.checkArrowTile(levelManager);
@@ -337,7 +336,7 @@ export class Player extends Entity {
   /**
    * Check if player is on a teleport tile and start teleport animation
    */
-  checkTeleportTile(levelManager) {
+  checkTeleportTile(levelManager, game = null) {
     const gridX = this.getGridX();
     const gridY = this.getGridY();
     const tile = levelManager.getTileAt(gridX, gridY);
@@ -351,6 +350,11 @@ export class Player extends Entity {
         this.teleportTimer = 0;
         this.teleportDestination = teleportDest;
         this.teleportPhase = 0; // Start at disappearing phase
+
+        // Play teleportation sound
+        if (game && game.audioManager) {
+          game.audioManager.playSfx('teleport');
+        }
       }
     }
   }
@@ -436,7 +440,7 @@ export class Player extends Entity {
       if (game) {
         const powerUp = levelManager.revealPowerUpFromBlock(targetX, targetY);
         if (powerUp) {
-          powerUp.reveal(targetX, targetY, levelManager);
+          powerUp.reveal(targetX, targetY, this.direction);
         }
       }
     }
@@ -448,12 +452,19 @@ export class Player extends Entity {
   applyPowerUp(powerType, game = null) {
     this.hasPowerUp = true;
     this.powerUpType = powerType;
-    this.powerUpTimer = this.powerUpDuration;
     this.blinkTimer = 0;
+
+    // Set duration based on power-up type
+    const duration = powerType === 'time' ? 4 : 5; // 3s for time, 5s for others
+    this.powerUpTimer = duration;
 
     switch (powerType) {
       case 'speed':
         this.speed = CONFIG.PLAYER_SPEED * 1.5;
+        // Accelerate music x1.5
+        if (game && game.audioManager) {
+          game.audioManager.setMusicSpeed(1.5);
+        }
         break;
       case 'invincible':
         // Play invincible music
@@ -481,6 +492,11 @@ export class Player extends Entity {
       if (levelMusic) {
         game.audioManager.playMusic(levelMusic);
       }
+    }
+
+    // Reset music speed if it was a speed power-up
+    if (game && game.audioManager && this.powerUpType === 'speed') {
+      game.audioManager.resetMusicSpeed();
     }
 
     this.hasPowerUp = false;
@@ -632,21 +648,6 @@ export class Player extends Entity {
         this.height - padding * 2,
         CONFIG.COLORS.LIGHT
       );
-    }
-
-    // Power-up indicator (time freeze or speed)
-    if (this.hasPowerUp && this.powerUpType !== 'invincible') {
-      const alpha = Math.sin(Date.now() / 200) * 0.3 + 0.7;
-      renderer.ctx.globalAlpha = alpha;
-      renderer.drawRectOutline(
-        this.x - 2,
-        this.y - 2,
-        this.width + 4,
-        this.height + 4,
-        this.powerUpType === 'speed' ? '#00ff00' : '#ffff00',
-        2
-      );
-      renderer.ctx.globalAlpha = 1;
     }
 
     // Trapped indicator (red pulsating outline)

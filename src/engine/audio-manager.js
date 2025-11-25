@@ -4,6 +4,7 @@
 export class AudioManager {
   constructor() {
     this.music = {};
+    this.sfx = {};
     this.currentMusic = null;
     this.musicVolume = 0.5;
     this.sfxVolume = 0.7;
@@ -25,7 +26,19 @@ export class AudioManager {
   }
 
   /**
-   * Load all music tracks
+   * Load a sound effect
+   */
+  loadSfx(name, path) {
+    const audio = new Audio(path);
+    audio.loop = false;
+    audio.volume = this.sfxVolume;
+    audio.preload = 'auto';
+    audio.load();
+    this.sfx[name] = audio;
+  }
+
+  /**
+   * Load all music tracks and sound effects
    */
   loadAll() {
     // UI music
@@ -37,6 +50,8 @@ export class AudioManager {
 
     // Game state music
     this.loadMusic('miss', '/music/08-miss.mp3', false); // Don't loop defeat music
+    this.loadMusic('game-over', '/music/09-game-over.mp3', false); // Don't loop game over music
+    this.loadMusic('stage-clear', '/music/04-stage-clear.mp3', false); // Generic stage clear music
 
     // Stage music (all 9 stages)
     this.loadMusic('stage-bgm-1', '/music/02-stage-bgm-1.mp3');
@@ -65,6 +80,9 @@ export class AudioManager {
 
     this.loadMusic('stage-bgm-9', '/music/15-stage-bgm-9.mp3');
     this.loadMusic('stage-clear-9', '/music/15-stage-clear-9.mp3', false);
+
+    // Sound effects
+    this.loadSfx('teleport', '/sfx/teleportation.mp3');
   }
 
   /**
@@ -79,6 +97,7 @@ export class AudioManager {
 
     // Reset and play immediately
     audio.currentTime = 0;
+    audio.playbackRate = 1.0; // Reset playback speed to normal
 
     // Set as current music immediately (before play promise)
     this.currentMusic = audio;
@@ -113,6 +132,41 @@ export class AudioManager {
   }
 
   /**
+   * Pause current music (without resetting)
+   */
+  pauseMusic() {
+    if (this.currentMusic) {
+      this.currentMusic.pause();
+    }
+  }
+
+  /**
+   * Resume current music
+   */
+  resumeMusic() {
+    if (this.currentMusic) {
+      this.currentMusic.play().catch(error => {
+        console.warn('Could not resume music:', error);
+      });
+    }
+  }
+
+  /**
+   * Play a sound effect
+   */
+  playSfx(name) {
+    const audio = this.sfx[name];
+    if (!audio) return;
+
+    // Clone the audio to allow multiple instances
+    const sfxInstance = audio.cloneNode();
+    sfxInstance.volume = this.sfxVolume;
+    sfxInstance.play().catch(error => {
+      console.warn('Could not play sound effect:', error);
+    });
+  }
+
+  /**
    * Set music volume
    */
   setMusicVolume(volume) {
@@ -127,5 +181,23 @@ export class AudioManager {
    */
   setSfxVolume(volume) {
     this.sfxVolume = Math.max(0, Math.min(1, volume));
+  }
+
+  /**
+   * Set music playback speed
+   */
+  setMusicSpeed(speed) {
+    if (this.currentMusic) {
+      this.currentMusic.playbackRate = speed;
+    }
+  }
+
+  /**
+   * Reset music playback speed to normal
+   */
+  resetMusicSpeed() {
+    if (this.currentMusic) {
+      this.currentMusic.playbackRate = 1.0;
+    }
   }
 }

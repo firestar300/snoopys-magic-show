@@ -15,12 +15,20 @@ export class UIManager {
     this.titleSnoopyAnimationTimer = 0;
     this.titleSnoopyAnimationSpeed = 0.2; // Speed of animation (50% faster)
     this.titleSnoopyFrameCount = 3; // Number of frames in the sprite
+
+    // Level complete time bonus animation
+    this.timeBonusAnimation = {
+      active: false,
+      timer: 0,
+      segmentSpeed: 0.1, // Time per segment (100ms)
+      gameInstance: null
+    };
   }
 
   /**
    * Set the current UI state
    */
-  setState(state) {
+  setState(state, data = null) {
     const previousState = this.currentState;
     this.currentState = state;
 
@@ -36,6 +44,16 @@ export class UIManager {
     if (previousState === GameState.MENU && state !== GameState.MENU) {
       audioManager.stopMusic();
     }
+
+    // Initialize time bonus animation when entering LEVEL_COMPLETE
+    if (state === GameState.LEVEL_COMPLETE && data) {
+      // Play stage clear music
+      audioManager.playMusic('stage-clear');
+
+      this.timeBonusAnimation.active = true;
+      this.timeBonusAnimation.timer = 0;
+      this.timeBonusAnimation.gameInstance = data.game;
+    }
   }
 
   /**
@@ -48,6 +66,24 @@ export class UIManager {
       if (this.titleSnoopyAnimationTimer >= this.titleSnoopyAnimationSpeed) {
         this.titleSnoopyFrame = (this.titleSnoopyFrame + 1) % this.titleSnoopyFrameCount;
         this.titleSnoopyAnimationTimer = 0;
+      }
+    }
+
+    // Update time bonus animation during level complete
+    if (this.currentState === GameState.LEVEL_COMPLETE && this.timeBonusAnimation.active) {
+      this.timeBonusAnimation.timer += 1 / 60; // Approximate frame time
+
+      if (this.timeBonusAnimation.timer >= this.timeBonusAnimation.segmentSpeed) {
+        const gameInstance = this.timeBonusAnimation.gameInstance;
+        if (gameInstance && gameInstance.timer.filledSegments < gameInstance.timer.totalSegments) {
+          // Fill one segment and add 100 points
+          gameInstance.timer.filledSegments++;
+          gameInstance.addScore(100);
+          this.timeBonusAnimation.timer = 0;
+        } else {
+          // Animation finished
+          this.timeBonusAnimation.active = false;
+        }
       }
     }
 
@@ -270,20 +306,28 @@ export class UIManager {
     const centerX = CONFIG.CANVAS_WIDTH / 2;
     const centerY = CONFIG.CANVAS_HEIGHT / 2;
 
-    // Semi-transparent overlay
-    ctx.fillStyle = 'rgba(15, 56, 15, 0.8)';
+    // Semi-transparent overlay (lighter to see the timer)
+    ctx.fillStyle = 'rgba(15, 56, 15, 0.5)';
     ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
 
     // Level complete text
     ctx.fillStyle = CONFIG.COLORS.LIGHT;
     ctx.font = 'bold 20px "Courier New", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('LEVEL COMPLETE!', centerX, centerY - 20);
+    ctx.fillText('LEVEL COMPLETE!', centerX, centerY - 50);
 
-    // Next level instruction
-    ctx.font = '14px "Courier New", monospace';
-    ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
-    ctx.fillText('PRESS SPACE TO CONTINUE', centerX, centerY + 20);
+    // Current score display - larger and more visible
+    ctx.font = 'bold 20px "Courier New", monospace';
+    ctx.fillStyle = CONFIG.COLORS.LIGHT;
+    ctx.fillText(`SCORE: ${this.game.state.score}`, centerX, centerY - 10);
+
+    // Show continue instruction only when animation is finished
+    if (!this.timeBonusAnimation.active || this.game.timer.filledSegments >= this.game.timer.totalSegments) {
+      ctx.font = 'bold 16px "Courier New", monospace';
+      const blinkOpacity = 0.5 + Math.abs(Math.sin(Date.now() / 400)) * 0.5;
+      ctx.fillStyle = `rgba(155, 188, 15, ${blinkOpacity})`;
+      ctx.fillText('PRESS SPACE TO CONTINUE', centerX, centerY + 35);
+    }
 
     ctx.textAlign = 'left';
   }

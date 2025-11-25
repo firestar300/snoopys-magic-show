@@ -367,14 +367,25 @@ export class SpriteManager {
 
   /**
    * Draw power-up sprite
-   * Type: 'invincible' or 'time'
+   * Type: 'invincible', 'time', or 'speed'
    */
-  drawPowerUp(renderer, type, x, y, width, height) {
+  drawPowerUp(renderer, type, x, y, width, height, frame = 0) {
     const sprite = this.sprites.powerups;
     if (!sprite) return;
 
     const frameWidth = 16;
-    const sx = type === 'invincible' ? 0 : 16;
+    let sx;
+
+    if (type === 'invincible') {
+      sx = 0; // L1C1
+    } else if (type === 'time') {
+      sx = 16; // L1C2
+    } else if (type === 'speed') {
+      // L1C3 (sx=32) or L1C4 (sx=48) based on frame
+      sx = frame === 0 ? 32 : 48;
+    } else {
+      sx = 0; // Default
+    }
 
     renderer.drawSprite(sprite, sx, 0, frameWidth, 16, x, y, width, height);
   }
@@ -422,7 +433,7 @@ export class SpriteManager {
 
   /**
    * Draw timer horizontal border segment (top or bottom)
-   * Uses L1C6 for empty, L1C5 for filled
+   * Uses L1C5 for empty, L1C6 for filled
    */
   drawTimerHorizontalBorder(renderer, x, y, width, startIndex, filledCount, reverse = false) {
     const sprite = this.sprites.timer;
@@ -434,8 +445,8 @@ export class SpriteManager {
       const segmentIndex = reverse ? (startIndex + numSegments - 1 - i) : (startIndex + i);
       const isFilled = segmentIndex < filledCount;
 
-      // L1C5 (filled) or L1C6 (empty)
-      const sx = isFilled ? 32 : 40;
+      // L1C6 (filled) or L1C5 (empty) - inverted
+      const sx = isFilled ? 40 : 32;
       const sy = 0;
 
       renderer.drawSprite(sprite, sx, sy, 8, 8, x + (i * 16), y, 16, 16);
@@ -444,7 +455,7 @@ export class SpriteManager {
 
   /**
    * Draw timer vertical border segment (left or right)
-   * Uses L2C6 for empty, L2C5 for filled
+   * Uses L2C5 for empty, L2C6 for filled
    */
   drawTimerVerticalBorder(renderer, x, y, height, startIndex, filledCount, reverse = false) {
     const sprite = this.sprites.timer;
@@ -456,11 +467,26 @@ export class SpriteManager {
       const segmentIndex = reverse ? (startIndex + numSegments - 1 - i) : (startIndex + i);
       const isFilled = segmentIndex < filledCount;
 
-      // L2C5 (filled) or L2C6 (empty)
-      const sx = isFilled ? 32 : 40;
+      // L2C6 (filled) or L2C5 (empty) - inverted
+      const sx = isFilled ? 40 : 32;
       const sy = 8;
 
       renderer.drawSprite(sprite, sx, sy, 8, 8, x, y + (i * 16), 16, 16);
     }
+  }
+
+  /**
+   * Draw score popup (1000pts sprite)
+   * From blocks.png L2C8
+   */
+  drawScorePopup(renderer, x, y, width, height) {
+    const sprite = this.sprites.blocks;
+    if (!sprite) return;
+
+    // L2C8: sx = 7 * 16 = 112, sy = 1 * 16 = 16
+    const sx = 112;
+    const sy = 16;
+
+    renderer.drawSprite(sprite, sx, sy, 16, 16, x, y, width, height);
   }
 }
