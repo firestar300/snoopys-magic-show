@@ -10,9 +10,9 @@ export class LevelManager {
     this.tiles = [];
     this.animatingBlocks = []; // Blocks currently being animated
     this.toggleBlocks = []; // Toggle blocks with their states
-    this.toggleTimer = 0; // Global timer for toggle blocks
-    this.toggleCycleDuration = 20; // Total cycle: 10s solid + 10s passable
-    this.toggleTransitionDuration = 0.3; // Transition animation duration
+    this.toggleCycleDuration = 14; // Total cycle: 7s solid + 7s passable
+    this.toggleTimer = -0.1; // Start with -0.5s (0.5 second delay before cycle starts)
+    this.toggleTransitionDuration = 0.4; // Transition animation duration (slowed down)
     this.hiddenPowerUps = new Map(); // Power-ups hidden in blocks, keyed by "x,y"
   }
 
@@ -85,8 +85,8 @@ export class LevelManager {
           this.toggleBlocks.push({
             x: x,
             y: y,
-            isSolid: false, // Start as passable (non-solid)
-            isTransitioning: false,
+            isSolid: false, // Start as non-solid (passable)
+            isTransitioning: false, // No animation during initial delay
             transitionProgress: 0,
           });
         }
@@ -343,11 +343,17 @@ export class LevelManager {
 
     // Update toggle blocks cycle
     this.toggleTimer += dt;
+
+    // Skip toggle block logic during initial delay (first second)
+    if (this.toggleTimer < 0) {
+      return;
+    }
+
     const cyclePosition = this.toggleTimer % this.toggleCycleDuration;
     const halfCycle = this.toggleCycleDuration / 2;
 
     for (const toggleBlock of this.toggleBlocks) {
-      const shouldBeSolid = cyclePosition >= halfCycle; // First half: passable, second half: solid
+      const shouldBeSolid = cyclePosition < halfCycle; // First half: solid (7s), second half: passable (7s)
 
       // Check if state should change
       if (shouldBeSolid !== toggleBlock.isSolid && !toggleBlock.isTransitioning) {
@@ -512,8 +518,8 @@ export class LevelManager {
         if (toggleBlock.isTransitioning) {
           state = 'transitioning';
           // Alternate between frame 0 and 1 based on transition progress
-          // Slower alternation: 5 times per second
-          transitionFrame = Math.floor(toggleBlock.transitionProgress * 10) % 2;
+          // 4 alternations during the transition (2 times each sprite)
+          transitionFrame = Math.floor(toggleBlock.transitionProgress * 6) % 2;
         }
 
         spriteManager.drawToggleBlock(renderer, state, x, y, size, size, transitionFrame);
