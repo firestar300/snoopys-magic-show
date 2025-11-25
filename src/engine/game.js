@@ -77,6 +77,13 @@ export class Game {
       isActive: true, // Timer is active by default
     };
 
+    // Ready? Go! state
+    this.readyGo = {
+      isActive: false,
+      timer: 0,
+      duration: 1.0, // 1 second
+    };
+
     // Input tracking
     this.pauseKeyPressed = false;
     this.godModeKeyPressed = false;
@@ -136,6 +143,9 @@ export class Game {
     // Initialize timer
     this.initTimer();
 
+    // Start "Ready? Go!" animation
+    this.startReadyGo();
+
     // Play level music if defined
     const levelMusic = this.levelManager.currentLevel?.music;
     if (levelMusic) {
@@ -168,6 +178,15 @@ export class Game {
     this.timer.elapsed = 0;
     this.timer.filledSegments = 0;
     this.timer.isActive = true; // Reactivate timer for new level
+  }
+
+  /**
+   * Start "Ready? Go!" animation
+   */
+  startReadyGo() {
+    this.readyGo.isActive = true;
+    this.readyGo.timer = 0;
+    this.timer.isActive = false; // Pause timer during Ready? Go!
   }
 
   /**
@@ -345,6 +364,20 @@ export class Game {
   update(dt) {
     // Check if player exists
     if (!this.player) return;
+
+    // Update "Ready? Go!" animation
+    if (this.readyGo.isActive) {
+      this.readyGo.timer += dt;
+
+      if (this.readyGo.timer >= this.readyGo.duration) {
+        // Animation finished, resume game
+        this.readyGo.isActive = false;
+        this.timer.isActive = true;
+      }
+
+      // Block all updates during "Ready? Go!"
+      return;
+    }
 
     // Update timer
     this.updateTimer(dt);
@@ -586,6 +619,22 @@ export class Game {
       // Restore context
       this.renderer.ctx.restore();
 
+      // Render "Ready? Go!" if active
+      if (this.readyGo.isActive) {
+        const ctx = this.renderer.ctx;
+        const sprite = this.spriteManager.sprites.ready_go;
+
+        if (sprite) {
+          // Calculate center position (2x scale)
+          const spriteWidth = 128;  // 64 * 2
+          const spriteHeight = 16;   // 8 * 2
+          const x = (CONFIG.CANVAS_WIDTH - spriteWidth) / 2;
+          const y = (CONFIG.CANVAS_HEIGHT - spriteHeight) / 2;
+
+          this.spriteManager.drawReadyGo(this.renderer, x, y, spriteWidth, spriteHeight);
+        }
+      }
+
       // Dev mode: Display level info and god mode
       if (CONFIG.DEV_MODE && this.showDevInfo) {
         const ctx = this.renderer.ctx;
@@ -690,6 +739,9 @@ export class Game {
     // Reset timer for retry
     this.initTimer();
 
+    // Start "Ready? Go!" animation
+    this.startReadyGo();
+
     // Restart level music
     const levelMusic = this.levelManager.currentLevel?.music;
     if (levelMusic) {
@@ -734,6 +786,9 @@ export class Game {
 
       // Initialize timer for new level
       this.initTimer();
+
+      // Start "Ready? Go!" animation
+      this.startReadyGo();
 
       // Play level music if defined
       const levelMusic = this.levelManager.currentLevel?.music;
@@ -837,6 +892,9 @@ export class Game {
 
       // Reset timer
       this.initTimer();
+
+      // Start "Ready? Go!" animation
+      this.startReadyGo();
 
       // Set state to PLAYING (unpause if paused)
       this.state.currentState = GameState.PLAYING;

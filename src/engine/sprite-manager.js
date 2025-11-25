@@ -29,6 +29,7 @@ export class SpriteManager {
       { name: 'blocks', path: '/sprites/blocks.png' },
       { name: 'powerups', path: '/sprites/powerups.png' },
       { name: 'timer', path: '/sprites/timer.png' },
+      { name: 'ready_go', path: '/sprites/ready-go.png' },
     ];
 
     this.loadingPromises = spriteFiles.map(sprite => this.loadSprite(sprite.name, sprite.path));
@@ -488,5 +489,15 @@ export class SpriteManager {
     const sy = 16;
 
     renderer.drawSprite(sprite, sx, sy, 16, 16, x, y, width, height);
+  }
+
+  /**
+   * Draw "Ready? Go!" sprite
+   */
+  drawReadyGo(renderer, x, y, width, height) {
+    const sprite = this.sprites.ready_go;
+    if (!sprite) return;
+
+    renderer.drawSprite(sprite, 0, 0, sprite.width, sprite.height, x, y, width, height);
   }
 }
