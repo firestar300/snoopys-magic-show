@@ -499,7 +499,7 @@ export class Player extends Entity {
     this.blinkTimer = 0;
 
     // Set duration based on power-up type
-    const duration = powerType === 'time' ? 4 : 5; // 4s for time, 5s for others
+    const duration = powerType === 'time' ? 3.5 : 4.5; // 3.5s for time, 4.5s for others
     this.powerUpTimer = duration;
 
     switch (powerType) {

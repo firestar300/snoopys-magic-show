@@ -594,14 +594,17 @@ export class Game {
   /**
    * Respawn the player at the start position
    */
-  respawnPlayer() {
+  async respawnPlayer() {
     // Remove power-ups from current player before clearing (safety check)
     if (this.player && this.player.hasPowerUp) {
       this.player.removePowerUp(this);
     }
 
-    // Clear all entities except the player will be removed
+    // Clear all entities
     this.entityManager.clear();
+
+    // Reload the level to reset all tiles (toggle blocks, etc.)
+    await this.levelManager.loadLevel(this.state.level);
 
     // Respawn all level entities
     this.spawnLevelEntities();
