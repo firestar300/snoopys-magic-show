@@ -58,7 +58,7 @@ export class Player extends Entity {
     // Victory animation
     this.isVictorious = false;
     this.victoryTimer = 0;
-    this.victoryDuration = 3; // 3 seconds
+    this.victoryDuration = 3.5; // 3.5 seconds
     this.victoryFrame = 0;
     this.victoryAnimationTimer = 0;
     this.victoryAnimationSpeed = 0.2; // Speed of frame alternation

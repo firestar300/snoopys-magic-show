@@ -3,8 +3,8 @@
   "name": "Ready Go!",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-2",
-  "clearMusic": "stage-clear-2",
+  "music": "stage-bgm-1",
+  "clearMusic": "stage-clear-1",
   "startPosition": {
     "x": 4,
     "y": 6

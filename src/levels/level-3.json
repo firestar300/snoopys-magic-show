@@ -3,8 +3,8 @@
   "name": "Push and Slide",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-5",
-  "clearMusic": "stage-clear-5",
+  "music": "stage-bgm-3",
+  "clearMusic": "stage-clear-3",
   "startPosition": {
     "x": 4,
     "y": 4

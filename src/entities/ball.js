@@ -21,6 +21,9 @@ export class Ball extends Entity {
     this.vy = vy * CONFIG.BALL_SPEED;
     this.frozen = false; // For time power-up
 
+    // Store constant speed for angle-based bouncing
+    this.speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+
     // Static sprite (no animation)
     this.frame = 0;
 
@@ -32,6 +35,39 @@ export class Ball extends Entity {
     this.teleportPhase = 0; // 0 = disappearing at source, 1 = appearing at destination
     this.teleportCooldown = 0; // Cooldown to prevent immediate re-teleportation
     this.teleportCooldownDuration = 1.0; // 1 second cooldown after teleport
+  }
+
+  /**
+   * Calculate bounce angle based on impact position
+   * @param {number} ballCenter - Center position of ball on collision axis
+   * @param {number} blockCenter - Center position of block on collision axis
+   * @param {number} blockSize - Size of the block (tile size)
+   * @param {boolean} isHorizontal - True for horizontal collision, false for vertical
+   * @returns {object} - New velocity { vx, vy }
+   */
+  calculateBounceAngle(ballCenter, blockCenter, blockSize, isHorizontal) {
+    // Calculate offset from center (-1 to 1, where 0 is center)
+    const offset = (ballCenter - blockCenter) / (blockSize / 2);
+    const clampedOffset = Math.max(-0.9, Math.min(0.9, offset)); // Limit to avoid extreme angles
+
+    // Current angle
+    let angle = Math.atan2(this.vy, this.vx);
+
+    if (isHorizontal) {
+      // Horizontal collision: reflect vx and modify vy based on offset
+      angle = Math.PI - angle; // Reflect horizontally
+      angle += clampedOffset * (Math.PI / 6); // Add up to 30° variation
+    } else {
+      // Vertical collision: reflect vy and modify vx based on offset
+      angle = -angle; // Reflect vertically
+      angle += clampedOffset * (Math.PI / 6); // Add up to 30° variation
+    }
+
+    // Calculate new velocity maintaining constant speed
+    return {
+      vx: Math.cos(angle) * this.speed,
+      vy: Math.sin(angle) * this.speed
+    };
   }
 
   /**
@@ -102,8 +138,9 @@ export class Ball extends Entity {
 
     if (this.vx > 0) {
       // Check canvas right boundary
-      if (ballRight >= CONFIG.CANVAS_WIDTH) {
-        this.x = CONFIG.CANVAS_WIDTH - this.width;
+      if (ballRight >= CONFIG.GAME_AREA_WIDTH) {
+        this.x = CONFIG.GAME_AREA_WIDTH - this.width;
+        // Simple reflection at boundary
         this.vx = -Math.abs(this.vx);
         horizontalCollision = true;
       } else {
@@ -113,7 +150,13 @@ export class Ball extends Entity {
         if (levelManager.isSolid(nextGridX, checkGridY)) {
           // Snap to left edge of the wall
           this.x = nextGridX * CONFIG.TILE_SIZE - this.width - 1;
-          this.vx = -Math.abs(this.vx);
+
+          // Calculate bounce angle based on impact position
+          const ballCenterYPos = this.y + this.height / 2;
+          const blockCenterY = (checkGridY * CONFIG.TILE_SIZE) + (CONFIG.TILE_SIZE / 2);
+          const newVelocity = this.calculateBounceAngle(ballCenterYPos, blockCenterY, CONFIG.TILE_SIZE, true);
+          this.vx = newVelocity.vx;
+          this.vy = newVelocity.vy;
           horizontalCollision = true;
         }
       }
@@ -121,6 +164,7 @@ export class Ball extends Entity {
       // Check canvas left boundary
       if (ballLeft <= 0) {
         this.x = 0;
+        // Simple reflection at boundary
         this.vx = Math.abs(this.vx);
         horizontalCollision = true;
       } else {
@@ -130,7 +174,13 @@ export class Ball extends Entity {
         if (levelManager.isSolid(nextGridX, checkGridY)) {
           // Snap to right edge of the wall
           this.x = (nextGridX + 1) * CONFIG.TILE_SIZE + 1;
-          this.vx = Math.abs(this.vx);
+
+          // Calculate bounce angle based on impact position
+          const ballCenterYPos = this.y + this.height / 2;
+          const blockCenterY = (checkGridY * CONFIG.TILE_SIZE) + (CONFIG.TILE_SIZE / 2);
+          const newVelocity = this.calculateBounceAngle(ballCenterYPos, blockCenterY, CONFIG.TILE_SIZE, true);
+          this.vx = newVelocity.vx;
+          this.vy = newVelocity.vy;
           horizontalCollision = true;
         }
       }
@@ -145,8 +195,9 @@ export class Ball extends Entity {
 
     if (this.vy > 0) {
       // Check canvas bottom boundary
-      if (ballBottom >= CONFIG.CANVAS_HEIGHT) {
-        this.y = CONFIG.CANVAS_HEIGHT - this.height;
+      if (ballBottom >= CONFIG.GAME_AREA_HEIGHT) {
+        this.y = CONFIG.GAME_AREA_HEIGHT - this.height;
+        // Simple reflection at boundary
         this.vy = -Math.abs(this.vy);
         verticalCollision = true;
       } else {
@@ -156,7 +207,13 @@ export class Ball extends Entity {
         if (levelManager.isSolid(checkGridX, nextGridY)) {
           // Snap to top edge of the wall
           this.y = nextGridY * CONFIG.TILE_SIZE - this.height - 1;
-          this.vy = -Math.abs(this.vy);
+
+          // Calculate bounce angle based on impact position
+          const ballCenterXPos = this.x + this.width / 2;
+          const blockCenterX = (checkGridX * CONFIG.TILE_SIZE) + (CONFIG.TILE_SIZE / 2);
+          const newVelocity = this.calculateBounceAngle(ballCenterXPos, blockCenterX, CONFIG.TILE_SIZE, false);
+          this.vx = newVelocity.vx;
+          this.vy = newVelocity.vy;
           verticalCollision = true;
         }
       }
@@ -164,6 +221,7 @@ export class Ball extends Entity {
       // Check canvas top boundary
       if (ballTop <= 0) {
         this.y = 0;
+        // Simple reflection at boundary
         this.vy = Math.abs(this.vy);
         verticalCollision = true;
       } else {
@@ -173,7 +231,13 @@ export class Ball extends Entity {
         if (levelManager.isSolid(checkGridX, nextGridY)) {
           // Snap to bottom edge of the wall
           this.y = (nextGridY + 1) * CONFIG.TILE_SIZE + 1;
-          this.vy = Math.abs(this.vy);
+
+          // Calculate bounce angle based on impact position
+          const ballCenterXPos = this.x + this.width / 2;
+          const blockCenterX = (checkGridX * CONFIG.TILE_SIZE) + (CONFIG.TILE_SIZE / 2);
+          const newVelocity = this.calculateBounceAngle(ballCenterXPos, blockCenterX, CONFIG.TILE_SIZE, false);
+          this.vx = newVelocity.vx;
+          this.vy = newVelocity.vy;
           verticalCollision = true;
         }
       }

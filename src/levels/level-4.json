@@ -3,8 +3,8 @@
   "name": "Teleport Maze",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-7",
-  "clearMusic": "stage-clear-7",
+  "music": "stage-bgm-4",
+  "clearMusic": "stage-clear-4",
   "startPosition": {
     "x": 4,
     "y": 4
