@@ -8,6 +8,7 @@ import { UIManager } from '../ui/ui-manager.js';
 import { GameState } from '../ui/game-states.js';
 import { SpriteManager } from './sprite-manager.js';
 import { AudioManager } from './audio-manager.js';
+import { DevConsole } from '../ui/dev-console.js';
 
 /**
  * Main game class that orchestrates the game loop and systems
@@ -26,10 +27,37 @@ export class Game {
     this.levelManager = new LevelManager();
     this.entityManager = new EntityManager();
     this.uiManager = new UIManager(this);
+    this.devConsole = CONFIG.DEV_MODE ? new DevConsole(this) : null;
 
     // Load sprites and audio
     this.spriteManager.loadAll();
     this.audioManager.loadAll();
+
+    // Dev console key listener
+    if (CONFIG.DEV_MODE) {
+      let consoleKeyPressed = false;
+
+      window.addEventListener('keydown', (e) => {
+        // Toggle console with CMD (Mac) or CTRL (Windows/Linux)
+        if ((e.key === 'Meta' || e.key === 'Control') && !consoleKeyPressed) {
+          consoleKeyPressed = true;
+          return;
+        }
+
+        // Handle console input if open
+        if (this.devConsole.isOpen) {
+          this.devConsole.handleInput(e);
+        }
+      });
+
+      window.addEventListener('keyup', (e) => {
+        if ((e.key === 'Meta' || e.key === 'Control') && consoleKeyPressed) {
+          e.preventDefault();
+          this.devConsole.toggle();
+          consoleKeyPressed = false;
+        }
+      });
+    }
 
     // Game state
     this.state = {
@@ -265,6 +293,11 @@ export class Game {
 
     // Dev mode shortcuts for quick level switching
     if (CONFIG.DEV_MODE && (this.state.currentState === GameState.PLAYING || this.state.currentState === GameState.PAUSED)) {
+      // Skip dev shortcuts if console is open
+      if (this.devConsole && this.devConsole.isOpen) {
+        return;
+      }
+
       // Check if any level key (0-9) is pressed
       let levelKeyCurrentlyPressed = false;
       for (let i = 0; i <= 9; i++) {
@@ -320,6 +353,16 @@ export class Game {
 
     // Get input state
     const input = this.inputManager.getState();
+
+    // Block all input if dev console is open
+    if (CONFIG.DEV_MODE && this.devConsole && this.devConsole.isOpen) {
+      input.up = false;
+      input.down = false;
+      input.left = false;
+      input.right = false;
+      input.action = false;
+      return; // Skip all game updates
+    }
 
     // Block player input if blocks are animating
     if (this.levelManager.isAnimating()) {
@@ -549,7 +592,7 @@ export class Game {
 
         // Level info box
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(10, 10, 180, 98);
+        ctx.fillRect(10, 10, 180, 112);
         ctx.fillStyle = CONFIG.COLORS.LIGHT;
         ctx.font = 'bold 12px "Courier New", monospace';
         ctx.textAlign = 'left';
@@ -565,15 +608,15 @@ export class Game {
         ctx.fillText(`Press 0-9 to jump`, 20, 56);
         ctx.fillText(`Press G for God Mode`, 20, 70);
         ctx.fillText(`Press H to hide`, 20, 84);
-        ctx.fillText(``, 20, 98);
+        ctx.fillText(`Press CMD/CTRL for console`, 20, 98);
 
         // God mode indicator
         if (this.player && this.player.godMode) {
           ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
-          ctx.fillRect(10, 104, 100, 24);
+          ctx.fillRect(10, 118, 100, 24);
           ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
           ctx.font = 'bold 14px "Courier New", monospace';
-          ctx.fillText(`GOD MODE`, 20, 121);
+          ctx.fillText(`GOD MODE`, 20, 135);
         }
 
         ctx.restore();
@@ -582,6 +625,11 @@ export class Game {
 
     // Render UI overlays
     this.uiManager.render();
+
+    // Render dev console (always on top)
+    if (CONFIG.DEV_MODE && this.devConsole) {
+      this.devConsole.render(this.renderer.ctx);
+    }
   }
 
   /**
