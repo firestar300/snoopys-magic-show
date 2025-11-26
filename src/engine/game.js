@@ -288,13 +288,23 @@ export class Game {
 
       case GameState.PLAYING:
         // Check for pause (P key, Escape, or gamepad Start button)
-        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape'] || input.pause) {
-          if (!this.pauseKeyPressed) {
-            this.togglePause();
-            this.pauseKeyPressed = true;
+        // But don't allow pause during:
+        // - "Ready? Go!" animation
+        // - Snoopy's victory animation
+        // - Snoopy's defeat animation
+        const canPause = !this.readyGo.isActive &&
+                        !this.player.isVictorious &&
+                        !this.player.isDefeated;
+
+        if (canPause) {
+          if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape'] || input.pause) {
+            if (!this.pauseKeyPressed) {
+              this.togglePause();
+              this.pauseKeyPressed = true;
+            }
+          } else {
+            this.pauseKeyPressed = false;
           }
-        } else {
-          this.pauseKeyPressed = false;
         }
         break;
 
