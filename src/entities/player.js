@@ -705,20 +705,5 @@ export class Player extends Entity {
         CONFIG.COLORS.LIGHT
       );
     }
-
-    // Trapped indicator (red pulsating outline)
-    if (this.isTrapped) {
-      const alpha = Math.sin(Date.now() / 150) * 0.4 + 0.6;
-      renderer.ctx.globalAlpha = alpha;
-      renderer.drawRectOutline(
-        this.x - 3,
-        this.y - 3,
-        this.width + 6,
-        this.height + 6,
-        '#ff0000',
-        3
-      );
-      renderer.ctx.globalAlpha = 1;
-    }
   }
 }

@@ -382,8 +382,8 @@ export class Game {
     // Update timer
     this.updateTimer(dt);
 
-    // Update level animations (blocks moving)
-    this.levelManager.update(dt);
+    // Update level animations (blocks moving), pass player for toggle block logic
+    this.levelManager.update(dt, this.player);
 
     // Get input state
     const input = this.inputManager.getState();

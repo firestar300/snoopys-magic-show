@@ -209,13 +209,7 @@ export class LevelManager {
       const toggleBlock = this.getToggleBlockAt(gridX, gridY);
       if (!toggleBlock) return true;
 
-      // If transitioning, use the target state (where it's going)
-      if (toggleBlock.isTransitioning) {
-        const cyclePosition = this.toggleTimer % this.toggleCycleDuration;
-        const halfCycle = this.toggleCycleDuration / 2;
-        return cyclePosition >= halfCycle; // Return the target state
-      }
-
+      // Always use the current solid state (it's updated at the start of transition now)
       return toggleBlock.isSolid;
     }
 
@@ -249,13 +243,6 @@ export class LevelManager {
     if (tile === TileType.TOGGLE_BLOCK) {
       const toggleBlock = this.getToggleBlockAt(gridX, gridY);
       if (!toggleBlock) return false;
-
-      // If transitioning, use the target state (where it's going)
-      if (toggleBlock.isTransitioning) {
-        const cyclePosition = this.toggleTimer % this.toggleCycleDuration;
-        const halfCycle = this.toggleCycleDuration / 2;
-        return cyclePosition >= halfCycle; // Return the target state
-      }
 
       // Player is trapped if the block is solid
       return toggleBlock.isSolid;
@@ -368,7 +355,7 @@ export class LevelManager {
   /**
    * Update block animations and toggle blocks
    */
-  update(dt) {
+  update(dt, player = null) {
     // Update all animating blocks (pushable blocks)
     for (let i = this.animatingBlocks.length - 1; i >= 0; i--) {
       const block = this.animatingBlocks[i];
@@ -397,14 +384,34 @@ export class LevelManager {
     const cyclePosition = this.toggleTimer % this.toggleCycleDuration;
     const halfCycle = this.toggleCycleDuration / 2;
 
+    // Get player grid position if available
+    let playerGridX = -1;
+    let playerGridY = -1;
+    if (player && !player.isMoving) {
+      playerGridX = player.getGridX();
+      playerGridY = player.getGridY();
+    }
+
     for (const toggleBlock of this.toggleBlocks) {
       const shouldBeSolid = cyclePosition < halfCycle; // First half: solid (7s), second half: passable (7s)
 
+      // Check if player is standing on this toggle block
+      const playerOnBlock = (playerGridX === toggleBlock.x && playerGridY === toggleBlock.y);
+
+      // If player is on block and it should become solid, prevent the transition
+      if (playerOnBlock && shouldBeSolid && !toggleBlock.isSolid) {
+        // Keep block non-solid, cancel any ongoing transition
+        toggleBlock.isTransitioning = false;
+        toggleBlock.transitionProgress = 0;
+        continue; // Skip this block's update
+      }
+
       // Check if state should change
       if (shouldBeSolid !== toggleBlock.isSolid && !toggleBlock.isTransitioning) {
-        // Start transition
+        // Start transition and immediately change solid state
         toggleBlock.isTransitioning = true;
         toggleBlock.transitionProgress = 0;
+        toggleBlock.isSolid = shouldBeSolid; // Change state immediately at start of transition
       }
 
       // Update transition
@@ -412,10 +419,9 @@ export class LevelManager {
         toggleBlock.transitionProgress += dt / this.toggleTransitionDuration;
 
         if (toggleBlock.transitionProgress >= 1) {
-          // Transition complete
+          // Transition animation complete
           toggleBlock.isTransitioning = false;
           toggleBlock.transitionProgress = 0;
-          toggleBlock.isSolid = shouldBeSolid;
         }
       }
     }
