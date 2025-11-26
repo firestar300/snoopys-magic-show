@@ -47,17 +47,7 @@
       "x": 6,
       "y": 1,
       "powerType": "speed",
-      "hidden": true,
       "blockX": 6,
-      "blockY": 1
-    },
-    {
-      "type": "powerup",
-      "x": 3,
-      "y": 1,
-      "powerType": "invincible",
-      "hidden": true,
-      "blockX": 3,
       "blockY": 1
     }
   ]

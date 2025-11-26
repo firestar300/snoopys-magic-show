@@ -181,12 +181,12 @@ export class Player extends Entity {
       // Check arrow tiles continuously (in case toggle blocks change state)
       // But only if delay has expired (to allow collectibles to be picked up first)
       if (this.arrowTileDelay <= 0) {
-        this.checkArrowTile(levelManager);
+        this.checkArrowTile(levelManager, input);
       }
 
       // Only handle manual input if not forced by arrow tile AND arrow delay expired
-      // This prevents manual input from interrupting arrow tile logic
-      if (!this.isMoving && this.arrowTileDelay <= 0) {
+      // Also block manual input if player is holding opposite direction on arrow tile
+      if (!this.isMoving && this.arrowTileDelay <= 0 && !this.isBlockedByOppositeInput(levelManager, input)) {
         this.handleInput(input, levelManager, game);
       }
     } else {
@@ -380,7 +380,37 @@ export class Player extends Entity {
   /**
    * Check if player is on an arrow tile and force movement
    */
-  checkArrowTile(levelManager) {
+  /**
+   * Check if player is on an arrow tile and pressing opposite direction
+   */
+  isBlockedByOppositeInput(levelManager, input) {
+    if (!input) return false;
+
+    const gridX = this.getGridX();
+    const gridY = this.getGridY();
+    const tile = levelManager.getTileAt(gridX, gridY);
+
+    // Arrow tiles: 6=UP, 7=RIGHT, 8=DOWN, 9=LEFT
+    switch (tile) {
+      case 6: // ARROW_UP
+        return input.down; // Blocked if pressing down
+      case 7: // ARROW_RIGHT
+        return input.left; // Blocked if pressing left
+      case 8: // ARROW_DOWN
+        return input.up; // Blocked if pressing up
+      case 9: // ARROW_LEFT
+        return input.right; // Blocked if pressing right
+      default:
+        return false; // Not on an arrow tile
+    }
+  }
+
+  checkArrowTile(levelManager, input = null) {
+    // If player is pressing opposite direction, block all movement
+    if (this.isBlockedByOppositeInput(levelManager, input)) {
+      return; // Stay completely static
+    }
+
     const gridX = this.getGridX();
     const gridY = this.getGridY();
     const tile = levelManager.getTileAt(gridX, gridY);
