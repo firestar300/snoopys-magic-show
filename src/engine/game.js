@@ -267,28 +267,28 @@ export class Game {
 
     switch (this.state.currentState) {
       case GameState.MENU:
-        if (input.actionJustPressed) {
+        if (input.actionJustPressed || input.pauseJustPressed) {
           this.init();
         }
         break;
 
       case GameState.GAME_OVER:
       case GameState.VICTORY:
-        if (input.actionJustPressed) {
+        if (input.actionJustPressed || input.pauseJustPressed) {
           this.init();
         }
         break;
 
       case GameState.LEVEL_COMPLETE:
         // Only allow continuing when time bonus animation is finished
-        if (input.actionJustPressed && !this.uiManager.timeBonusAnimation.active) {
+        if ((input.actionJustPressed || input.pauseJustPressed) && !this.uiManager.timeBonusAnimation.active) {
           this.continueToNextLevel();
         }
         break;
 
       case GameState.PLAYING:
-        // Check for pause (P key or Escape)
-        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape']) {
+        // Check for pause (P key, Escape, or gamepad Start button)
+        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape'] || input.pause) {
           if (!this.pauseKeyPressed) {
             this.togglePause();
             this.pauseKeyPressed = true;
@@ -299,8 +299,8 @@ export class Game {
         break;
 
       case GameState.PAUSED:
-        // Check for unpause (P key or Escape)
-        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape']) {
+        // Check for unpause (P key, Escape, or gamepad Start button)
+        if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape'] || input.pause) {
           if (!this.pauseKeyPressed) {
             this.togglePause();
             this.pauseKeyPressed = true;
@@ -668,6 +668,20 @@ export class Game {
           ctx.font = 'bold 14px "Courier New", monospace';
           ctx.fillText(`GOD MODE`, 20, 135);
         }
+
+        ctx.restore();
+      }
+
+      // Gamepad indicator (if connected)
+      if (this.inputManager.isGamepadConnected()) {
+        const ctx = this.renderer.ctx;
+        ctx.save();
+
+        // Draw small gamepad icon in bottom-right corner
+        ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
+        ctx.font = '16px "Courier New", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText('🎮', CONFIG.CANVAS_WIDTH - 10, CONFIG.CANVAS_HEIGHT - 10);
 
         ctx.restore();
       }

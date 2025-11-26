@@ -20,6 +20,7 @@ export class DevConsole {
       time: this.cmdTime.bind(this),
       lives: this.cmdLives.bind(this),
       score: this.cmdScore.bind(this),
+      gamepad: this.cmdGamepad.bind(this),
       help: this.cmdHelp.bind(this),
       clear: this.cmdClear.bind(this),
     };
@@ -237,6 +238,56 @@ export class DevConsole {
   }
 
   /**
+   * Command: /gamepad
+   */
+  cmdGamepad(args) {
+    this.addOutput('=== GAMEPAD DIAGNOSTIC ===', '#9bbc0f');
+
+    // Check API availability
+    const hasAPI = 'getGamepads' in navigator;
+    this.addOutput(`API Available: ${hasAPI ? 'YES' : 'NO'}`, hasAPI ? '#8bac0f' : '#ff6b6b');
+
+    if (!hasAPI) {
+      this.addOutput('Gamepad API not supported in this browser', '#ff6b6b');
+      return;
+    }
+
+    // Check connected gamepads
+    const gamepads = navigator.getGamepads();
+    this.addOutput(`Gamepad slots: ${gamepads.length}`, '#8bac0f');
+
+    let foundAny = false;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        foundAny = true;
+        const gp = gamepads[i];
+        this.addOutput(`--- Gamepad ${i} ---`, '#9bbc0f');
+        this.addOutput(`  ID: ${gp.id}`, '#8bac0f');
+        this.addOutput(`  Buttons: ${gp.buttons.length}`, '#8bac0f');
+        this.addOutput(`  Axes: ${gp.axes.length}`, '#8bac0f');
+
+        // Show pressed buttons
+        const pressed = [];
+        for (let b = 0; b < gp.buttons.length; b++) {
+          if (gp.buttons[b].pressed) {
+            pressed.push(b);
+          }
+        }
+        this.addOutput(`  Pressed: [${pressed.join(', ')}]`, '#8bac0f');
+
+        // Show axes values
+        const axes = gp.axes.map((v, i) => `${i}:${v.toFixed(2)}`).join(', ');
+        this.addOutput(`  Axes: [${axes}]`, '#8bac0f');
+      }
+    }
+
+    if (!foundAny) {
+      this.addOutput('No gamepads detected', '#ff6b6b');
+      this.addOutput('Try pressing a button on your controller', '#8bac0f');
+    }
+  }
+
+  /**
    * Command: /help
    */
   cmdHelp(args) {
@@ -246,6 +297,7 @@ export class DevConsole {
     this.addOutput('/time <on|off> - Toggle timer', '#8bac0f');
     this.addOutput('/lives <n>     - Set lives', '#8bac0f');
     this.addOutput('/score <n>     - Set score', '#8bac0f');
+    this.addOutput('/gamepad       - Show gamepad info', '#8bac0f');
     this.addOutput('/clear         - Clear output', '#8bac0f');
     this.addOutput('/help          - Show this help', '#8bac0f');
   }
