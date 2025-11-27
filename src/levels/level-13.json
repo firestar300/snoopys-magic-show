@@ -1,0 +1,76 @@
+{
+  "id": 13,
+  "name": "Level 13",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-1",
+  "clearMusic": "stage-clear-1",
+  "startPosition": {
+    "x": 4,
+    "y": 4
+  },
+  "tiles": [
+    "000000000",
+    "0CAA0A1A0",
+    "010D0C0D0",
+    "010B1B010",
+    "010000010",
+    "0C00000D0",
+    "0B11111B0",
+    "000000000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "type": "ball",
+      "x": 4,
+      "y": 0,
+      "vx": 1,
+      "vy": -1
+    },
+    {
+      "type": "powerup",
+      "x": 7,
+      "y": 2,
+      "powerType": "time",
+      "hidden": true,
+      "blockX": 7,
+      "blockY": 2,
+      "targets": {
+        "up": { "x": 8, "y": 4 },
+        "down": { "x": 8, "y": 4 },
+        "left": { "x": 8, "y": 4 },
+        "right": { "x": 8, "y": 4 }
+      }
+    },
+    {
+      "type": "portal",
+      "x": 5,
+      "y": 3,
+      "destinationX": 4,
+      "destinationY": 7,
+      "hidden": true,
+      "blockX": 5,
+      "blockY": 3
+    }
+  ]
+}
