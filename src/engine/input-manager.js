@@ -132,6 +132,7 @@ export class InputManager {
         right: false,
         action: false,
         pause: false,
+        restart: false,
       };
     }
 
@@ -178,6 +179,7 @@ export class InputManager {
       right: dpadRight || stickRight,
       action: buttons[0]?.pressed || buttons[1]?.pressed || false, // B or A button
       pause: buttons[9]?.pressed || buttons[8]?.pressed || buttons[16]?.pressed || buttons[17]?.pressed || false,  // Start, Select, Share, PS button
+      restart: buttons[4]?.pressed || false, // L1/LB button for restart
     };
   }
 
@@ -268,6 +270,7 @@ export class InputManager {
       actionJustPressed: this.isJustPressed('ACTION') || (touchState.action && !this.previousTouchAction) || this.isGamepadButtonJustPressed(0) || this.isGamepadButtonJustPressed(1),
       pause: gamepadState.pause, // Start button on gamepad (held)
       pauseJustPressed: this.isPauseButtonJustPressed(), // Any pause button just pressed
+      restart: gamepadState.restart || false, // L1/LB button on gamepad
     };
 
     // Store previous state for next frame

@@ -89,6 +89,7 @@ export class Game {
     this.godModeKeyPressed = false;
     this.levelKeyPressed = false;
     this.hideDevInfoKeyPressed = false;
+    this.restartKeyPressed = false;
 
     // Dev mode UI visibility (hidden by default, press H to show)
     this.showDevInfo = false;
@@ -304,6 +305,24 @@ export class Game {
             }
           } else {
             this.pauseKeyPressed = false;
+          }
+        }
+
+        // Check for restart (R key or L1/LB button) - trigger defeat animation
+        // Allow restart during gameplay (not during animations)
+        const canRestart = !this.readyGo.isActive &&
+                          !this.player.isVictorious &&
+                          !this.player.isDefeated;
+
+        if (canRestart) {
+          if (this.inputManager.keys['r'] || this.inputManager.keys['R'] || input.restart) {
+            if (!this.restartKeyPressed) {
+              // Trigger defeat animation to restart the level
+              this.player.startDefeatAnimation(this);
+              this.restartKeyPressed = true;
+            }
+          } else {
+            this.restartKeyPressed = false;
           }
         }
         break;

@@ -43,14 +43,15 @@ export const CONFIG = {
   BALL_SPEED: 2,
   BALL_SIZE: 8, // Ball collision size (8x8 pixels)
   BALL_DISPLAY_SIZE: 16, // Ball display size (16x16 pixels)
-  BALL_ANGLE_RANDOMNESS: Math.PI / 18, // ±10° random variation on bounce angle
+  BALL_ANGLE_RANDOMNESS: Math.PI / 8, // random variation on bounce angle
 
-  // Input keys
+  // Input KEYS
   KEYS: {
     UP: ['ArrowUp', 'w', 'W'],
     DOWN: ['ArrowDown', 's', 'S'],
     LEFT: ['ArrowLeft', 'a', 'A'],
     RIGHT: ['ArrowRight', 'd', 'D'],
     ACTION: [' ', 'Enter'],
+    RESTART: ['r', 'R'],
   },
 };
