@@ -99,27 +99,11 @@ export class PowerUp extends Entity {
       const tilesY = Math.abs(deltaY) / CONFIG.TILE_SIZE;
       const totalTiles = tilesX + tilesY;
 
-      // Determine movement order based on Snoopy's direction
-      const isVerticalFirst = this.revealDirection === 'up' || this.revealDirection === 'down';
+      // Determine movement order: move on shortest axis first
+      const isXAxisShorter = tilesX < tilesY;
 
-      if (isVerticalFirst) {
-        // Vertical movement first (up/down direction), then horizontal
-        const verticalPhaseEnd = totalTiles > 0 ? tilesY / totalTiles : 0.5;
-
-        if (progress < verticalPhaseEnd) {
-          // Phase 1: Vertical movement only
-          const verticalProgress = verticalPhaseEnd > 0 ? progress / verticalPhaseEnd : 0;
-          this.x = this.startX; // Stay at start X
-          this.y = this.startY + deltaY * verticalProgress;
-        } else {
-          // Phase 2: Horizontal movement only (vertical is complete)
-          const horizontalPhaseLength = 1 - verticalPhaseEnd;
-          const horizontalProgress = horizontalPhaseLength > 0 ? (progress - verticalPhaseEnd) / horizontalPhaseLength : 1;
-          this.x = this.startX + deltaX * horizontalProgress;
-          this.y = this.targetY; // Already at target Y
-        }
-      } else {
-        // Horizontal movement first (left/right direction), then vertical
+      if (isXAxisShorter) {
+        // X axis is shorter: move horizontally first, then vertically
         const horizontalPhaseEnd = totalTiles > 0 ? tilesX / totalTiles : 0.5;
 
         if (progress < horizontalPhaseEnd) {
@@ -133,6 +117,22 @@ export class PowerUp extends Entity {
           const verticalProgress = verticalPhaseLength > 0 ? (progress - horizontalPhaseEnd) / verticalPhaseLength : 1;
           this.x = this.targetX; // Already at target X
           this.y = this.startY + deltaY * verticalProgress;
+        }
+      } else {
+        // Y axis is shorter (or equal): move vertically first, then horizontally
+        const verticalPhaseEnd = totalTiles > 0 ? tilesY / totalTiles : 0.5;
+
+        if (progress < verticalPhaseEnd) {
+          // Phase 1: Vertical movement only
+          const verticalProgress = verticalPhaseEnd > 0 ? progress / verticalPhaseEnd : 0;
+          this.x = this.startX; // Stay at start X
+          this.y = this.startY + deltaY * verticalProgress;
+        } else {
+          // Phase 2: Horizontal movement only (vertical is complete)
+          const horizontalPhaseLength = 1 - verticalPhaseEnd;
+          const horizontalProgress = horizontalPhaseLength > 0 ? (progress - verticalPhaseEnd) / horizontalPhaseLength : 1;
+          this.x = this.startX + deltaX * horizontalProgress;
+          this.y = this.targetY; // Already at target Y
         }
       }
 
