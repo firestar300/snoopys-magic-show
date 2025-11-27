@@ -43,6 +43,7 @@ export const CONFIG = {
   BALL_SPEED: 2,
   BALL_SIZE: 8, // Ball collision size (8x8 pixels)
   BALL_DISPLAY_SIZE: 16, // Ball display size (16x16 pixels)
+  BALL_ANGLE_RANDOMNESS: Math.PI / 18, // ±10° random variation on bounce angle
 
   // Input keys
   KEYS: {

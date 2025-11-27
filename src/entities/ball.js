@@ -119,6 +119,11 @@ export class Ball extends Entity {
 
     angle = normalizedAngle;
 
+    // Add random variation to make trajectories less predictable
+    // Random value between -BALL_ANGLE_RANDOMNESS and +BALL_ANGLE_RANDOMNESS
+    const randomVariation = (Math.random() - 0.5) * 2 * CONFIG.BALL_ANGLE_RANDOMNESS;
+    angle += randomVariation;
+
     // Calculate new velocity maintaining constant speed
     return {
       vx: Math.cos(angle) * this.speed,
