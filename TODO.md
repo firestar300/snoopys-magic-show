@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (14/100)
+### ✅ Niveaux Terminés (21/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -20,10 +20,17 @@
 - [x] Level 11
 - [x] Level 12
 - [x] Level 13
+- [x] Level 14
+- [x] Level 15
+- [x] Level 16
+- [x] Level 17
+- [x] Level 18
+- [x] Level 19
+- [x] Level 20
 
 ### 🚧 Niveaux En Cours (0/100)
 
-### 📝 Niveaux Planifiés (87/100)
+### 📝 Niveaux Planifiés (80/100)
 
 #### Zone 1 : Introduction (Levels 1-10) ✅ 10/10 - COMPLÈTE
 
@@ -31,14 +38,11 @@ Mécaniques de base, apprentissage progressif
 
 - [x] Level 1-10
 
-#### Zone 2 : Toggle Blocks (Levels 11-20) 3/10
+#### Zone 2 : Toggle Blocks (Levels 11-20) ✅ 10/10 - COMPLÈTE
 
 Focus sur les blocs qui alternent entre solide et passable
 
-- [x] Level 11 ✅
-- [x] Level 12 ✅
-- [x] Level 13 ✅
-- [ ] Level 14-20
+- [x] Level 11-20
 
 #### Zone 3 : Téléportation (Levels 21-30) 0/10
 
@@ -176,11 +180,10 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 14/100 (14%)
+- **Niveaux complétés :** 21/100 (21%)
 - **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 86/100 (86%)
-- **Zones complètes :** 1/10 (Zone 1: Introduction) 🎉
-- **Zone 2 en cours :** 3/10 niveaux complétés
+- **Niveaux restants :** 79/100 (79%)
+- **Zones complètes :** 2/10 (Zone 1: Introduction, Zone 2: Toggle Blocks) 🎉🎉
 
 ## 🆕 Nouvelles Fonctionnalités
 
