@@ -6,22 +6,22 @@
 
 ### ✅ Niveaux Terminés (12/100)
 
-- [x] **Level 0** - Test Level (Dev only)
-- [x] **Level 1** - Ready Go!
-- [x] **Level 2** - Cross Formation
-- [x] **Level 3** - Push and Slide
-- [x] **Level 4** - Teleport Challenge
-- [x] **Level 5** - Arrow Maze
-- [x] **Level 6** - Break Out
-- [x] **Level 7** - Toggle Timing
-- [x] **Level 8** - Block Maze
-- [x] **Level 9** - Grand Finale
-- [x] **Level 10** - The Final Battle
-- [x] **Level 11** - Toggle Blocks Introduction
+- [x] Level 0 (Dev only)
+- [x] Level 1
+- [x] Level 2
+- [x] Level 3
+- [x] Level 4
+- [x] Level 5
+- [x] Level 6
+- [x] Level 7
+- [x] Level 8
+- [x] Level 9
+- [x] Level 10
+- [x] Level 11
 
 ### 🚧 Niveaux En Cours (1/100)
 
-- [ ] **Level 12** - En développement
+- [ ] Level 12
 
 ### 📝 Niveaux Planifiés (87/100)
 
