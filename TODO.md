@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (11/100)
+### ✅ Niveaux Terminés (12/100)
 
 - [x] **Level 0** - Test Level (Dev only)
 - [x] **Level 1** - Ready Go!
@@ -17,10 +17,11 @@
 - [x] **Level 8** - Block Maze
 - [x] **Level 9** - Grand Finale
 - [x] **Level 10** - The Final Battle
+- [x] **Level 11** - Toggle Blocks Introduction
 
-### 🚧 Niveaux En Cours (0/100)
+### 🚧 Niveaux En Cours (1/100)
 
-- [ ] **Level 11** - À définir
+- [ ] **Level 12** - En développement
 
 ### 📝 Niveaux Planifiés (87/100)
 
@@ -30,11 +31,13 @@ Mécaniques de base, apprentissage progressif
 
 - [x] Level 1-10
 
-#### Zone 2 : Toggle Blocks (Levels 11-20) 0/10
+#### Zone 2 : Toggle Blocks (Levels 11-20) 1/10
 
 Focus sur les blocs qui alternent entre solide et passable
 
-- [ ] Level 11-20
+- [x] Level 11 ✅
+- [ ] Level 12 (WIP)
+- [ ] Level 13-20
 
 #### Zone 3 : Téléportation (Levels 21-30) 0/10
 
@@ -172,10 +175,11 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 11/100 (11%)
-- **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 89/100 (89%)
+- **Niveaux complétés :** 12/100 (12%)
+- **Niveaux en cours :** 1/100 (1%)
+- **Niveaux restants :** 88/100 (88%)
 - **Zones complètes :** 1/10 (Zone 1: Introduction) 🎉
+- **Zone 2 en cours :** 1/10 niveaux complétés
 
 ---
-Dernière mise à jour : 2025-11-25
+Dernière mise à jour : 2025-11-27

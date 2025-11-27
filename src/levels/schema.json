@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Snoopy's Magic Show - Level Schema",
+  "description": "Schema for game level configuration files",
+  "type": "object",
+  "required": ["id", "name", "width", "height", "music", "clearMusic", "startPosition", "tiles", "entities"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the level",
+      "minimum": 0
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the level",
+      "minLength": 1
+    },
+    "width": {
+      "type": "integer",
+      "description": "Width of the level grid in tiles",
+      "minimum": 1,
+      "default": 9
+    },
+    "height": {
+      "type": "integer",
+      "description": "Height of the level grid in tiles",
+      "minimum": 1,
+      "default": 8
+    },
+    "music": {
+      "type": "string",
+      "description": "Background music track ID for the level",
+      "pattern": "^stage-bgm-[0-9]+$"
+    },
+    "clearMusic": {
+      "type": "string",
+      "description": "Victory music track ID played when level is completed",
+      "pattern": "^stage-clear-[0-9]+$"
+    },
+    "startPosition": {
+      "type": "object",
+      "description": "Starting position of the player (Snoopy)",
+      "required": ["x", "y"],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "description": "X coordinate (column) on the grid",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "description": "Y coordinate (row) on the grid",
+          "minimum": 0
+        }
+      }
+    },
+    "tiles": {
+      "type": "array",
+      "description": "Grid of tile types. Each string represents a row, each character a tile type.",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9A-E]+$"
+      },
+      "minItems": 1
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to spawn in the level",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Woodstock entity (goal bird)",
+            "required": ["type", "x", "y"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "woodstock"
+              },
+              "x": {
+                "type": "integer",
+                "description": "X coordinate on the grid",
+                "minimum": 0
+              },
+              "y": {
+                "type": "integer",
+                "description": "Y coordinate on the grid",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Ball entity (enemy/obstacle)",
+            "required": ["type", "x", "y", "vx", "vy"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "ball"
+              },
+              "x": {
+                "type": "integer",
+                "description": "X coordinate on the grid",
+                "minimum": 0
+              },
+              "y": {
+                "type": "integer",
+                "description": "Y coordinate on the grid",
+                "minimum": 0
+              },
+              "vx": {
+                "type": "integer",
+                "description": "Horizontal velocity (-1, 0, or 1)",
+                "minimum": -1,
+                "maximum": 1
+              },
+              "vy": {
+                "type": "integer",
+                "description": "Vertical velocity (-1, 0, or 1)",
+                "minimum": -1,
+                "maximum": 1
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Power-up entity (collectible)",
+            "required": ["type", "x", "y", "powerType"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "powerup"
+              },
+              "x": {
+                "type": "integer",
+                "description": "X coordinate on the grid",
+                "minimum": 0
+              },
+              "y": {
+                "type": "integer",
+                "description": "Y coordinate on the grid",
+                "minimum": 0
+              },
+              "powerType": {
+                "type": "string",
+                "description": "Type of power-up",
+                "enum": ["invincible", "time", "speed"]
+              },
+              "hidden": {
+                "type": "boolean",
+                "description": "Whether the power-up is initially hidden",
+                "default": false
+              },
+              "blockX": {
+                "type": "integer",
+                "description": "X coordinate of the block containing this power-up (if hidden)",
+                "minimum": 0
+              },
+              "blockY": {
+                "type": "integer",
+                "description": "Y coordinate of the block containing this power-up (if hidden)",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "tileTypes": {
+      "description": "Available tile types",
+      "enum": {
+        "0": "Empty space",
+        "1": "Basic block (gray)",
+        "2": "Blue block",
+        "3": "Green block",
+        "4": "Red block (destructible)",
+        "5": "Cyan block",
+        "6": "Orange/yellow gradient left",
+        "7": "Orange/yellow gradient middle",
+        "8": "Orange/yellow gradient middle-right",
+        "9": "Orange/yellow gradient right",
+        "A": "Purple block",
+        "B": "Dark blue block",
+        "C": "Teal block",
+        "D": "Pink block",
+        "E": "Stone/gray block"
+      }
+    },
+    "powerTypes": {
+      "description": "Available power-up types",
+      "enum": {
+        "invincible": "Makes player invincible temporarily",
+        "time": "Freezes time/enemies temporarily",
+        "speed": "Increases player movement speed"
+      }
+    }
+  }
+}

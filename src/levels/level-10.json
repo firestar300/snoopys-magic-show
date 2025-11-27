@@ -3,8 +3,8 @@
   "name": "The Final Battle",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-10",
-  "clearMusic": "stage-clear-10",
+  "music": "stage-bgm-1",
+  "clearMusic": "stage-clear-1",
   "startPosition": {
     "x": 2,
     "y": 4
