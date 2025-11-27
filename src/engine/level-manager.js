@@ -311,8 +311,46 @@ export class LevelManager {
       return false; // Can't push into solid tile or out of bounds
     }
 
-    // Clear the source position
+    // Check if there's a ball at destination
+    let ballAtDestination = false;
+    if (entityManager) {
+      const balls = entityManager.getEntitiesByType('ball');
+      for (const ball of balls) {
+        const ballGridX = ball.getGridX();
+        const ballGridY = ball.getGridY();
+
+        if (ballGridX === destX && ballGridY === destY) {
+          ballAtDestination = true;
+          break;
+        }
+      }
+    }
+
+    // Clear the source position (do this first for all cases to show animation properly)
     this.setTileAt(gridX, gridY, TileType.EMPTY);
+
+    // If ball is at destination, create a short bounce animation WITH Snoopy moving
+    if (ballAtDestination) {
+      // Create a bounce-only animation (goes to 50% then bounces back)
+      this.animatingBlocks.push({
+        tileType: tile,
+        fromX: gridX,
+        fromY: gridY,
+        toX: destX,
+        toY: destY,
+        destX: destX,
+        destY: destY,
+        progress: 0,
+        duration: 0.2, // Same duration as normal push (to reach 50% at mid-point)
+        isBouncing: false,
+        bounceProgress: 0,
+        bounceDuration: 0.15, // Bounce back duration
+        bouncingChecked: false,
+        willBounce: true, // Mark as will bounce immediately
+      });
+
+      return true; // Let player move - they will bounce back together
+    }
 
     // Reveal power-up if there was one hidden in this block
     const powerUp = this.revealPowerUpFromBlock(gridX, gridY);
@@ -337,6 +375,11 @@ export class LevelManager {
       destY: destY,
       progress: 0,
       duration: 0.2, // 200ms animation
+      isBouncing: false, // Will bounce back if hits a ball
+      bounceProgress: 0,
+      bounceDuration: 0.15, // Bounce back duration
+      bouncingChecked: false, // Track if bouncing was already triggered
+      willBounce: false,
     });
 
     return true;
@@ -365,21 +408,86 @@ export class LevelManager {
   /**
    * Update block animations and toggle blocks
    */
-  update(dt, player = null) {
+  update(dt, player = null, entityManager = null) {
     // Update all animating blocks (pushable blocks)
     for (let i = this.animatingBlocks.length - 1; i >= 0; i--) {
       const block = this.animatingBlocks[i];
-      block.progress += dt / block.duration;
 
-      if (block.progress >= 1) {
-        // Animation complete
-        block.progress = 1;
+      if (!block.isBouncing) {
+        // Normal forward animation
+        block.progress += dt / block.duration;
 
-        // Set the final tile at destination (convert to wall)
-        this.setTileAt(block.destX, block.destY, TileType.WALL);
+        // If marked to bounce (ball was already there), trigger bounce when progress reaches 40%
+        if (block.willBounce && block.progress >= 0.4) {
+          block.progress = 0.4; // Cap progress at 40%
+          // Store the actual position where we're bouncing from
+          const t = this.easeInOutQuad(0.4);
+          block.bounceFromX = block.fromX + (block.toX - block.fromX) * t;
+          block.bounceFromY = block.fromY + (block.toY - block.fromY) * t;
+          block.isBouncing = true;
+          block.bounceProgress = 0;
+          block.bouncingChecked = true;
 
-        // Remove from animation array
-        this.animatingBlocks.splice(i, 1);
+          // Signal player to bounce back too
+          if (player && player.isMoving) {
+            player.bounceBack();
+          }
+        }
+        // Check continuously if there's a ball at destination (only after 30% to avoid instant bounce)
+        else if (block.progress >= 0.3 && block.progress < 1 && entityManager && !block.bouncingChecked && !block.willBounce) {
+          const balls = entityManager.getEntitiesByType('ball');
+          let ballAtDestination = false;
+
+          for (const ball of balls) {
+            const ballGridX = ball.getGridX();
+            const ballGridY = ball.getGridY();
+
+            if (ballGridX === block.destX && ballGridY === block.destY) {
+              ballAtDestination = true;
+              break;
+            }
+          }
+
+          // If ball detected, start bouncing back
+          if (ballAtDestination) {
+            // Store the actual position where we're bouncing from
+            const t = this.easeInOutQuad(block.progress);
+            block.bounceFromX = block.fromX + (block.toX - block.fromX) * t;
+            block.bounceFromY = block.fromY + (block.toY - block.fromY) * t;
+
+            block.isBouncing = true;
+            block.bounceProgress = 0;
+            block.bouncingChecked = true;
+
+            // Signal player to bounce back too
+            if (player && player.isMoving) {
+              player.bounceBack();
+            }
+          }
+        }
+
+        if (block.progress >= 1 && !block.isBouncing) {
+          // Animation complete normally
+          block.progress = 1;
+
+          // Set the final tile at destination (convert to wall)
+          this.setTileAt(block.destX, block.destY, TileType.WALL);
+
+          // Remove from animation array
+          this.animatingBlocks.splice(i, 1);
+        }
+      } else {
+        // Bouncing back animation
+        block.bounceProgress += dt / block.bounceDuration;
+
+        if (block.bounceProgress >= 1) {
+          // Bounce complete, restore block at original position
+          block.bounceProgress = 1;
+          this.setTileAt(block.fromX, block.fromY, block.tileType);
+
+          // Remove from animation array
+          this.animatingBlocks.splice(i, 1);
+        }
       }
     }
 
@@ -454,6 +562,47 @@ export class LevelManager {
       gridY >= 0 &&
       gridY < CONFIG.GRID_HEIGHT
     );
+  }
+
+  /**
+   * Check if position is blocked by an animating block
+   * Also returns the pixel position of the block for better collision
+   */
+  isBlockedByAnimatingBlock(gridX, gridY) {
+    for (const block of this.animatingBlocks) {
+      let currentX, currentY;
+
+      if (!block.isBouncing) {
+        // Normal forward animation
+        const t = this.easeInOutQuad(block.progress);
+        currentX = block.fromX + (block.toX - block.fromX) * t;
+        currentY = block.fromY + (block.toY - block.fromY) * t;
+      } else {
+        // Bouncing back animation - go from where we stopped back to origin
+        const t = this.easeInOutQuad(block.bounceProgress);
+        const bounceFromX = block.bounceFromX !== undefined ? block.bounceFromX : block.toX;
+        const bounceFromY = block.bounceFromY !== undefined ? block.bounceFromY : block.toY;
+        currentX = bounceFromX + (block.fromX - bounceFromX) * t;
+        currentY = bounceFromY + (block.fromY - bounceFromY) * t;
+      }
+
+      // Check if the animating block overlaps with the grid position
+      // Block occupies space from its current position
+      const blockGridX = Math.floor(currentX);
+      const blockGridY = Math.floor(currentY);
+
+      // Also check adjacent cells if block is between two cells
+      const blockGridX2 = Math.ceil(currentX);
+      const blockGridY2 = Math.ceil(currentY);
+
+      if ((blockGridX === gridX && blockGridY === gridY) ||
+          (blockGridX2 === gridX && blockGridY2 === gridY) ||
+          (blockGridX === gridX && blockGridY2 === gridY) ||
+          (blockGridX2 === gridX && blockGridY === gridY)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -559,10 +708,21 @@ export class LevelManager {
   renderAnimatingBlocks(renderer, spriteManager) {
     // Render animating blocks on top of everything
     for (const block of this.animatingBlocks) {
-      // Interpolate position using easeInOutQuad for smooth animation
-      const t = this.easeInOutQuad(block.progress);
-      const currentX = block.fromX + (block.toX - block.fromX) * t;
-      const currentY = block.fromY + (block.toY - block.fromY) * t;
+      let currentX, currentY;
+
+      if (!block.isBouncing) {
+        // Normal forward animation
+        const t = this.easeInOutQuad(block.progress);
+        currentX = block.fromX + (block.toX - block.fromX) * t;
+        currentY = block.fromY + (block.toY - block.fromY) * t;
+      } else {
+        // Bouncing back animation - go from where we stopped back to origin
+        const t = this.easeInOutQuad(block.bounceProgress);
+        const bounceFromX = block.bounceFromX !== undefined ? block.bounceFromX : block.toX;
+        const bounceFromY = block.bounceFromY !== undefined ? block.bounceFromY : block.toY;
+        currentX = bounceFromX + (block.fromX - bounceFromX) * t;
+        currentY = bounceFromY + (block.fromY - bounceFromY) * t;
+      }
 
       const pixelX = currentX * CONFIG.TILE_SIZE;
       const pixelY = currentY * CONFIG.TILE_SIZE;
