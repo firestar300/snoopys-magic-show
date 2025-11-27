@@ -541,7 +541,7 @@ export class LevelManager {
   }
 
   /**
-   * Render the level
+   * Render the level (static tiles only)
    */
   render(renderer, spriteManager) {
     // Render static tiles
@@ -551,8 +551,13 @@ export class LevelManager {
         this.renderTile(renderer, tile, x, y, spriteManager);
       }
     }
+  }
 
-    // Render animating blocks on top
+  /**
+   * Render animating blocks (should be called after entities to keep blocks on top)
+   */
+  renderAnimatingBlocks(renderer, spriteManager) {
+    // Render animating blocks on top of everything
     for (const block of this.animatingBlocks) {
       // Interpolate position using easeInOutQuad for smooth animation
       const t = this.easeInOutQuad(block.progress);

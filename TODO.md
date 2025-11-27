@@ -183,6 +183,7 @@ Boss finals et défis ultimes
 ## 🆕 Nouvelles Fonctionnalités
 
 ### Portails à Sens Unique (One-Way Portals)
+
 - **Date d'ajout :** 2025-11-27
 - **Description :** Portails entités qui téléportent vers une destination fixe (contrairement aux portails bidirectionnels)
 - **Peut être caché :** Oui, dans des blocs poussables

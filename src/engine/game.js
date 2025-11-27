@@ -617,11 +617,14 @@ export class Game {
       this.renderer.ctx.save();
       this.renderer.ctx.translate(CONFIG.TIMER_BORDER, CONFIG.TIMER_BORDER);
 
-      // Render level
+      // Render level (static tiles)
       this.levelManager.render(this.renderer, this.spriteManager);
 
       // Render entities
       this.entityManager.render(this.renderer, this.spriteManager);
+
+      // Render animating blocks on top of entities (so they stay in foreground)
+      this.levelManager.renderAnimatingBlocks(this.renderer, this.spriteManager);
 
       // Render grid overlay
       this.renderer.drawGrid();
