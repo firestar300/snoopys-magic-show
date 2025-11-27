@@ -63,6 +63,62 @@ export class Ball extends Entity {
       angle += clampedOffset * (Math.PI / 6); // Add up to 30° variation
     }
 
+    // Prevent too-flat angles (avoid infinite horizontal/vertical bouncing)
+    // Min angle from horizontal/vertical
+    const minAngleFromHorizontal = Math.PI / 4; // 45° from 0°/180°
+    const minAngleFromVertical = Math.PI / 4;   // 45° from 90°/270°
+
+    // Normalize angle to 0-2π range
+    let normalizedAngle = angle;
+    while (normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+    while (normalizedAngle >= Math.PI * 2) normalizedAngle -= Math.PI * 2;
+
+    // Define forbidden zones and clamp accordingly
+    const halfPi = Math.PI / 2;
+
+    // Quadrant 1 (0° to 90°): Top-right
+    if (normalizedAngle >= 0 && normalizedAngle < halfPi) {
+      if (normalizedAngle < minAngleFromHorizontal) {
+        // Too horizontal (close to 0°), push to 30°
+        normalizedAngle = minAngleFromHorizontal;
+      } else if (normalizedAngle > halfPi - minAngleFromVertical) {
+        // Too vertical (close to 90°), push to 60°
+        normalizedAngle = halfPi - minAngleFromVertical;
+      }
+    }
+    // Quadrant 2 (90° to 180°): Top-left
+    else if (normalizedAngle >= halfPi && normalizedAngle < Math.PI) {
+      if (normalizedAngle < halfPi + minAngleFromVertical) {
+        // Too vertical (close to 90°), push to 120°
+        normalizedAngle = halfPi + minAngleFromVertical;
+      } else if (normalizedAngle > Math.PI - minAngleFromHorizontal) {
+        // Too horizontal (close to 180°), push to 150°
+        normalizedAngle = Math.PI - minAngleFromHorizontal;
+      }
+    }
+    // Quadrant 3 (180° to 270°): Bottom-left
+    else if (normalizedAngle >= Math.PI && normalizedAngle < Math.PI + halfPi) {
+      if (normalizedAngle < Math.PI + minAngleFromHorizontal) {
+        // Too horizontal (close to 180°), push to 210°
+        normalizedAngle = Math.PI + minAngleFromHorizontal;
+      } else if (normalizedAngle > Math.PI + halfPi - minAngleFromVertical) {
+        // Too vertical (close to 270°), push to 240°
+        normalizedAngle = Math.PI + halfPi - minAngleFromVertical;
+      }
+    }
+    // Quadrant 4 (270° to 360°): Bottom-right
+    else {
+      if (normalizedAngle < Math.PI + halfPi + minAngleFromVertical) {
+        // Too vertical (close to 270°), push to 300°
+        normalizedAngle = Math.PI + halfPi + minAngleFromVertical;
+      } else if (normalizedAngle > Math.PI * 2 - minAngleFromHorizontal) {
+        // Too horizontal (close to 360°/0°), push to 330°
+        normalizedAngle = Math.PI * 2 - minAngleFromHorizontal;
+      }
+    }
+
+    angle = normalizedAngle;
+
     // Calculate new velocity maintaining constant speed
     return {
       vx: Math.cos(angle) * this.speed,
