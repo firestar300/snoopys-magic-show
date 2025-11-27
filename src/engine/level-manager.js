@@ -14,6 +14,7 @@ export class LevelManager {
     this.toggleTimer = -0.1; // Start with -0.5s (0.5 second delay before cycle starts)
     this.toggleTransitionDuration = 0.4; // Transition animation duration (slowed down)
     this.hiddenPowerUps = new Map(); // Power-ups hidden in blocks, keyed by "x,y"
+    this.hiddenPortals = new Map(); // Portals hidden in blocks, keyed by "x,y"
   }
 
   /**
@@ -52,6 +53,9 @@ export class LevelManager {
 
     // Clear hidden power-ups map
     this.hiddenPowerUps = new Map();
+
+    // Clear hidden portals map
+    this.hiddenPortals = new Map();
   }
 
   /**
@@ -316,6 +320,12 @@ export class LevelManager {
       powerUp.reveal(gridX, gridY, direction, this, entityManager);
     }
 
+    // Reveal portal if there was one hidden in this block
+    const portal = this.revealPortalFromBlock(gridX, gridY);
+    if (portal) {
+      portal.reveal();
+    }
+
     // Create animation for the block
     this.animatingBlocks.push({
       tileType: tile,
@@ -482,6 +492,29 @@ export class LevelManager {
     if (powerUp) {
       this.hiddenPowerUps.delete(key);
       return powerUp;
+    }
+
+    return null;
+  }
+
+  /**
+   * Register a portal as hidden in a block
+   */
+  hidePortalInBlock(gridX, gridY, portal) {
+    const key = `${gridX},${gridY}`;
+    this.hiddenPortals.set(key, portal);
+  }
+
+  /**
+   * Reveal portal from a block (if any)
+   */
+  revealPortalFromBlock(gridX, gridY) {
+    const key = `${gridX},${gridY}`;
+    const portal = this.hiddenPortals.get(key);
+
+    if (portal) {
+      this.hiddenPortals.delete(key);
+      return portal;
     }
 
     return null;

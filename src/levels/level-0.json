@@ -49,6 +49,16 @@
       "powerType": "speed",
       "blockX": 6,
       "blockY": 1
+    },
+    {
+      "type": "portal",
+      "x": 4,
+      "y": 3,
+      "destinationX": 0,
+      "destinationY": 0,
+      "hidden": true,
+      "blockX": 4,
+      "blockY": 3
     }
   ]
 }

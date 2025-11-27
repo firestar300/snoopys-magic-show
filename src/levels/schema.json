@@ -162,6 +162,52 @@
                 "minimum": 0
               }
             }
+          },
+          {
+            "type": "object",
+            "description": "One-way portal entity (teleporter to fixed destination)",
+            "required": ["type", "x", "y", "destinationX", "destinationY"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "portal"
+              },
+              "x": {
+                "type": "integer",
+                "description": "X coordinate on the grid",
+                "minimum": 0
+              },
+              "y": {
+                "type": "integer",
+                "description": "Y coordinate on the grid",
+                "minimum": 0
+              },
+              "destinationX": {
+                "type": "integer",
+                "description": "Destination X coordinate for teleportation",
+                "minimum": 0
+              },
+              "destinationY": {
+                "type": "integer",
+                "description": "Destination Y coordinate for teleportation",
+                "minimum": 0
+              },
+              "hidden": {
+                "type": "boolean",
+                "description": "Whether the portal is initially hidden in a pushable block",
+                "default": false
+              },
+              "blockX": {
+                "type": "integer",
+                "description": "X coordinate of the block containing this portal (if hidden)",
+                "minimum": 0
+              },
+              "blockY": {
+                "type": "integer",
+                "description": "Y coordinate of the block containing this portal (if hidden)",
+                "minimum": 0
+              }
+            }
           }
         ]
       }

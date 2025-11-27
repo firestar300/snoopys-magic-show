@@ -46,6 +46,16 @@
       "y": 7,
       "vx": -1,
       "vy": 1
+    },
+    {
+      "type": "portal",
+      "x": 8,
+      "y": 1,
+      "destinationX": 2,
+      "destinationY": 0,
+      "hidden": true,
+      "blockX": 8,
+      "blockY": 1
     }
   ]
 }

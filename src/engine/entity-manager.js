@@ -1,6 +1,7 @@
 import { Ball } from '../entities/ball.js';
 import { Woodstock } from '../entities/woodstock.js';
 import { PowerUp } from '../entities/power-up.js';
+import { Portal } from '../entities/portal.js';
 import { TileType } from '../tiles/tile-types.js';
 
 /**
@@ -40,6 +41,13 @@ export class EntityManager {
    */
   getByType(type) {
     return this.entities.filter(e => e.type === type);
+  }
+
+  /**
+   * Alias for getByType (for consistency with game code)
+   */
+  getEntitiesByType(type) {
+    return this.getByType(type);
   }
 
   /**
@@ -87,6 +95,25 @@ export class EntityManager {
         // If power-up is hidden in a block, register it with the level manager
         if (hidden && data.blockX !== undefined && data.blockY !== undefined && levelManager) {
           levelManager.hidePowerUpInBlock(data.blockX, data.blockY, entity);
+        }
+        break;
+
+      case 'portal':
+        const portalHidden = data.hidden || false;
+        const destX = data.destinationX;
+        const destY = data.destinationY;
+
+        // Validate destination coordinates
+        if (destX === undefined || destY === undefined) {
+          console.warn(`Portal at (${data.x}, ${data.y}) has no destination. Skipping spawn.`);
+          return;
+        }
+
+        entity = new Portal(data.x, data.y, destX, destY, portalHidden);
+
+        // If portal is hidden in a block, register it with the level manager
+        if (portalHidden && data.blockX !== undefined && data.blockY !== undefined && levelManager) {
+          levelManager.hidePortalInBlock(data.blockX, data.blockY, entity);
         }
         break;
     }

@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (12/100)
+### ✅ Niveaux Terminés (13/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -18,10 +18,9 @@
 - [x] Level 9
 - [x] Level 10
 - [x] Level 11
+- [x] Level 12
 
-### 🚧 Niveaux En Cours (1/100)
-
-- [ ] Level 12
+### 🚧 Niveaux En Cours (0/100)
 
 ### 📝 Niveaux Planifiés (87/100)
 
@@ -31,12 +30,12 @@ Mécaniques de base, apprentissage progressif
 
 - [x] Level 1-10
 
-#### Zone 2 : Toggle Blocks (Levels 11-20) 1/10
+#### Zone 2 : Toggle Blocks (Levels 11-20) 2/10
 
 Focus sur les blocs qui alternent entre solide et passable
 
 - [x] Level 11 ✅
-- [ ] Level 12 (WIP)
+- [x] Level 12 ✅
 - [ ] Level 13-20
 
 #### Zone 3 : Téléportation (Levels 21-30) 0/10
@@ -175,11 +174,20 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 12/100 (12%)
-- **Niveaux en cours :** 1/100 (1%)
-- **Niveaux restants :** 88/100 (88%)
+- **Niveaux complétés :** 13/100 (13%)
+- **Niveaux en cours :** 0/100 (0%)
+- **Niveaux restants :** 87/100 (87%)
 - **Zones complètes :** 1/10 (Zone 1: Introduction) 🎉
-- **Zone 2 en cours :** 1/10 niveaux complétés
+- **Zone 2 en cours :** 2/10 niveaux complétés
+
+## 🆕 Nouvelles Fonctionnalités
+
+### Portails à Sens Unique (One-Way Portals)
+- **Date d'ajout :** 2025-11-27
+- **Description :** Portails entités qui téléportent vers une destination fixe (contrairement aux portails bidirectionnels)
+- **Peut être caché :** Oui, dans des blocs poussables
+- **Fichiers :** `src/entities/portal.js`, support dans `entity-manager.js` et `level-manager.js`
+- **Schema :** Documenté dans `src/levels/schema.json`
 
 ---
 Dernière mise à jour : 2025-11-27
