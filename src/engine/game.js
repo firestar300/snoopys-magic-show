@@ -674,12 +674,23 @@ export class Game {
         ctx.fillText(`Press CMD+SHIFT for console`, 20, 98);
 
         // God mode indicator
+        let yOffset = 118;
         if (this.player && this.player.godMode) {
           ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
-          ctx.fillRect(10, 118, 100, 24);
+          ctx.fillRect(10, yOffset, 100, 24);
           ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
           ctx.font = 'bold 14px "Courier New", monospace';
-          ctx.fillText(`GOD MODE`, 20, 135);
+          ctx.fillText(`GOD MODE`, 20, yOffset + 17);
+          yOffset += 28;
+        }
+
+        // Noclip mode indicator
+        if (this.player && this.player.noclipMode) {
+          ctx.fillStyle = 'rgba(138, 43, 226, 0.9)';
+          ctx.fillRect(10, yOffset, 100, 24);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.font = 'bold 14px "Courier New", monospace';
+          ctx.fillText(`NOCLIP`, 20, yOffset + 17);
         }
 
         ctx.restore();

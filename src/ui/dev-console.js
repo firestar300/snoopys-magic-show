@@ -17,6 +17,7 @@ export class DevConsole {
     this.commands = {
       level: this.cmdLevel.bind(this),
       god: this.cmdGod.bind(this),
+      noclip: this.cmdNoclip.bind(this),
       time: this.cmdTime.bind(this),
       lives: this.cmdLives.bind(this),
       score: this.cmdScore.bind(this),
@@ -175,6 +176,33 @@ export class DevConsole {
   }
 
   /**
+   * Command: /noclip <on|off|1|0>
+   */
+  cmdNoclip(args) {
+    if (args.length === 0) {
+      const status = this.game.player?.noclipMode ? 'ON' : 'OFF';
+      this.addOutput(`Noclip mode is ${status}`, '#8bac0f');
+      return;
+    }
+
+    const arg = args[0].toLowerCase();
+    const enable = arg === 'on' || arg === '1' || arg === 'true';
+    const disable = arg === 'off' || arg === '0' || arg === 'false';
+
+    if (!enable && !disable) {
+      this.addOutput('Usage: /noclip <on|off|1|0>', '#ff6b6b');
+      return;
+    }
+
+    if (this.game.player) {
+      this.game.player.noclipMode = enable;
+      this.addOutput(`Noclip mode ${enable ? 'enabled' : 'disabled'}`, '#8bac0f');
+    } else {
+      this.addOutput('No player available', '#ff6b6b');
+    }
+  }
+
+  /**
    * Command: /time <on|off|1|0>
    */
   cmdTime(args) {
@@ -292,14 +320,15 @@ export class DevConsole {
    */
   cmdHelp(args) {
     this.addOutput('Available commands:', '#9bbc0f');
-    this.addOutput('/level <n>     - Load level n', '#8bac0f');
-    this.addOutput('/god <on|off>  - Toggle god mode', '#8bac0f');
-    this.addOutput('/time <on|off> - Toggle timer', '#8bac0f');
-    this.addOutput('/lives <n>     - Set lives', '#8bac0f');
-    this.addOutput('/score <n>     - Set score', '#8bac0f');
-    this.addOutput('/gamepad       - Show gamepad info', '#8bac0f');
-    this.addOutput('/clear         - Clear output', '#8bac0f');
-    this.addOutput('/help          - Show this help', '#8bac0f');
+    this.addOutput('/level <n>      - Load level n', '#8bac0f');
+    this.addOutput('/god <on|off>   - Toggle god mode', '#8bac0f');
+    this.addOutput('/noclip <on|off> - Toggle noclip mode', '#8bac0f');
+    this.addOutput('/time <on|off>  - Toggle timer', '#8bac0f');
+    this.addOutput('/lives <n>      - Set lives', '#8bac0f');
+    this.addOutput('/score <n>      - Set score', '#8bac0f');
+    this.addOutput('/gamepad        - Show gamepad info', '#8bac0f');
+    this.addOutput('/clear          - Clear output', '#8bac0f');
+    this.addOutput('/help           - Show this help', '#8bac0f');
   }
 
   /**

@@ -86,6 +86,9 @@ export class Player extends Entity {
     // God mode (dev mode only)
     this.godMode = false;
     this.defeatFrameCount = 0;
+
+    // Noclip mode (dev mode only - disables collisions)
+    this.noclipMode = false;
   }
 
   /**
@@ -285,8 +288,12 @@ export class Player extends Entity {
     if (newGridX !== gridX || newGridY !== gridY) {
       const tile = levelManager.getTileAt(newGridX, newGridY);
 
+      // Noclip mode: ignore all collisions
+      if (this.noclipMode) {
+        this.startMovement(newGridX, newGridY);
+      }
       // Check if it's a pushable block
-      if (levelManager.isPushable(newGridX, newGridY)) {
+      else if (levelManager.isPushable(newGridX, newGridY)) {
         // Try to push the block in the direction we're moving
         const entityManager = game ? game.entityManager : null;
         if (levelManager.tryPushBlock(newGridX, newGridY, this.direction, entityManager)) {
@@ -446,8 +453,8 @@ export class Player extends Entity {
         return; // Not on an arrow tile
     }
 
-    // Force movement if the target is not solid
-    if (!levelManager.isSolid(forcedX, forcedY)) {
+    // Force movement if the target is not solid (or if noclip is enabled)
+    if (this.noclipMode || !levelManager.isSolid(forcedX, forcedY)) {
       // Update direction and sprite only if movement is possible
       this.direction = targetDirection;
       this.directionIndex = targetDirectionIndex;
