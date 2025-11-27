@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (21/100)
+### ✅ Niveaux Terminés (26/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -27,10 +27,15 @@
 - [x] Level 18
 - [x] Level 19
 - [x] Level 20
+- [x] Level 21
+- [x] Level 22
+- [x] Level 23
+- [x] Level 24
+- [x] Level 25
 
 ### 🚧 Niveaux En Cours (0/100)
 
-### 📝 Niveaux Planifiés (80/100)
+### 📝 Niveaux Planifiés (75/100)
 
 #### Zone 1 : Introduction (Levels 1-10) ✅ 10/10 - COMPLÈTE
 
@@ -44,11 +49,16 @@ Focus sur les blocs qui alternent entre solide et passable
 
 - [x] Level 11-20
 
-#### Zone 3 : Téléportation (Levels 21-30) 0/10
+#### Zone 3 : Téléportation (Levels 21-30) 5/10
 
 Maîtrise des portails et téléportation
 
-- [ ] Level 21-30
+- [x] Level 21 ✅
+- [x] Level 22 ✅
+- [x] Level 23 ✅
+- [x] Level 24 ✅
+- [x] Level 25 ✅
+- [ ] Level 26-30
 
 #### Zone 4 : Power-ups Avancés (Levels 31-40) 0/10
 
@@ -180,10 +190,11 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 21/100 (21%)
+- **Niveaux complétés :** 26/100 (26%)
 - **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 79/100 (79%)
+- **Niveaux restants :** 74/100 (74%)
 - **Zones complètes :** 2/10 (Zone 1: Introduction, Zone 2: Toggle Blocks) 🎉🎉
+- **Zone 3 en cours :** 5/10 niveaux complétés (Téléportation)
 
 ## 🆕 Nouvelles Fonctionnalités
 
