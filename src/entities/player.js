@@ -17,6 +17,8 @@ export class Player extends Entity {
     this.vy = 0;
     this.targetX = this.x;
     this.targetY = this.y;
+    this.startX = this.x; // Store starting position for bounce-back
+    this.startY = this.y;
     this.isMoving = false;
     this.isOnArrowTile = false;
 
@@ -314,6 +316,10 @@ export class Player extends Entity {
    * Start movement to a new grid position
    */
   startMovement(gridX, gridY) {
+    // Store starting position before moving
+    this.startX = this.x;
+    this.startY = this.y;
+
     this.targetX = gridX * CONFIG.TILE_SIZE;
     this.targetY = gridY * CONFIG.TILE_SIZE;
     this.isMoving = true;
@@ -327,6 +333,21 @@ export class Player extends Entity {
       this.vx = (dx / distance) * this.speed;
       this.vy = (dy / distance) * this.speed;
     }
+  }
+
+  /**
+   * Bounce back to starting position (when pushing block hits a ball)
+   */
+  bounceBack() {
+    if (!this.isMoving) return;
+
+    // Set target back to stored starting position
+    this.targetX = this.startX;
+    this.targetY = this.startY;
+
+    // Reverse velocity direction
+    this.vx = -this.vx;
+    this.vy = -this.vy;
   }
 
   /**

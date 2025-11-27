@@ -203,7 +203,7 @@ export class Ball extends Entity {
         // Moving right - check right edge
         const nextGridX = Math.floor(ballRight / CONFIG.TILE_SIZE);
         const checkGridY = Math.floor(ballCenterY / CONFIG.TILE_SIZE);
-        if (levelManager.isSolid(nextGridX, checkGridY)) {
+        if (levelManager.isSolid(nextGridX, checkGridY) || levelManager.isBlockedByAnimatingBlock(nextGridX, checkGridY)) {
           // Snap to left edge of the wall
           this.x = nextGridX * CONFIG.TILE_SIZE - this.width - 1;
 
@@ -227,7 +227,7 @@ export class Ball extends Entity {
         // Moving left - check left edge
         const nextGridX = Math.floor(ballLeft / CONFIG.TILE_SIZE);
         const checkGridY = Math.floor(ballCenterY / CONFIG.TILE_SIZE);
-        if (levelManager.isSolid(nextGridX, checkGridY)) {
+        if (levelManager.isSolid(nextGridX, checkGridY) || levelManager.isBlockedByAnimatingBlock(nextGridX, checkGridY)) {
           // Snap to right edge of the wall
           this.x = (nextGridX + 1) * CONFIG.TILE_SIZE + 1;
 
@@ -260,7 +260,7 @@ export class Ball extends Entity {
         // Moving down - check bottom edge
         const nextGridY = Math.floor(ballBottom / CONFIG.TILE_SIZE);
         const checkGridX = Math.floor(ballCenterX / CONFIG.TILE_SIZE);
-        if (levelManager.isSolid(checkGridX, nextGridY)) {
+        if (levelManager.isSolid(checkGridX, nextGridY) || levelManager.isBlockedByAnimatingBlock(checkGridX, nextGridY)) {
           // Snap to top edge of the wall
           this.y = nextGridY * CONFIG.TILE_SIZE - this.height - 1;
 
@@ -284,7 +284,7 @@ export class Ball extends Entity {
         // Moving up - check top edge
         const nextGridY = Math.floor(ballTop / CONFIG.TILE_SIZE);
         const checkGridX = Math.floor(ballCenterX / CONFIG.TILE_SIZE);
-        if (levelManager.isSolid(checkGridX, nextGridY)) {
+        if (levelManager.isSolid(checkGridX, nextGridY) || levelManager.isBlockedByAnimatingBlock(checkGridX, nextGridY)) {
           // Snap to bottom edge of the wall
           this.y = (nextGridY + 1) * CONFIG.TILE_SIZE + 1;
 

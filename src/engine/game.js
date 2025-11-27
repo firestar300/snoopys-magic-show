@@ -393,7 +393,7 @@ export class Game {
     this.updateTimer(dt);
 
     // Update level animations (blocks moving), pass player for toggle block logic
-    this.levelManager.update(dt, this.player);
+    this.levelManager.update(dt, this.player, this.entityManager);
 
     // Get input state
     const input = this.inputManager.getState();
