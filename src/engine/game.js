@@ -681,20 +681,6 @@ export class Game {
 
         ctx.restore();
       }
-
-      // Gamepad indicator (if connected)
-      if (this.inputManager.isGamepadConnected()) {
-        const ctx = this.renderer.ctx;
-        ctx.save();
-
-        // Draw small gamepad icon in bottom-right corner
-        ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
-        ctx.font = '16px "Courier New", monospace';
-        ctx.textAlign = 'right';
-        ctx.fillText('🎮', CONFIG.CANVAS_WIDTH - 10, CONFIG.CANVAS_HEIGHT - 10);
-
-        ctx.restore();
-      }
     }
 
     // Render UI overlays

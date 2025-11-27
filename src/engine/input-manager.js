@@ -16,7 +16,7 @@ export class InputManager {
     // Gamepad state
     this.gamepadConnected = false;
     this.previousGamepadButtons = {};
-    this.gamepadDeadzone = 0.3; // Deadzone for analog sticks
+    this.gamepadDeadzone = 0.6; // Deadzone for analog sticks (higher = less sensitive)
     this.gamepadDebugLogged = false; // Flag to log debug info once
     this.previousPause = false; // Track previous pause button state
 
