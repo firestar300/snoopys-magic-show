@@ -15,6 +15,8 @@ export class LevelManager {
     this.toggleTransitionDuration = 0.4; // Transition animation duration (slowed down)
     this.hiddenPowerUps = new Map(); // Power-ups hidden in blocks, keyed by "x,y"
     this.hiddenPortals = new Map(); // Portals hidden in blocks, keyed by "x,y"
+    this.teleportCooldowns = new Map(); // Cooldowns for teleport tiles, keyed by tile type
+    this.teleportCooldownDuration = 1.0; // 1 second cooldown after each teleportation
   }
 
   /**
@@ -56,6 +58,9 @@ export class LevelManager {
 
     // Clear hidden portals map
     this.hiddenPortals = new Map();
+
+    // Clear teleport cooldowns
+    this.teleportCooldowns = new Map();
   }
 
   /**
@@ -409,6 +414,16 @@ export class LevelManager {
    * Update block animations and toggle blocks
    */
   update(dt, player = null, entityManager = null) {
+    // Update teleport cooldowns
+    for (const [tileType, cooldown] of this.teleportCooldowns.entries()) {
+      const newCooldown = cooldown - dt;
+      if (newCooldown <= 0) {
+        this.teleportCooldowns.delete(tileType);
+      } else {
+        this.teleportCooldowns.set(tileType, newCooldown);
+      }
+    }
+
     // Update all animating blocks (pushable blocks)
     for (let i = this.animatingBlocks.length - 1; i >= 0; i--) {
       const block = this.animatingBlocks[i];
@@ -673,6 +688,12 @@ export class LevelManager {
    * Find the destination for a teleport tile
    */
   findTeleportDestination(fromX, fromY, tileType) {
+    // Check if this teleport type is in cooldown
+    const cooldown = this.teleportCooldowns.get(tileType) || 0;
+    if (cooldown > 0) {
+      return null; // Block teleportation if in cooldown
+    }
+
     // Find the other teleport of the same type
     for (let y = 0; y < this.tiles.length; y++) {
       for (let x = 0; x < this.tiles[y].length; x++) {
@@ -681,6 +702,8 @@ export class LevelManager {
 
         // Found the matching teleport
         if (this.tiles[y][x] === tileType) {
+          // Activate cooldown for this teleport type
+          this.teleportCooldowns.set(tileType, this.teleportCooldownDuration);
           return { x, y };
         }
       }

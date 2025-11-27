@@ -19,9 +19,9 @@ export class Portal extends Entity {
 		this.activationDelay = 0;
 		this.activationDelayDuration = 0.3; // 300ms delay after reveal before portal becomes active
 
-		// Track entities that have recently used this portal to prevent immediate re-teleportation
-		this.recentUsers = new Map(); // entity -> cooldown timer
-		this.useCooldown = 1.0; // 1 second cooldown per entity
+		// Global cooldown (portal becomes inactive for ALL entities after each use)
+		this.globalCooldown = 0;
+		this.globalCooldownDuration = 1.0; // 1 second cooldown after each teleportation
 	}
 
 	/**
@@ -38,28 +38,30 @@ export class Portal extends Entity {
 			this.activationDelay -= dt;
 		}
 
-		// Update entity cooldowns
-		for (const [entity, cooldown] of this.recentUsers.entries()) {
-			const newCooldown = cooldown - dt;
-			if (newCooldown <= 0) {
-				this.recentUsers.delete(entity);
-			} else {
-				this.recentUsers.set(entity, newCooldown);
+		// Update global cooldown
+		if (this.globalCooldown > 0) {
+			this.globalCooldown -= dt;
+			if (this.globalCooldown < 0) {
+				this.globalCooldown = 0;
 			}
 		}
 
-		// Only check collisions if activation delay has expired
-		if (this.activationDelay <= 0) {
+		// Only check collisions if activation delay has expired and portal is not in cooldown
+		if (this.activationDelay <= 0 && this.globalCooldown <= 0) {
 			// Check for player collision (teleportation)
 			if (game && game.player) {
 				this.checkPlayerCollision(game.player, game);
 			}
 
-			// Check for ball collisions
-			if (game && game.entityManager) {
+			// Check for ball collisions (only if portal is still active after player check)
+			if (this.globalCooldown <= 0 && game && game.entityManager) {
 				const balls = game.entityManager.getEntitiesByType('ball');
 				for (const ball of balls) {
 					this.checkBallCollision(ball, game);
+					// Stop checking other balls if portal went into cooldown
+					if (this.globalCooldown > 0) {
+						break;
+					}
 				}
 			}
 		}
@@ -72,8 +74,11 @@ export class Portal extends Entity {
 		// Don't teleport if player is already teleporting
 		if (player.isTeleporting) return;
 
-		// Check if player has cooldown
-		if (this.recentUsers.has(player)) return;
+		// Don't teleport if portal is in cooldown
+		if (this.globalCooldown > 0) return;
+
+		// Don't teleport if portal is not yet active
+		if (this.activationDelay > 0) return;
 
 		// Check if player is at portal position
 		const playerGridX = player.getGridX();
@@ -91,8 +96,8 @@ export class Portal extends Entity {
 			};
 			player.teleportPhase = 0;
 
-			// Add cooldown
-			this.recentUsers.set(player, this.useCooldown);
+			// Activate global cooldown
+			this.globalCooldown = this.globalCooldownDuration;
 
 			// Play teleportation sound
 			if (game.audioManager) {
@@ -108,8 +113,11 @@ export class Portal extends Entity {
 		// Don't teleport if ball is already teleporting
 		if (ball.isTeleporting) return;
 
-		// Check if ball has cooldown
-		if (this.recentUsers.has(ball)) return;
+		// Don't teleport if portal is in cooldown
+		if (this.globalCooldown > 0) return;
+
+		// Don't teleport if portal is not yet active
+		if (this.activationDelay > 0) return;
 
 		// Check if ball is at portal position
 		const ballGridX = ball.getGridX();
@@ -127,8 +135,13 @@ export class Portal extends Entity {
 			};
 			ball.teleportPhase = 0;
 
-			// Add cooldown
-			this.recentUsers.set(ball, this.useCooldown);
+			// Also set ball's own cooldown to prevent it from using other portals immediately
+			if (ball.teleportCooldown !== undefined) {
+				ball.teleportCooldown = ball.teleportCooldownDuration || 1.0;
+			}
+
+			// Activate global cooldown
+			this.globalCooldown = this.globalCooldownDuration;
 
 			// Play teleportation sound
 			if (game.audioManager) {
