@@ -192,5 +192,16 @@ Boss finals et défis ultimes
 - **Fichiers :** `src/entities/portal.js`, support dans `entity-manager.js` et `level-manager.js`
 - **Schema :** Documenté dans `src/levels/schema.json`
 
+## 🐛 Bugs Connus & Améliorations à Faire
+
+### Collision Balle vs Bloc Poussable
+
+- **Priorité :** Moyenne
+- **Description :** Problème de collision quand une balle se trouve dans une case qui pourrait être comblée par un bloc poussable (cas particulier)
+- **Impact :** Peut causer des comportements inattendus dans certaines configurations de niveaux
+- **Solution potentielle :** Forcer la balle à continuer sa trajectoire au lieu de bloquer le mouvement du bloc
+- **Fichiers concernés :** `src/engine/level-manager.js`, `src/entities/ball.js`
+- **Statut :** À corriger plus tard
+
 ---
 Dernière mise à jour : 2025-11-27
