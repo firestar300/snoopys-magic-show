@@ -513,21 +513,22 @@ export class Player extends Entity {
     if (tile === 3) { // BREAKABLE
       levelManager.setTileAt(targetX, targetY, 10); // Set to BROKEN (type 10)
 
-      // Play block break sound
+      // Reveal power-up if there was one hidden in this block
+      const powerUp = game ? levelManager.revealPowerUpFromBlock(targetX, targetY) : null;
+
+      // Play appropriate block break sound
       if (game && game.audioManager) {
-        game.audioManager.playSfx('block-break');
+        const soundName = powerUp ? 'block-break-item' : 'block-break';
+        game.audioManager.playSfx(soundName);
       }
 
-      // Reveal power-up if there was one hidden in this block
-      if (game) {
-        const powerUp = levelManager.revealPowerUpFromBlock(targetX, targetY);
-        if (powerUp) {
-          powerUp.reveal(targetX, targetY, this.direction, game.levelManager, game.entityManager);
-          // Play power-up reveal sound based on type
-          if (game.audioManager) {
-            const soundName = powerUp.powerType === 'time' ? 'powerup-time' : 'powerup-god';
-            game.audioManager.playSfx(soundName);
-          }
+      // Reveal and animate the power-up
+      if (powerUp) {
+        powerUp.reveal(targetX, targetY, this.direction, game.levelManager, game.entityManager);
+        // Play power-up reveal sound based on type
+        if (game.audioManager) {
+          const soundName = powerUp.powerType === 'time' ? 'powerup-time' : 'powerup-god';
+          game.audioManager.playSfx(soundName);
         }
       }
     }

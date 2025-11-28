@@ -85,14 +85,15 @@ export class AudioManager {
     this.loadMusic('stage-clear-10', '/music/21-Jingle-10.mp3', false);
 
     // Sound effects
-    this.loadSfx('teleport', '/sfx/teleportation.mp3');
-    this.loadSfx('block-break', '/sfx/block-broken.mp3');
-    this.loadSfx('powerup-time', '/sfx/powerup-time.mp3');
-    this.loadSfx('powerup-god', '/sfx/powerup-god.mp3');
-    this.loadSfx('ball-collision', '/sfx/ball-collision.mp3');
-    this.loadSfx('pause', '/sfx/pause.mp3');
-    this.loadSfx('woodstock-collect', '/sfx/woodstock-collected.mp3');
-    this.loadSfx('timer', '/sfx/timer.mp3');
+    this.loadSfx('powerup-time', '/sfx/34.mp3');
+    this.loadSfx('powerup-god', '/sfx/34.mp3');
+    this.loadSfx('ball-collision', '/sfx/35.mp3');
+    this.loadSfx('woodstock-collect', '/sfx/36.mp3');
+    this.loadSfx('block-break', '/sfx/37.mp3');
+    this.loadSfx('block-break-item', '/sfx/38.mp3');
+    this.loadSfx('pause', '/sfx/39.mp3');
+    this.loadSfx('timer', '/sfx/40.mp3');
+    this.loadSfx('teleport', '/sfx/41.mp3');
   }
 
   /**
