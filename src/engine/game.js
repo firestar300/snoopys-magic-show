@@ -877,12 +877,14 @@ export class Game {
     if (this.state.currentState === GameState.PLAYING) {
       this.state.currentState = GameState.PAUSED;
       this.uiManager.setState(GameState.PAUSED);
+      // Play pause sound
+      this.audioManager.playSfx('pause');
       // Pause music
       this.audioManager.pauseMusic();
     } else if (this.state.currentState === GameState.PAUSED) {
       this.state.currentState = GameState.PLAYING;
       this.uiManager.setState(GameState.PLAYING);
-      // Resume music
+      // Resume music (no sound effect on unpause)
       this.audioManager.resumeMusic();
     }
   }

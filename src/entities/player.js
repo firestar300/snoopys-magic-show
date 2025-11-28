@@ -298,7 +298,8 @@ export class Player extends Entity {
       else if (levelManager.isPushable(newGridX, newGridY)) {
         // Try to push the block in the direction we're moving
         const entityManager = game ? game.entityManager : null;
-        if (levelManager.tryPushBlock(newGridX, newGridY, this.direction, entityManager)) {
+        const audioManager = game ? game.audioManager : null;
+        if (levelManager.tryPushBlock(newGridX, newGridY, this.direction, entityManager, audioManager)) {
           // Block was pushed successfully, player moves into the block's position
           this.startMovement(newGridX, newGridY);
         }
@@ -512,11 +513,21 @@ export class Player extends Entity {
     if (tile === 3) { // BREAKABLE
       levelManager.setTileAt(targetX, targetY, 10); // Set to BROKEN (type 10)
 
+      // Play block break sound
+      if (game && game.audioManager) {
+        game.audioManager.playSfx('block-break');
+      }
+
       // Reveal power-up if there was one hidden in this block
       if (game) {
         const powerUp = levelManager.revealPowerUpFromBlock(targetX, targetY);
         if (powerUp) {
           powerUp.reveal(targetX, targetY, this.direction, game.levelManager, game.entityManager);
+          // Play power-up reveal sound based on type
+          if (game.audioManager) {
+            const soundName = powerUp.powerType === 'time' ? 'powerup-time' : 'powerup-god';
+            game.audioManager.playSfx(soundName);
+          }
         }
       }
     }

@@ -28,6 +28,11 @@ export class Woodstock extends Entity {
     // Player collects Woodstock - 1000 points
     game.addScore(1000);
 
+    // Play collection sound
+    if (game.audioManager) {
+      game.audioManager.playSfx('woodstock-collect');
+    }
+
     // Create score popup animation
     const scorePopup = new ScorePopup(this.gridX, this.gridY, 1000);
     game.entityManager.add(scorePopup);

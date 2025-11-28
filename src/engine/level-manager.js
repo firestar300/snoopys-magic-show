@@ -278,7 +278,7 @@ export class LevelManager {
    * Try to push a block in a direction
    * Returns true if push was successful
    */
-  tryPushBlock(gridX, gridY, direction, entityManager = null) {
+  tryPushBlock(gridX, gridY, direction, entityManager = null, audioManager = null) {
     const tile = this.getTileAt(gridX, gridY);
 
     // Check if tile is pushable
@@ -361,6 +361,11 @@ export class LevelManager {
     const powerUp = this.revealPowerUpFromBlock(gridX, gridY);
     if (powerUp) {
       powerUp.reveal(gridX, gridY, direction, this, entityManager);
+      // Play power-up reveal sound based on type
+      if (audioManager) {
+        const soundName = powerUp.powerType === 'time' ? 'powerup-time' : 'powerup-god';
+        audioManager.playSfx(soundName);
+      }
     }
 
     // Reveal portal if there was one hidden in this block

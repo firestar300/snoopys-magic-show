@@ -219,6 +219,11 @@ export class Ball extends Entity {
           this.vx = newVelocity.vx;
           this.vy = newVelocity.vy;
           horizontalCollision = true;
+
+          // Play collision sound (only for block collisions, not canvas boundaries)
+          if (game && game.audioManager) {
+            game.audioManager.playSfx('ball-collision');
+          }
         }
       }
     } else if (this.vx < 0) {
@@ -243,6 +248,11 @@ export class Ball extends Entity {
           this.vx = newVelocity.vx;
           this.vy = newVelocity.vy;
           horizontalCollision = true;
+
+          // Play collision sound (only for block collisions, not canvas boundaries)
+          if (game && game.audioManager) {
+            game.audioManager.playSfx('ball-collision');
+          }
         }
       }
     }
@@ -276,6 +286,11 @@ export class Ball extends Entity {
           this.vx = newVelocity.vx;
           this.vy = newVelocity.vy;
           verticalCollision = true;
+
+          // Play collision sound (only for block collisions, not canvas boundaries)
+          if (game && game.audioManager) {
+            game.audioManager.playSfx('ball-collision');
+          }
         }
       }
     } else if (this.vy < 0) {
@@ -300,6 +315,11 @@ export class Ball extends Entity {
           this.vx = newVelocity.vx;
           this.vy = newVelocity.vy;
           verticalCollision = true;
+
+          // Play collision sound (only for block collisions, not canvas boundaries)
+          if (game && game.audioManager) {
+            game.audioManager.playSfx('ball-collision');
+          }
         }
       }
     }

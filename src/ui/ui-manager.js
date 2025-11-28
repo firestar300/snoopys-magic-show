@@ -79,6 +79,10 @@ export class UIManager {
           // Fill one segment and add 100 points
           gameInstance.timer.filledSegments++;
           gameInstance.addScore(100);
+          // Play timer sound for each segment
+          if (gameInstance.audioManager) {
+            gameInstance.audioManager.playSfx('timer');
+          }
           this.timeBonusAnimation.timer = 0;
         } else {
           // Animation finished
