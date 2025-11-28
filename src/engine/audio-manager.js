@@ -101,33 +101,68 @@ export class AudioManager {
    */
   playMusic(name) {
     const audio = this.music[name];
-    if (!audio) return;
+    if (!audio) {
+      console.warn(`Music '${name}' not found`);
+      return;
+    }
 
     // Stop current music if playing
     this.stopMusic();
 
-    // Reset and play immediately
+    // Reset and prepare for playback
     audio.currentTime = 0;
     audio.playbackRate = 1.0; // Reset playback speed to normal
 
     // Set as current music immediately (before play promise)
     this.currentMusic = audio;
 
-    // Use play() with promise handling for better control
-    const playPromise = audio.play();
+    // Function to attempt playback
+    const attemptPlay = () => {
+      const playPromise = audio.play();
 
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          // Playback started successfully
-        })
-        .catch(error => {
-          console.warn('Could not play music:', error);
-          // Clear current music if playback failed
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully
+            console.log(`Music '${name}' playing`);
+          })
+          .catch(error => {
+            console.warn(`Could not play music '${name}':`, error);
+            // Clear current music if playback failed
+            if (this.currentMusic === audio) {
+              this.currentMusic = null;
+            }
+          });
+      }
+    };
+
+    // Check if audio is ready to play
+    // readyState 4 = HAVE_ENOUGH_DATA, 3 = HAVE_FUTURE_DATA (both are playable)
+    if (audio.readyState >= 3) {
+      // Audio is ready, play immediately
+      attemptPlay();
+    } else {
+      // Audio not ready yet, wait for it to load
+      console.log(`Waiting for music '${name}' to load...`);
+
+      const onCanPlay = () => {
+        console.log(`Music '${name}' loaded, playing now`);
+        attemptPlay();
+        audio.removeEventListener('canplay', onCanPlay);
+      };
+
+      audio.addEventListener('canplay', onCanPlay);
+
+      // Fallback timeout (15 seconds for heavy files)
+      setTimeout(() => {
+        if (audio.readyState < 3) {
+          console.warn(`Music '${name}' failed to load in time`);
+          audio.removeEventListener('canplay', onCanPlay);
           if (this.currentMusic === audio) {
             this.currentMusic = null;
           }
-        });
+        }
+      }, 15000);
     }
   }
 
@@ -170,13 +205,22 @@ export class AudioManager {
    */
   playSfx(name) {
     const audio = this.sfx[name];
-    if (!audio) return;
+    if (!audio) {
+      console.warn(`Sound effect '${name}' not found`);
+      return;
+    }
+
+    // Check if audio is ready (readyState >= 3 means we have enough data)
+    if (audio.readyState < 3) {
+      console.warn(`Sound effect '${name}' not ready yet (readyState: ${audio.readyState})`);
+      return;
+    }
 
     // Clone the audio to allow multiple instances
     const sfxInstance = audio.cloneNode();
     sfxInstance.volume = this.sfxVolume;
     sfxInstance.play().catch(error => {
-      console.warn('Could not play sound effect:', error);
+      console.warn(`Could not play sound effect '${name}':`, error);
     });
   }
 
