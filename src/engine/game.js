@@ -264,6 +264,11 @@ export class Game {
    * Handle input for state transitions
    */
   handleStateInput() {
+    // Block all game inputs when dev console is open
+    if (this.devConsole && this.devConsole.isOpen) {
+      return;
+    }
+
     const input = this.inputManager.getState();
 
     switch (this.state.currentState) {
@@ -342,11 +347,6 @@ export class Game {
 
     // Dev mode shortcuts for quick level switching
     if (CONFIG.DEV_MODE && (this.state.currentState === GameState.PLAYING || this.state.currentState === GameState.PAUSED)) {
-      // Skip dev shortcuts if console is open
-      if (this.devConsole && this.devConsole.isOpen) {
-        return;
-      }
-
       // Check if any level key (0-9) is pressed
       let levelKeyCurrentlyPressed = false;
       for (let i = 0; i <= 9; i++) {
@@ -916,9 +916,13 @@ export class Game {
     // Clear entities
     this.entityManager.clear();
 
-    // Update level number
+    // Reset state (important when coming from menu)
+    this.state.score = 0;
+    this.state.lives = 3;
     this.state.level = levelNumber;
     this.state.levelReady = false;
+    this.state.currentState = GameState.PLAYING;
+    this.uiManager.setState(GameState.PLAYING);
 
     try {
       // Load the level
@@ -941,15 +945,14 @@ export class Game {
       // Start "Ready? Go!" animation
       this.startReadyGo();
 
-      // Set state to PLAYING (unpause if paused)
-      this.state.currentState = GameState.PLAYING;
-      this.uiManager.setState(GameState.PLAYING);
-
       // Play level music if defined
       const levelMusic = this.levelManager.currentLevel?.music;
       if (levelMusic) {
         this.audioManager.playMusic(levelMusic);
       }
+
+      // Update UI
+      this.updateUI();
 
       console.log(`[DEV] Level ${levelNumber} loaded successfully!`);
     } catch (error) {
