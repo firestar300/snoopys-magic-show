@@ -78,8 +78,8 @@ export class AudioManager {
     this.loadMusic('stage-bgm-9', '/music/16-BGM-09.mp3');
     this.loadMusic('stage-clear-8', '/music/17-Jingle-08.mp3', false);
 
-    this.loadMusic('stage-bgm-10', '/music/19-BGM-10.mp3');
-    this.loadMusic('stage-clear-9', '/music/18-Jingle-09.mp3', false);
+    this.loadMusic('stage-bgm-10', '/music/18-BGM-10.mp3');
+    this.loadMusic('stage-clear-9', '/music/19-Jingle-09.mp3', false);
 
     this.loadMusic('stage-bgm-11', '/music/20-BGM-11.mp3');
     this.loadMusic('stage-clear-10', '/music/21-Jingle-10.mp3', false);
@@ -153,7 +153,7 @@ export class AudioManager {
 
       audio.addEventListener('canplay', onCanPlay);
 
-      // Fallback timeout (15 seconds for heavy files)
+      // Fallback timeout (5 seconds - enough for optimized files)
       setTimeout(() => {
         if (audio.readyState < 3) {
           console.warn(`Music '${name}' failed to load in time`);
@@ -162,7 +162,7 @@ export class AudioManager {
             this.currentMusic = null;
           }
         }
-      }, 15000);
+      }, 5000);
     }
   }
 
