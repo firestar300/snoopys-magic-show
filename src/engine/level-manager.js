@@ -416,6 +416,26 @@ export class LevelManager {
   }
 
   /**
+   * Get the opposite pushable block type (for bidirectional pushing)
+   */
+  getOppositePushableType(tileType) {
+    switch (tileType) {
+      case TileType.PUSHABLE_UP:
+        return TileType.PUSHABLE_DOWN; // Was pushed up, can now be pushed down
+      case TileType.PUSHABLE_DOWN:
+        return TileType.PUSHABLE_UP; // Was pushed down, can now be pushed up
+      case TileType.PUSHABLE_LEFT:
+        return TileType.PUSHABLE_RIGHT; // Was pushed left, can now be pushed right
+      case TileType.PUSHABLE_RIGHT:
+        return TileType.PUSHABLE_LEFT; // Was pushed right, can now be pushed left
+      case TileType.PUSHABLE:
+        return TileType.PUSHABLE; // Generic stays generic
+      default:
+        return TileType.WALL; // Fallback to wall for non-pushable tiles
+    }
+  }
+
+  /**
    * Update block animations and toggle blocks
    */
   update(dt, player = null, entityManager = null) {
@@ -490,8 +510,9 @@ export class LevelManager {
           // Animation complete normally
           block.progress = 1;
 
-          // Set the final tile at destination (convert to wall)
-          this.setTileAt(block.destX, block.destY, TileType.WALL);
+          // Set the final tile at destination (convert to opposite pushable type for bidirectional pushing)
+          const oppositeTileType = this.getOppositePushableType(block.tileType);
+          this.setTileAt(block.destX, block.destY, oppositeTileType);
 
           // Remove from animation array
           this.animatingBlocks.splice(i, 1);
