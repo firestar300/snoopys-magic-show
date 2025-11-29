@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (41/100)
+### ✅ Niveaux Terminés (46/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -47,6 +47,11 @@
 - [x] Level 38
 - [x] Level 39
 - [x] Level 40
+- [x] Level 41
+- [x] Level 42
+- [x] Level 43
+- [x] Level 44
+- [x] Level 45
 
 ### 🚧 Niveaux En Cours (0/100)
 
@@ -76,11 +81,16 @@ Utilisation stratégique des power-ups
 
 - [x] Level 31-40
 
-#### Zone 5 : Puzzles Complexes (Levels 41-50) 0/10
+#### Zone 5 : Puzzles Complexes (Levels 41-50) 5/10
 
 Combinaison de plusieurs mécaniques
 
-- [ ] Level 41-50
+- [x] Level 41 ✅
+- [x] Level 42 ✅
+- [x] Level 43 ✅
+- [x] Level 44 ✅
+- [x] Level 45 ✅
+- [ ] Level 46-50
 
 #### Zone 6 : Précision (Levels 51-60) 0/10
 
@@ -200,10 +210,11 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 41/100 (41%)
+- **Niveaux complétés :** 46/100 (46%)
 - **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 59/100 (59%)
+- **Niveaux restants :** 54/100 (54%)
 - **Zones complètes :** 4/10 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation, Zone 4: Power-ups Avancés) 🎉🎉🎉🎉
+- **Zone 5 en cours :** 5/10 niveaux complétés (Puzzles Complexes)
 
 ## 🆕 Nouvelles Fonctionnalités
 
@@ -262,4 +273,4 @@ Boss finals et défis ultimes
 - **Statut :** À corriger plus tard
 
 ---
-Dernière mise à jour : 2025-11-29 (Zone 4 complète - Levels 36-40)
+Dernière mise à jour : 2025-11-29 (Zone 5 en cours - Levels 41-45)

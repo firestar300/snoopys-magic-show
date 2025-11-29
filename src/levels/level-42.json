@@ -1,0 +1,51 @@
+{
+  "id": 42,
+  "name": "Level 42",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-7",
+  "clearMusic": "stage-clear-6",
+  "startPosition": {
+    "x": 4,
+    "y": 4
+  },
+  "tiles": [
+    "060080000",
+    "080089997",
+    "080001000",
+    "081000099",
+    "770000160",
+    "000100060",
+    "977760060",
+    "000060080"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "type": "ball",
+      "x": 2,
+      "y": 2,
+      "vx": -1,
+      "vy": -1
+    }
+  ]
+}
