@@ -2,9 +2,9 @@
 
 ## 📊 Progression des Niveaux
 
-**Objectif : 100 niveaux**
+**Objectif : 60 niveaux**
 
-### ✅ Niveaux Terminés (46/100)
+### ✅ Niveaux Terminés (46/60)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -53,9 +53,9 @@
 - [x] Level 44
 - [x] Level 45
 
-### 🚧 Niveaux En Cours (0/100)
+### 🚧 Niveaux En Cours (0/60)
 
-### 📝 Niveaux Planifiés (75/100)
+### 📝 Niveaux Planifiés (14/60)
 
 #### Zone 1 : Introduction (Levels 1-10) ✅ 10/10 - COMPLÈTE
 
@@ -92,35 +92,11 @@ Combinaison de plusieurs mécaniques
 - [x] Level 45 ✅
 - [ ] Level 46-50
 
-#### Zone 6 : Précision (Levels 51-60) 0/10
+#### Zone 6 : Finale (Levels 51-60) 0/10
 
-Timing et précision requis
+Boss levels, défis ultimes et maîtrise complète
 
 - [ ] Level 51-60
-
-#### Zone 7 : Chaos Contrôlé (Levels 61-70) 0/10
-
-Multiples balles, situations chaotiques
-
-- [ ] Level 61-70
-
-#### Zone 8 : Maîtrise (Levels 71-80) 0/10
-
-Niveaux très difficiles
-
-- [ ] Level 71-80
-
-#### Zone 9 : Expert (Levels 81-90) 0/10
-
-Pour les joueurs expérimentés
-
-- [ ] Level 81-90
-
-#### Zone 10 : Finale (Levels 91-100) 0/10
-
-Boss finals et défis ultimes
-
-- [ ] Level 91-100
 
 ## 🎯 Idées de Mécaniques par Zone
 
@@ -156,35 +132,16 @@ Boss finals et défis ultimes
 - Séquences d'actions requises
 - Chemins alternatifs
 
-### Zone 6 (51-60) - Précision
+### Zone 6 (51-60) - Finale
 
-- Timer serré
-- Mouvements précis requis
+- Boss levels et défis ultimes
+- Combinaison de toutes les mécaniques apprises
+- Timer serré et mouvements précis requis
 - Patterns de balles complexes
-
-### Zone 7 (61-70) - Chaos Contrôlé
-
-- 5+ balles simultanées
-- Espaces restreints
-- Évitement pur
-
-### Zone 8 (71-80) - Maîtrise
-
-- Combinaison de toutes les mécaniques
+- Multiples balles simultanées
 - Puzzles multi-étapes
-- Niveaux longs
-
-### Zone 9 (81-90) - Expert
-
-- Défis de vitesse
-- Perfection requise
-- Mécaniques extrêmes
-
-### Zone 10 (91-100) - Finale
-
-- Boss levels
-- Niveaux marathon
-- Défi ultime au niveau 100
+- Défis de vitesse et perfection requise
+- Défi ultime au niveau 60
 
 ## 📋 Notes de Design
 
@@ -210,10 +167,10 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 46/100 (46%)
-- **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 54/100 (54%)
-- **Zones complètes :** 4/10 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation, Zone 4: Power-ups Avancés) 🎉🎉🎉🎉
+- **Niveaux complétés :** 46/60 (76.7%) 🎯
+- **Niveaux en cours :** 0/60 (0%)
+- **Niveaux restants :** 14/60 (23.3%)
+- **Zones complètes :** 4/6 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation, Zone 4: Power-ups Avancés) 🎉🎉🎉🎉
 - **Zone 5 en cours :** 5/10 niveaux complétés (Puzzles Complexes)
 
 ## 🆕 Nouvelles Fonctionnalités
@@ -273,4 +230,4 @@ Boss finals et défis ultimes
 - **Statut :** À corriger plus tard
 
 ---
-Dernière mise à jour : 2025-11-29 (Zone 5 en cours - Levels 41-45)
+Dernière mise à jour : 2025-11-29 (Objectif ajusté à 60 niveaux - Zone 5 en cours)
