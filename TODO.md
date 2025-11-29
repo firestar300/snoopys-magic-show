@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (26/100)
+### ✅ Niveaux Terminés (31/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -32,6 +32,11 @@
 - [x] Level 23
 - [x] Level 24
 - [x] Level 25
+- [x] Level 26
+- [x] Level 27
+- [x] Level 28
+- [x] Level 29
+- [x] Level 30
 
 ### 🚧 Niveaux En Cours (0/100)
 
@@ -49,16 +54,11 @@ Focus sur les blocs qui alternent entre solide et passable
 
 - [x] Level 11-20
 
-#### Zone 3 : Téléportation (Levels 21-30) 5/10
+#### Zone 3 : Téléportation (Levels 21-30) ✅ 10/10 - COMPLÈTE
 
 Maîtrise des portails et téléportation
 
-- [x] Level 21 ✅
-- [x] Level 22 ✅
-- [x] Level 23 ✅
-- [x] Level 24 ✅
-- [x] Level 25 ✅
-- [ ] Level 26-30
+- [x] Level 21-30
 
 #### Zone 4 : Power-ups Avancés (Levels 31-40) 0/10
 
@@ -190,11 +190,10 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 26/100 (26%)
+- **Niveaux complétés :** 31/100 (31%)
 - **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 74/100 (74%)
-- **Zones complètes :** 2/10 (Zone 1: Introduction, Zone 2: Toggle Blocks) 🎉🎉
-- **Zone 3 en cours :** 5/10 niveaux complétés (Téléportation)
+- **Niveaux restants :** 69/100 (69%)
+- **Zones complètes :** 3/10 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation) 🎉🎉🎉
 
 ## 🆕 Nouvelles Fonctionnalités
 
@@ -205,6 +204,30 @@ Boss finals et défis ultimes
 - **Peut être caché :** Oui, dans des blocs poussables
 - **Fichiers :** `src/entities/portal.js`, support dans `entity-manager.js` et `level-manager.js`
 - **Schema :** Documenté dans `src/levels/schema.json`
+
+### Système Audio Complet
+
+- **Date d'ajout :** 2025-11-29
+- **Effets sonores :**
+  - `block-break` : Casse de bloc vide
+  - `block-break-item` : Casse de bloc contenant un power-up
+  - `powerup-time` : Révélation power-up Time
+  - `powerup-god` : Révélation power-up Speed/Invincible
+  - `ball-collision` : Rebond de balle sur bloc solide
+  - `pause` : Activation de la pause
+  - `woodstock-collect` : Collecte de Woodstock
+  - `timer` : Décompte du time bonus (fin de niveau)
+- **Optimisation :** Fichiers musicaux réduits de 85% (6.9MB → 500KB-1.1MB)
+- **Chargement intelligent :** Vérification readyState et attente du chargement
+
+### Dev Console Améliorée
+
+- **Date d'ajout :** 2025-11-29
+- **Améliorations :**
+  - Blocage de tous les inputs du jeu quand la console est ouverte
+  - Fix du bug `/level` depuis l'écran titre
+  - Commande `noclip` pour désactiver les collisions
+- **Fichiers :** `src/ui/dev-console.js`, `src/engine/game.js`
 
 ## 🐛 Bugs Connus & Améliorations à Faire
 
@@ -218,4 +241,4 @@ Boss finals et défis ultimes
 - **Statut :** À corriger plus tard
 
 ---
-Dernière mise à jour : 2025-11-27
+Dernière mise à jour : 2025-11-29
