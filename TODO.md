@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (36/100)
+### ✅ Niveaux Terminés (41/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -42,6 +42,11 @@
 - [x] Level 33
 - [x] Level 34
 - [x] Level 35
+- [x] Level 36
+- [x] Level 37
+- [x] Level 38
+- [x] Level 39
+- [x] Level 40
 
 ### 🚧 Niveaux En Cours (0/100)
 
@@ -65,16 +70,11 @@ Maîtrise des portails et téléportation
 
 - [x] Level 21-30
 
-#### Zone 4 : Power-ups Avancés (Levels 31-40) 5/10
+#### Zone 4 : Power-ups Avancés (Levels 31-40) ✅ 10/10 - COMPLÈTE
 
 Utilisation stratégique des power-ups
 
-- [x] Level 31 ✅
-- [x] Level 32 ✅
-- [x] Level 33 ✅
-- [x] Level 34 ✅
-- [x] Level 35 ✅
-- [ ] Level 36-40
+- [x] Level 31-40
 
 #### Zone 5 : Puzzles Complexes (Levels 41-50) 0/10
 
@@ -200,11 +200,10 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 36/100 (36%)
+- **Niveaux complétés :** 41/100 (41%)
 - **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 64/100 (64%)
-- **Zones complètes :** 3/10 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation) 🎉🎉🎉
-- **Zone 4 en cours :** 5/10 niveaux complétés (Power-ups Avancés)
+- **Niveaux restants :** 59/100 (59%)
+- **Zones complètes :** 4/10 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation, Zone 4: Power-ups Avancés) 🎉🎉🎉🎉
 
 ## 🆕 Nouvelles Fonctionnalités
 
@@ -263,4 +262,4 @@ Boss finals et défis ultimes
 - **Statut :** À corriger plus tard
 
 ---
-Dernière mise à jour : 2025-11-29 (Levels 31-35 + Blocs poussables bidirectionnels)
+Dernière mise à jour : 2025-11-29 (Zone 4 complète - Levels 36-40)
