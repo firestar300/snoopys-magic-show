@@ -4,7 +4,7 @@
 
 **Objectif : 100 niveaux**
 
-### ✅ Niveaux Terminés (31/100)
+### ✅ Niveaux Terminés (36/100)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -37,6 +37,11 @@
 - [x] Level 28
 - [x] Level 29
 - [x] Level 30
+- [x] Level 31
+- [x] Level 32
+- [x] Level 33
+- [x] Level 34
+- [x] Level 35
 
 ### 🚧 Niveaux En Cours (0/100)
 
@@ -60,11 +65,16 @@ Maîtrise des portails et téléportation
 
 - [x] Level 21-30
 
-#### Zone 4 : Power-ups Avancés (Levels 31-40) 0/10
+#### Zone 4 : Power-ups Avancés (Levels 31-40) 5/10
 
 Utilisation stratégique des power-ups
 
-- [ ] Level 31-40
+- [x] Level 31 ✅
+- [x] Level 32 ✅
+- [x] Level 33 ✅
+- [x] Level 34 ✅
+- [x] Level 35 ✅
+- [ ] Level 36-40
 
 #### Zone 5 : Puzzles Complexes (Levels 41-50) 0/10
 
@@ -190,10 +200,11 @@ Boss finals et défis ultimes
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 31/100 (31%)
+- **Niveaux complétés :** 36/100 (36%)
 - **Niveaux en cours :** 0/100 (0%)
-- **Niveaux restants :** 69/100 (69%)
+- **Niveaux restants :** 64/100 (64%)
 - **Zones complètes :** 3/10 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation) 🎉🎉🎉
+- **Zone 4 en cours :** 5/10 niveaux complétés (Power-ups Avancés)
 
 ## 🆕 Nouvelles Fonctionnalités
 
@@ -229,6 +240,17 @@ Boss finals et défis ultimes
   - Commande `noclip` pour désactiver les collisions
 - **Fichiers :** `src/ui/dev-console.js`, `src/engine/game.js`
 
+### Blocs Poussables Bidirectionnels
+
+- **Date d'ajout :** 2025-11-29
+- **Description :** Les blocs poussables peuvent maintenant être poussés dans la direction opposée
+- **Comportement :**
+  - Bloc `PUSHABLE_RIGHT` poussé vers la droite → devient `PUSHABLE_LEFT`
+  - Bloc `PUSHABLE_LEFT` poussé vers la gauche → devient `PUSHABLE_RIGHT`
+  - Idem pour les directions haut/bas
+- **Impact gameplay :** Permet de repositionner les blocs et créer des puzzles plus complexes
+- **Fichiers :** `src/engine/level-manager.js`
+
 ## 🐛 Bugs Connus & Améliorations à Faire
 
 ### Collision Balle vs Bloc Poussable
@@ -241,4 +263,4 @@ Boss finals et défis ultimes
 - **Statut :** À corriger plus tard
 
 ---
-Dernière mise à jour : 2025-11-29
+Dernière mise à jour : 2025-11-29 (Levels 31-35 + Blocs poussables bidirectionnels)

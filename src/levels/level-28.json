@@ -1,0 +1,61 @@
+{
+  "id": 28,
+  "name": "Level 28",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-7",
+  "clearMusic": "stage-clear-6",
+  "startPosition": {
+    "x": 0,
+    "y": 0
+  },
+  "tiles": [
+    "000010000",
+    "000080000",
+    "000101000",
+    "000907000",
+    "001010100",
+    "008000800",
+    "010A810C0",
+    "700000009"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "type": "woodstock",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "type": "woodstock",
+      "x": 2,
+      "y": 6
+    },
+    {
+      "type": "woodstock",
+      "x": 6,
+      "y": 6
+    },
+    {
+      "type": "ball",
+      "x": 4,
+      "y": 7,
+      "vx": -1,
+      "vy": -1
+    },
+    {
+      "type": "portal",
+      "x": 3,
+      "y": 6,
+      "hidden": true,
+      "blockX": 3,
+      "blockY": 6,
+      "destinationX": 1,
+      "destinationY": 1
+    }
+  ]
+}
