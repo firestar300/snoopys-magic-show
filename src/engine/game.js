@@ -298,9 +298,10 @@ export class Game {
         // - "Ready? Go!" animation
         // - Snoopy's victory animation
         // - Snoopy's defeat animation
-        const canPause = !this.readyGo.isActive &&
-                        !this.player.isVictorious &&
-                        !this.player.isDefeated;
+        const canPause = this.player &&
+                        !this.readyGo?.isActive &&
+                        !this.player?.isVictorious &&
+                        !this.player?.isDefeated;
 
         if (canPause) {
           if (this.inputManager.keys['p'] || this.inputManager.keys['P'] || this.inputManager.keys['Escape'] || input.pause) {
@@ -315,7 +316,8 @@ export class Game {
 
         // Check for restart (R key or L1/LB button) - trigger defeat animation
         // Allow restart during gameplay (not during animations)
-        const canRestart = !this.readyGo.isActive &&
+        const canRestart = this.player &&
+                          !this.readyGo.isActive &&
                           !this.player.isVictorious &&
                           !this.player.isDefeated;
 
