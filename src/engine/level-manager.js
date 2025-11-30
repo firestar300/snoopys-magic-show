@@ -329,6 +329,19 @@ export class LevelManager {
       }
     }
 
+    // Check if there's the player (Snoopy) at destination (blocks can't be pushed into Snoopy)
+    if (entityManager) {
+      const players = entityManager.getEntitiesByType('player');
+      for (const player of players) {
+        const playerGridX = player.getGridX();
+        const playerGridY = player.getGridY();
+
+        if (playerGridX === destX && playerGridY === destY) {
+          return false; // Can't push block into Snoopy
+        }
+      }
+    }
+
     // Check if there's a ball at destination
     let ballAtDestination = false;
     if (entityManager) {
