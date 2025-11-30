@@ -195,7 +195,7 @@ export class Player extends Entity {
         this.handleInput(input, levelManager, game);
       }
     } else {
-      this.updateMovement(dt, levelManager);
+      this.updateMovement(dt, levelManager, game);
     }
 
     // Break blocks only when player is not moving and action button is held
@@ -354,7 +354,7 @@ export class Player extends Entity {
   /**
    * Update movement towards target
    */
-  updateMovement(dt, levelManager) {
+  updateMovement(dt, levelManager, game = null) {
     const moveAmount = this.speed;
     const dx = this.targetX - this.x;
     const dy = this.targetY - this.y;

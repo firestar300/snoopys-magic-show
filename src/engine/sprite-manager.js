@@ -23,6 +23,7 @@ export class SpriteManager {
     const spriteFiles = [
       { name: 'snoopy', path: '/sprites/snoopy.png' },
       { name: 'snoopy_victory', path: '/sprites/snoopy_victory.png' },
+      { name: 'spike', path: '/sprites/spike.png' },
       { name: 'title_screen_snoopy', path: '/title-screen-snoopy.png' },
       { name: 'woodstock', path: '/sprites/woodstock.png' },
       { name: 'ball', path: '/sprites/ball.png' },
@@ -229,6 +230,48 @@ export class SpriteManager {
     const frameSize = 16;
     const sx = col * frameSize;
     const sy = row * frameSize;
+
+    renderer.drawSprite(sprite, sx, sy, frameSize, frameSize, x, y, width, height);
+  }
+
+  /**
+   * Draw Spike sprite (uses same positions as Snoopy)
+   * direction: 0=up, 1=down, 2=left, 3=right
+   * frame: 0-2 (animation frame)
+   */
+  drawSpike(renderer, direction, frame, x, y, width, height) {
+    const sprite = this.sprites.spike;
+    if (!sprite) return;
+
+    const frameSize = 16;
+    let sx, sy;
+
+    // Same sprite organization as Snoopy
+    // Line 1 (y=0): down (0-2), up (3-5), left (6-8)
+    // Line 2 (y=16): right (7-9)
+    const framePositions = {
+      // down (line 1)
+      '1-0': { x: 0, y: 0 },
+      '1-1': { x: 16, y: 0 },
+      '1-2': { x: 32, y: 0 },
+      // up (line 1)
+      '0-0': { x: 48, y: 0 },
+      '0-1': { x: 64, y: 0 },
+      '0-2': { x: 80, y: 0 },
+      // left (line 1)
+      '2-0': { x: 96, y: 0 },
+      '2-1': { x: 112, y: 0 },
+      '2-2': { x: 128, y: 0 },
+      // right (line 2, positions 7-9)
+      '3-0': { x: 112, y: 16 },
+      '3-1': { x: 128, y: 16 },
+      '3-2': { x: 144, y: 16 },
+    };
+
+    const key = `${direction}-${frame}`;
+    const pos = framePositions[key] || { x: 0, y: 0 };
+    sx = pos.x;
+    sy = pos.y;
 
     renderer.drawSprite(sprite, sx, sy, frameSize, frameSize, x, y, width, height);
   }

@@ -6,8 +6,8 @@
   "music": "stage-bgm-2",
   "clearMusic": "stage-clear-1",
   "startPosition": {
-    "x": 4,
-    "y": 6
+    "x": 3,
+    "y": 4
   },
   "tiles": [
     "000000000",
@@ -54,7 +54,13 @@
       "powerType": "invincible",
       "hidden": true,
       "blockX": 4,
-      "blockY": 4
+      "blockY": 4,
+      "targets": {
+        "up": { "x": 4, "y": 1 },
+        "down": { "x": 4, "y": 7 },
+        "left": { "x": 1, "y": 4 },
+        "right": { "x": 7, "y": 4 }
+      }
     }
   ]
 }

@@ -208,6 +208,27 @@
                 "minimum": 0
               }
             }
+          },
+          {
+            "type": "object",
+            "description": "Spike entity (AI-controlled enemy, Snoopy's brother)",
+            "required": ["type", "x", "y"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "spike"
+              },
+              "x": {
+                "type": "integer",
+                "description": "X coordinate on the grid",
+                "minimum": 0
+              },
+              "y": {
+                "type": "integer",
+                "description": "Y coordinate on the grid",
+                "minimum": 0
+              }
+            }
           }
         ]
       }

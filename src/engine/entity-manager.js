@@ -2,7 +2,9 @@ import { Ball } from '../entities/ball.js';
 import { Woodstock } from '../entities/woodstock.js';
 import { PowerUp } from '../entities/power-up.js';
 import { Portal } from '../entities/portal.js';
+import { Spike } from '../entities/spike.js';
 import { TileType } from '../tiles/tile-types.js';
+import { CONFIG } from '../config.js';
 
 /**
  * Manages all game entities
@@ -116,6 +118,11 @@ export class EntityManager {
           levelManager.hidePortalInBlock(data.blockX, data.blockY, entity);
         }
         break;
+
+      case 'spike':
+        // Spawn Spike (AI-controlled enemy)
+        entity = new Spike(data.x * CONFIG.TILE_SIZE, data.y * CONFIG.TILE_SIZE);
+        break;
     }
 
     if (entity) {
@@ -149,11 +156,15 @@ export class EntityManager {
    */
   render(renderer, spriteManager) {
     // Sort entities by type and y position for proper layering
-    // Player is always rendered last (on top)
+    // Player is always rendered last (on top), Spike before player
     const sorted = [...this.entities].sort((a, b) => {
       // Player always on top
       if (a.type === 'player') return 1;
       if (b.type === 'player') return -1;
+
+      // Spike rendered above other entities but below player
+      if (a.type === 'spike') return 1;
+      if (b.type === 'spike') return -1;
 
       // Other entities sorted by y position
       return a.y - b.y;

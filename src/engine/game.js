@@ -465,6 +465,9 @@ export class Game {
     // Always check collision with balls (dangerous)
     this.checkBallCollisions();
 
+    // Always check collision with Spike
+    this.checkSpikeCollisions();
+
     // Check collectibles again if player just stopped moving
     if (justStoppedMoving) {
       this.checkCollectibleCollisions();
@@ -490,6 +493,41 @@ export class Game {
     balls.forEach(ball => {
       if (this.isColliding(player, ball)) {
         ball.onCollideWithPlayer(player, this);
+      }
+    });
+  }
+
+  /**
+   * Check collisions with Spike (always checked)
+   */
+  checkSpikeCollisions() {
+    const player = this.player;
+
+    // Don't check if player is defeated, victorious, or teleporting
+    if (player.isDefeated || player.isVictorious || player.isTeleporting) {
+      return;
+    }
+
+    const spikes = this.entityManager.getByType('spike');
+
+    spikes.forEach(spike => {
+      // Skip if Spike is already defeated or teleporting
+      if (spike.isDefeated || spike.isTeleporting) {
+        return;
+      }
+
+      if (this.isColliding(player, spike)) {
+        // If player has invincibility power-up, defeat Spike
+        if (player.hasPowerUp && player.powerUpType === 'invincible') {
+          spike.defeat();
+        } else {
+          // If player doesn't have invincibility, Spike defeats Snoopy
+          player.startDefeatAnimation(this);
+
+          // Play miss music and stop current music
+          this.audioManager.stopMusic();
+          this.audioManager.playMusic('miss');
+        }
       }
     });
   }
