@@ -316,6 +316,19 @@ export class LevelManager {
       return false; // Can't push into solid tile or out of bounds
     }
 
+    // Check if there's a Woodstock at destination (blocks can't be pushed into Woodstocks)
+    if (entityManager) {
+      const woodstocks = entityManager.getEntitiesByType('woodstock');
+      for (const woodstock of woodstocks) {
+        const woodstockGridX = woodstock.getGridX();
+        const woodstockGridY = woodstock.getGridY();
+
+        if (woodstockGridX === destX && woodstockGridY === destY) {
+          return false; // Can't push block into Woodstock
+        }
+      }
+    }
+
     // Check if there's a ball at destination
     let ballAtDestination = false;
     if (entityManager) {
