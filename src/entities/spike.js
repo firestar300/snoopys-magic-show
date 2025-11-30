@@ -138,6 +138,28 @@ export class Spike extends Player {
 		const myGridX = this.getGridX();
 		const myGridY = this.getGridY();
 
+		// Check if on arrow tile - force only that direction
+		const currentTile = levelManager.getTileAt(myGridX, myGridY);
+		let forcedDirection = null;
+
+		// Arrow tiles: 6=UP, 7=RIGHT, 8=DOWN, 9=LEFT
+		// When on arrow tile, ONLY move in arrow direction
+		switch (currentTile) {
+			case 6: forcedDirection = 'up'; break;    // UP arrow forces up
+			case 7: forcedDirection = 'right'; break; // RIGHT arrow forces right
+			case 8: forcedDirection = 'down'; break;  // DOWN arrow forces down
+			case 9: forcedDirection = 'left'; break;  // LEFT arrow forces left
+		}
+
+		// If on arrow tile, only execute that direction
+		if (forcedDirection) {
+			this.currentDirection = forcedDirection;
+			this.movesInDirection = 1;
+			this.maxMovesInDirection = 1; // Reset to ensure we re-check next time
+			this.executeAIMove(forcedDirection, levelManager, game);
+			return;
+		}
+
 		// Try to continue in current direction first (for smooth movement)
 		if (this.currentDirection && this.movesInDirection < this.maxMovesInDirection) {
 			const [dx, dy] = this.getDirectionDelta(this.currentDirection);
