@@ -50,14 +50,14 @@ export class Portal extends Entity {
 		if (this.activationDelay <= 0 && this.globalCooldown <= 0) {
 			// Check for player collision (teleportation)
 			if (game && game.player) {
-				this.checkPlayerCollision(game.player, game);
+				this.checkPlayerCollision(game.player, game, levelManager);
 			}
 
 			// Check for ball collisions (only if portal is still active after player check)
 			if (this.globalCooldown <= 0 && game && game.entityManager) {
 				const balls = game.entityManager.getEntitiesByType('ball');
 				for (const ball of balls) {
-					this.checkBallCollision(ball, game);
+					this.checkBallCollision(ball, game, levelManager);
 					// Stop checking other balls if portal went into cooldown
 					if (this.globalCooldown > 0) {
 						break;
@@ -70,7 +70,7 @@ export class Portal extends Entity {
 	/**
 	 * Check if player is on portal and teleport them
 	 */
-	checkPlayerCollision(player, game) {
+	checkPlayerCollision(player, game, levelManager) {
 		// Don't teleport if player is already teleporting
 		if (player.isTeleporting) return;
 
@@ -87,6 +87,21 @@ export class Portal extends Entity {
 		const portalGridY = this.getGridY();
 
 		if (playerGridX === portalGridX && playerGridY === portalGridY) {
+			// Check if destination is solid
+			const isDestinationSolid = levelManager && levelManager.isSolid(this.destinationX, this.destinationY);
+
+			// Play teleportation sound
+			if (game.audioManager) {
+				game.audioManager.playSfx('teleport');
+			}
+
+			// If destination is solid, only play sound and activate cooldown but don't teleport
+			if (isDestinationSolid) {
+				// Activate global cooldown
+				this.globalCooldown = this.globalCooldownDuration;
+				return; // Don't teleport
+			}
+
 			// Start teleportation animation
 			player.isTeleporting = true;
 			player.teleportTimer = 0;
@@ -98,18 +113,13 @@ export class Portal extends Entity {
 
 			// Activate global cooldown
 			this.globalCooldown = this.globalCooldownDuration;
-
-			// Play teleportation sound
-			if (game.audioManager) {
-				game.audioManager.playSfx('teleport');
-			}
 		}
 	}
 
 	/**
 	 * Check if ball is on portal and teleport it
 	 */
-	checkBallCollision(ball, game) {
+	checkBallCollision(ball, game, levelManager) {
 		// Don't teleport if ball is already teleporting
 		if (ball.isTeleporting) return;
 
@@ -126,6 +136,21 @@ export class Portal extends Entity {
 		const portalGridY = this.getGridY();
 
 		if (ballGridX === portalGridX && ballGridY === portalGridY) {
+			// Check if destination is solid
+			const isDestinationSolid = levelManager && levelManager.isSolid(this.destinationX, this.destinationY);
+
+			// Play teleportation sound
+			if (game.audioManager) {
+				game.audioManager.playSfx('teleport');
+			}
+
+			// If destination is solid, only play sound and activate cooldown but don't teleport
+			if (isDestinationSolid) {
+				// Activate global cooldown
+				this.globalCooldown = this.globalCooldownDuration;
+				return; // Don't teleport
+			}
+
 			// Start teleportation animation
 			ball.isTeleporting = true;
 			ball.teleportTimer = 0;
@@ -142,11 +167,6 @@ export class Portal extends Entity {
 
 			// Activate global cooldown
 			this.globalCooldown = this.globalCooldownDuration;
-
-			// Play teleportation sound
-			if (game.audioManager) {
-				game.audioManager.playSfx('teleport');
-			}
 		}
 	}
 
