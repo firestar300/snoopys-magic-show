@@ -8,16 +8,32 @@ export class AudioManager {
     this.currentMusic = null;
     this.musicVolume = 0.5;
     this.sfxVolume = 0.7;
+
+    // Loop points configuration: { musicName: loopStartTime }
+    // When a music with loop point ends, it will restart at this time instead of 0
+    this.loopPoints = {};
+    this.loopListeners = {}; // Store event listeners for cleanup
   }
 
   /**
    * Load a music track
+   * @param {string} name - Music identifier
+   * @param {string} path - Path to audio file
+   * @param {boolean} loop - Whether to loop (ignored if loopPoint is set)
+   * @param {number|null} loopPoint - Time in seconds where the loop should restart (null = loop from start)
    */
-  loadMusic(name, path, loop = true) {
+  loadMusic(name, path, loop = true, loopPoint = null) {
     const audio = new Audio(path);
-    audio.loop = loop;
     audio.volume = this.musicVolume;
     audio.preload = 'auto'; // Preload the audio file
+
+    // If loopPoint is specified, we handle looping manually
+    if (loopPoint !== null) {
+      audio.loop = false; // Disable native loop
+      this.loopPoints[name] = loopPoint;
+    } else {
+      audio.loop = loop;
+    }
 
     // Force load by calling load()
     audio.load();
@@ -81,7 +97,8 @@ export class AudioManager {
     this.loadMusic('stage-bgm-10', '/music/18-BGM-10.mp3');
     this.loadMusic('stage-clear-9', '/music/19-Jingle-09.mp3', false);
 
-    this.loadMusic('stage-bgm-11', '/music/20-BGM-11.mp3');
+    // stage-bgm-11 with custom loop point
+    this.loadMusic('stage-bgm-11', '/music/20-BGM-11.mp3', true, 1.75  );
     this.loadMusic('stage-clear-10', '/music/21-Jingle-10.mp3', false);
 
     // Sound effects
@@ -115,6 +132,27 @@ export class AudioManager {
 
     // Set as current music immediately (before play promise)
     this.currentMusic = audio;
+
+    // Setup custom loop if loopPoint is defined for this music
+    if (this.loopPoints[name] !== undefined) {
+      // Remove previous listener if exists
+      if (this.loopListeners[name]) {
+        audio.removeEventListener('ended', this.loopListeners[name]);
+      }
+
+      // Create loop handler
+      const loopHandler = () => {
+        // Restart at loop point
+        audio.currentTime = this.loopPoints[name];
+        audio.play().catch(error => {
+          console.warn(`Could not restart music '${name}' at loop point:`, error);
+        });
+      };
+
+      // Store listener for cleanup
+      this.loopListeners[name] = loopHandler;
+      audio.addEventListener('ended', loopHandler);
+    }
 
     // Function to attempt playback
     const attemptPlay = () => {
@@ -170,6 +208,15 @@ export class AudioManager {
    * Stop current music
    */
   stopMusic() {
+    // Remove all loop listeners before stopping
+    Object.keys(this.loopListeners).forEach(musicName => {
+      const audio = this.music[musicName];
+      const listener = this.loopListeners[musicName];
+      if (audio && listener) {
+        audio.removeEventListener('ended', listener);
+      }
+    });
+
     // Stop all music (not just currentMusic) to prevent race conditions
     Object.values(this.music).forEach(audio => {
       if (!audio.paused) {
