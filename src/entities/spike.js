@@ -30,12 +30,20 @@ export class Spike extends Player {
 
 		// Defeated state (when hit by invincible Snoopy)
 		this.isDefeatedByPlayer = false;
+
+		// Frozen state (for time power-up)
+		this.frozen = false;
 	}
 
 	/**
 	 * Update Spike (AI-controlled)
 	 */
 	update(dt, input, levelManager, game = null) {
+		// Don't update if frozen (time power-up)
+		if (this.frozen) {
+			return;
+		}
+
 		// If defeated by player, play defeat animation
 		if (this.isDefeatedByPlayer && !this.isDefeated) {
 			this.startDefeatAnimation();

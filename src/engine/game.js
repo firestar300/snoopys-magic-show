@@ -456,6 +456,12 @@ export class Game {
       ball.frozen = ballsFrozen;
     });
 
+    // Freeze/unfreeze Spike entities
+    const spikes = this.entityManager.getByType('spike');
+    spikes.forEach(spike => {
+      spike.frozen = ballsFrozen;
+    });
+
     // Update entities
     this.entityManager.update(dt, input, this.levelManager, this);
 
