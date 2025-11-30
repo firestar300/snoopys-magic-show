@@ -138,12 +138,12 @@ export class Spike extends Player {
 		const myGridX = this.getGridX();
 		const myGridY = this.getGridY();
 
-		// Check if on arrow tile - force only that direction
+		// Check if on arrow tile - force only that direction IF IT'S NOT BLOCKED
 		const currentTile = levelManager.getTileAt(myGridX, myGridY);
 		let forcedDirection = null;
 
 		// Arrow tiles: 6=UP, 7=RIGHT, 8=DOWN, 9=LEFT
-		// When on arrow tile, ONLY move in arrow direction
+		// When on arrow tile, ONLY move in arrow direction IF the direction is valid
 		switch (currentTile) {
 			case 6: forcedDirection = 'up'; break;    // UP arrow forces up
 			case 7: forcedDirection = 'right'; break; // RIGHT arrow forces right
@@ -151,13 +151,23 @@ export class Spike extends Player {
 			case 9: forcedDirection = 'left'; break;  // LEFT arrow forces left
 		}
 
-		// If on arrow tile, only execute that direction
+		// If on arrow tile, check if the forced direction is valid
 		if (forcedDirection) {
-			this.currentDirection = forcedDirection;
-			this.movesInDirection = 1;
-			this.maxMovesInDirection = 1; // Reset to ensure we re-check next time
-			this.executeAIMove(forcedDirection, levelManager, game);
-			return;
+			const [dx, dy] = this.getDirectionDelta(forcedDirection);
+			const newX = myGridX + dx;
+			const newY = myGridY + dy;
+
+			// Check if the forced direction is valid (not blocked)
+			if (levelManager.isInBounds(newX, newY) &&
+			    (!levelManager.isSolid(newX, newY) || levelManager.isPushable(newX, newY))) {
+				// Direction is valid, execute it
+				this.currentDirection = forcedDirection;
+				this.movesInDirection = 1;
+				this.maxMovesInDirection = 1; // Reset to ensure we re-check next time
+				this.executeAIMove(forcedDirection, levelManager, game);
+				return;
+			}
+			// If forced direction is blocked, allow lateral movement (continue to normal AI logic)
 		}
 
 		// Try to continue in current direction first (for smooth movement)
@@ -181,8 +191,25 @@ export class Spike extends Player {
 		const playerGridX = player.getGridX();
 		const playerGridY = player.getGridY();
 
+		// Check if still on arrow tile (for filtering forbidden directions)
+		const arrowTile = levelManager.getTileAt(myGridX, myGridY);
+		let forbiddenDirection = null;
+
+		// If on arrow tile, prevent moving in opposite direction
+		if (arrowTile >= 6 && arrowTile <= 9) {
+			switch (arrowTile) {
+				case 6: forbiddenDirection = 'down'; break;  // UP arrow forbids down
+				case 7: forbiddenDirection = 'left'; break;  // RIGHT arrow forbids left
+				case 8: forbiddenDirection = 'up'; break;    // DOWN arrow forbids up
+				case 9: forbiddenDirection = 'right'; break; // LEFT arrow forbids left
+			}
+		}
+
 		const directions = ['up', 'down', 'left', 'right'];
 		const validDirections = directions.filter(dir => {
+			// Don't allow forbidden direction (opposite of arrow)
+			if (dir === forbiddenDirection) return false;
+
 			const [dx, dy] = this.getDirectionDelta(dir);
 			const newX = myGridX + dx;
 			const newY = myGridY + dy;
