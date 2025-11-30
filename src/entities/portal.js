@@ -86,6 +86,9 @@ export class Portal extends Entity {
 		// Don't teleport if player is already teleporting
 		if (player.isTeleporting) return;
 
+		// Don't teleport if player is still moving
+		if (player.isMoving) return;
+
 		// Don't teleport if portal is in cooldown
 		if (this.globalCooldown > 0) return;
 
@@ -137,6 +140,9 @@ export class Portal extends Entity {
 
 		// Don't teleport if Spike is defeated
 		if (spike.isDefeated) return;
+
+		// Don't teleport if Spike is still moving
+		if (spike.isMoving) return;
 
 		// Don't teleport if portal is in cooldown
 		if (this.globalCooldown > 0) return;
