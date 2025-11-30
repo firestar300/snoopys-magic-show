@@ -1,6 +1,6 @@
 {
-  "id": 7,
-  "name": "Level 7",
+  "id": 67,
+  "name": "Level 67",
   "width": 9,
   "height": 8,
   "music": "stage-bgm-8",
@@ -46,6 +46,11 @@
       "y": 4,
       "vx": -1,
       "vy": -1
+    },
+    {
+      "type": "spike",
+      "x": 0,
+      "y": 3
     }
   ]
 }

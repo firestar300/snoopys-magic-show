@@ -1,0 +1,71 @@
+{
+  "id": 62,
+  "name": "Level 62",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-3",
+  "clearMusic": "stage-clear-2",
+  "startPosition": {
+    "x": 4,
+    "y": 4
+  },
+  "tiles": [
+    "000000000",
+    "0B00000B0",
+    "000010000",
+    "000401000",
+    "000104000",
+    "000010000",
+    "0A00000A0",
+    "000000000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "type": "ball",
+      "x": 7,
+      "y": 7,
+      "vx": -1,
+      "vy": -1
+    },
+    {
+      "type": "powerup",
+      "x": 1,
+      "y": 1,
+      "powerType": "invincible",
+      "hidden": true,
+      "blockX": 1,
+      "blockY": 1,
+      "targets": {
+        "up": { "x": 1, "y": 4 },
+        "down": { "x": 1, "y": 4 },
+        "left": { "x": 1, "y": 4 },
+        "right": { "x": 1, "y": 4 }
+      }
+    },
+    {
+      "type": "spike",
+      "x": 8,
+      "y": 6
+    }
+  ]
+}
