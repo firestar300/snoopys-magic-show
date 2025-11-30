@@ -523,8 +523,8 @@ export class Player extends Entity {
       }
 
       // Reveal and animate the power-up
-      if (powerUp) {
-        powerUp.reveal(targetX, targetY, this.direction, game.levelManager, game.entityManager);
+        if (powerUp) {
+          powerUp.reveal(targetX, targetY, this.direction, game.levelManager, game.entityManager);
         // Play power-up reveal sound based on type
         if (game.audioManager) {
           const soundName = powerUp.powerType === 'time' ? 'powerup-time' : 'powerup-god';
