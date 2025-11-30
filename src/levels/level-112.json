@@ -1,6 +1,6 @@
 {
-  "id": 53,
-  "name": "Level 53",
+  "id": 112,
+  "name": "Level 112",
   "width": 9,
   "height": 8,
   "music": "stage-bgm-6",
@@ -42,13 +42,6 @@
     },
     {
       "type": "ball",
-      "x": 1,
-      "y": 0,
-      "vx": 1,
-      "vy": 1
-    },
-    {
-      "type": "ball",
       "x": 7,
       "y": 7,
       "vx": 1,
@@ -78,6 +71,11 @@
         "left": { "x": 0, "y": 4 },
         "right": { "x": 0, "y": 4 }
       }
+    },
+    {
+      "type": "spike",
+      "x": 4,
+      "y": 0
     }
   ]
 }

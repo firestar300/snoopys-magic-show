@@ -1,51 +1,56 @@
 {
-  "id": 11,
-  "name": "Level 11",
+  "id": 102,
+  "name": "Level 102",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-8",
-  "clearMusic": "stage-clear-7",
+  "music": "stage-bgm-7",
+  "clearMusic": "stage-clear-6",
   "startPosition": {
     "x": 4,
     "y": 4
   },
   "tiles": [
-    "000808000",
-    "6E10001E6",
-    "011000110",
-    "000000000",
-    "000000000",
-    "011000110",
-    "8E10001E8",
-    "000606000"
+    "060080000",
+    "080089997",
+    "080001000",
+    "081000099",
+    "770000160",
+    "000100060",
+    "977760060",
+    "000060080"
   ],
   "entities": [
     {
       "type": "woodstock",
-      "x": 1,
+      "x": 0,
       "y": 0
     },
     {
       "type": "woodstock",
-      "x": 7,
+      "x": 8,
       "y": 0
     },
     {
       "type": "woodstock",
-      "x": 1,
+      "x": 0,
       "y": 7
     },
     {
       "type": "woodstock",
-      "x": 7,
+      "x": 8,
       "y": 7
     },
     {
       "type": "ball",
-      "x": 0,
-      "y": 0,
+      "x": 2,
+      "y": 2,
       "vx": -1,
       "vy": -1
+    },
+    {
+      "type": "spike",
+      "x": 5,
+      "y": 0
     }
   ]
 }

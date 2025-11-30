@@ -1,6 +1,6 @@
 {
-  "id": 44,
-  "name": "Level 44",
+  "id": 104,
+  "name": "Level 104",
   "width": 9,
   "height": 8,
   "music": "stage-bgm-4",
@@ -68,6 +68,11 @@
         "left": { "x": 5, "y": 4 },
         "right": { "x": 5, "y": 4 }
       }
+    },
+    {
+      "type": "spike",
+      "x": 0,
+      "y": 0
     }
   ]
 }

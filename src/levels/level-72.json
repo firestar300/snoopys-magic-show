@@ -1,0 +1,66 @@
+{
+  "id": 72,
+  "name": "Level 72",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-6",
+  "clearMusic": "stage-clear-5",
+  "startPosition": {
+    "x": 0,
+    "y": 0
+  },
+  "tiles": [
+    "000010000",
+    "11181611B",
+    "090000010",
+    "010000090",
+    "010000010",
+    "090000010",
+    "011611810",
+    "000010000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 6,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "type": "woodstock",
+      "x": 2,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "type": "ball",
+      "x": 0,
+      "y": 7,
+      "vx": -1,
+      "vy": 1
+    },
+    {
+      "type": "portal",
+      "x": 8,
+      "y": 1,
+      "destinationX": 2,
+      "destinationY": 0,
+      "hidden": true,
+      "blockX": 8,
+      "blockY": 1
+    },
+    {
+      "type": "spike",
+      "x": 4,
+      "y": 5
+    }
+  ]
+}

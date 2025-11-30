@@ -1,0 +1,81 @@
+{
+  "id": 110,
+  "name": "Level 110",
+  "width": 9,
+  "height": 8,
+  "music": "stage-bgm-9",
+  "clearMusic": "stage-clear-8",
+  "startPosition": {
+    "x": 4,
+    "y": 4
+  },
+  "tiles": [
+    "000700900",
+    "000100AD8",
+    "00A000000",
+    "810000000",
+    "0000000D6",
+    "000000B00",
+    "6CB00B000",
+    "007009000"
+  ],
+  "entities": [
+    {
+      "type": "woodstock",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "type": "woodstock",
+      "x": 8,
+      "y": 0
+    },
+    {
+      "type": "woodstock",
+      "x": 0,
+      "y": 7
+    },
+    {
+      "type": "woodstock",
+      "x": 6,
+      "y": 6
+    },
+    {
+      "type": "ball",
+      "x": 0,
+      "y": 0,
+      "vx": 1,
+      "vy": 1
+    },
+    {
+      "type": "portal",
+      "x": 6,
+      "y": 5,
+      "destinationX": 1,
+      "destinationY": 1,
+      "hidden": true,
+      "blockX": 6,
+      "blockY": 5
+    },
+    {
+      "type": "powerup",
+      "x": 2,
+      "y": 2,
+      "powerType": "invincible",
+      "hidden": true,
+      "blockX": 2,
+      "blockY": 2,
+      "targets": {
+        "up": { "x": 0, "y": 3 },
+        "down": { "x": 0, "y": 3 },
+        "left": { "x": 0, "y": 3 },
+        "right": { "x": 0, "y": 3 }
+      }
+    },
+    {
+      "type": "spike",
+      "x": 8,
+      "y": 7
+    }
+  ]
+}

@@ -1,43 +1,43 @@
 {
-  "id": 44,
-  "name": "Level 44",
+  "id": 105,
+  "name": "Level 105",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-4",
-  "clearMusic": "stage-clear-3",
+  "music": "stage-bgm-8",
+  "clearMusic": "stage-clear-7",
   "startPosition": {
-    "x": 4,
+    "x": 5,
     "y": 4
   },
   "tiles": [
-    "0000010E0",
-    "0E8990090",
-    "000060060",
-    "000060060",
-    "A8990776B",
-    "080080000",
-    "070080000",
-    "0E00776E0"
+    "777777778",
+    "6E0000008",
+    "6077778E8",
+    "606030808",
+    "606060808",
+    "6E6069908",
+    "606000E08",
+    "606999999"
   ],
   "entities": [
     {
       "type": "woodstock",
-      "x": 4,
-      "y": 0
+      "x": 6,
+      "y": 1
     },
     {
       "type": "woodstock",
-      "x": 8,
+      "x": 1,
       "y": 3
     },
     {
       "type": "woodstock",
-      "x": 0,
+      "x": 7,
       "y": 5
     },
     {
       "type": "woodstock",
-      "x": 8,
+      "x": 1,
       "y": 7
     },
     {
@@ -56,18 +56,23 @@
     },
     {
       "type": "powerup",
-      "x": 8,
-      "y": 4,
+      "x": 4,
+      "y": 3,
       "powerType": "invincible",
       "hidden": true,
-      "blockX": 8,
-      "blockY": 4,
+      "blockX": 4,
+      "blockY": 3,
       "targets": {
-        "up": { "x": 5, "y": 4 },
-        "down": { "x": 5, "y": 4 },
-        "left": { "x": 5, "y": 4 },
-        "right": { "x": 5, "y": 4 }
+        "up": { "x": 4, "y": 0 },
+        "down": { "x": 4, "y": 7 },
+        "left": { "x": 0, "y": 3 },
+        "right": { "x": 8, "y": 3 }
       }
+    },
+    {
+      "type": "spike",
+      "x": 1,
+      "y": 6
     }
   ]
 }

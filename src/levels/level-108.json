@@ -1,23 +1,23 @@
 {
-  "id": 53,
-  "name": "Level 53",
+  "id": 108,
+  "name": "Level 108",
   "width": 9,
   "height": 8,
-  "music": "stage-bgm-6",
-  "clearMusic": "stage-clear-5",
+  "music": "stage-bgm-2",
+  "clearMusic": "stage-clear-1",
   "startPosition": {
     "x": 4,
     "y": 4
   },
   "tiles": [
-    "008000800",
-    "0180008D0",
-    "77A000199",
-    "000000000",
-    "000000000",
-    "77D000B99",
-    "0C6000610",
-    "006000600"
+    "080000080",
+    "70D00ED09",
+    "0A00000B0",
+    "0E0000000",
+    "0000000E0",
+    "0A00000B0",
+    "70CE00C09",
+    "060000060"
   ],
   "entities": [
     {
@@ -43,41 +43,36 @@
     {
       "type": "ball",
       "x": 1,
-      "y": 0,
+      "y": 1,
       "vx": 1,
       "vy": 1
     },
     {
       "type": "ball",
       "x": 7,
-      "y": 7,
-      "vx": 1,
-      "vy": 1
-    },
-    {
-      "type": "portal",
-      "x": 2,
-      "y": 5,
-      "destinationX": 8,
-      "destinationY": 1,
-      "hidden": true,
-      "blockX": 2,
-      "blockY": 5
+      "y": 6,
+      "vx": -1,
+      "vy": -1
     },
     {
       "type": "powerup",
       "x": 1,
-      "y": 6,
+      "y": 2,
       "powerType": "time",
       "hidden": true,
       "blockX": 1,
-      "blockY": 6,
+      "blockY": 2,
       "targets": {
-        "up": { "x": 0, "y": 4 },
-        "down": { "x": 0, "y": 4 },
-        "left": { "x": 0, "y": 4 },
-        "right": { "x": 0, "y": 4 }
+        "up": { "x": 2, "y": 0 },
+        "down": { "x": 2, "y": 0 },
+        "left": { "x": 2, "y": 0 },
+        "right": { "x": 2, "y": 0 }
       }
+    },
+    {
+      "type": "spike",
+      "x": 5,
+      "y": 0
     }
   ]
 }

@@ -1,28 +1,28 @@
 {
-  "id": 45,
-  "name": "Level 45",
+  "id": 87,
+  "name": "Level 87",
   "width": 9,
   "height": 8,
   "music": "stage-bgm-8",
   "clearMusic": "stage-clear-7",
   "startPosition": {
-    "x": 5,
-    "y": 4
+    "x": 7,
+    "y": 0
   },
   "tiles": [
-    "777777778",
-    "6E0000008",
-    "6077778E8",
-    "606030808",
-    "606060808",
-    "6E6069908",
-    "606000E08",
-    "606999999"
+    "8999E0000",
+    "8000B0000",
+    "89999E010",
+    "80000B000",
+    "899999E00",
+    "800000B00",
+    "8999998E0",
+    "000000010"
   ],
   "entities": [
     {
       "type": "woodstock",
-      "x": 6,
+      "x": 1,
       "y": 1
     },
     {
@@ -32,7 +32,7 @@
     },
     {
       "type": "woodstock",
-      "x": 7,
+      "x": 1,
       "y": 5
     },
     {
@@ -42,32 +42,37 @@
     },
     {
       "type": "ball",
-      "x": 8,
-      "y": 0,
-      "vx": -1,
-      "vy": -1
-    },
-    {
-      "type": "ball",
-      "x": 0,
+      "x": 4,
       "y": 7,
       "vx": -1,
       "vy": -1
     },
     {
+      "type": "portal",
+      "x": 0,
+      "y": 7,
+      "destinationX": 8,
+      "destinationY": 0
+    },
+    {
       "type": "powerup",
-      "x": 4,
-      "y": 3,
+      "x": 6,
+      "y": 5,
       "powerType": "invincible",
       "hidden": true,
-      "blockX": 4,
-      "blockY": 3,
+      "blockX": 6,
+      "blockY": 5,
       "targets": {
-        "up": { "x": 4, "y": 0 },
-        "down": { "x": 4, "y": 7 },
-        "left": { "x": 0, "y": 3 },
-        "right": { "x": 8, "y": 3 }
+        "up": { "x": 8, "y": 7 },
+        "down": { "x": 8, "y": 7 },
+        "left": { "x": 8, "y": 7 },
+        "right": { "x": 8, "y": 7 }
       }
+    },
+    {
+      "type": "spike",
+      "x": 8,
+      "y": 6
     }
   ]
 }
