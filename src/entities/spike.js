@@ -11,6 +11,9 @@ export class Spike extends Player {
 
 		this.type = 'spike';
 
+		// Spike is slower than Snoopy (70% of Snoopy's speed)
+		this.speed = this.speed * 0.7;
+
 		// AI behavior
 		this.aiTimer = 0;
 		this.aiThinkDelay = 0.02; // Think quickly but moves smoothly
