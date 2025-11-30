@@ -313,6 +313,34 @@ export class Spike extends Player {
 	}
 
 	/**
+	 * Update teleportation animation
+	 */
+	updateTeleportation(dt) {
+		this.teleportTimer += dt;
+		const halfDuration = this.teleportDuration / 2;
+
+		// At 50% of animation, teleport to destination and start appearing phase
+		if (this.teleportPhase === 0 && this.teleportTimer >= halfDuration) {
+			if (this.teleportDestination) {
+				this.x = this.teleportDestination.x * CONFIG.TILE_SIZE;
+				this.y = this.teleportDestination.y * CONFIG.TILE_SIZE;
+				this.targetX = this.x;
+				this.targetY = this.y;
+			}
+			this.teleportPhase = 1; // Switch to appearing phase
+		}
+
+		// At 100% of animation, complete teleportation
+		if (this.teleportTimer >= this.teleportDuration) {
+			// Reset teleport state
+			this.isTeleporting = false;
+			this.teleportTimer = 0;
+			this.teleportDestination = null;
+			this.teleportPhase = 0;
+		}
+	}
+
+	/**
 	 * Update defeat animation
 	 */
 	updateDefeatAnimation(dt) {
