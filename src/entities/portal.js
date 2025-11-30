@@ -53,7 +53,19 @@ export class Portal extends Entity {
 				this.checkPlayerCollision(game.player, game, levelManager);
 			}
 
-			// Check for ball collisions (only if portal is still active after player check)
+			// Check for Spike collisions (only if portal is still active after player check)
+			if (this.globalCooldown <= 0 && game && game.entityManager) {
+				const spikes = game.entityManager.getEntitiesByType('spike');
+				for (const spike of spikes) {
+					this.checkSpikeCollision(spike, game, levelManager);
+					// Stop checking other spikes if portal went into cooldown
+					if (this.globalCooldown > 0) {
+						break;
+					}
+				}
+			}
+
+			// Check for ball collisions (only if portal is still active after player/spike check)
 			if (this.globalCooldown <= 0 && game && game.entityManager) {
 				const balls = game.entityManager.getEntitiesByType('ball');
 				for (const ball of balls) {
@@ -110,6 +122,58 @@ export class Portal extends Entity {
 				y: this.destinationY,
 			};
 			player.teleportPhase = 0;
+
+			// Activate global cooldown
+			this.globalCooldown = this.globalCooldownDuration;
+		}
+	}
+
+	/**
+	 * Check if Spike is on portal and teleport them
+	 */
+	checkSpikeCollision(spike, game, levelManager) {
+		// Don't teleport if Spike is already teleporting
+		if (spike.isTeleporting) return;
+
+		// Don't teleport if Spike is defeated
+		if (spike.isDefeated) return;
+
+		// Don't teleport if portal is in cooldown
+		if (this.globalCooldown > 0) return;
+
+		// Don't teleport if portal is not yet active
+		if (this.activationDelay > 0) return;
+
+		// Check if Spike is at portal position
+		const spikeGridX = spike.getGridX();
+		const spikeGridY = spike.getGridY();
+		const portalGridX = this.getGridX();
+		const portalGridY = this.getGridY();
+
+		if (spikeGridX === portalGridX && spikeGridY === portalGridY) {
+			// Check if destination is solid
+			const isDestinationSolid = levelManager && levelManager.isSolid(this.destinationX, this.destinationY);
+
+			// Play teleportation sound
+			if (game.audioManager) {
+				game.audioManager.playSfx('teleport');
+			}
+
+			// If destination is solid, only play sound and activate cooldown but don't teleport
+			if (isDestinationSolid) {
+				// Activate global cooldown
+				this.globalCooldown = this.globalCooldownDuration;
+				return; // Don't teleport
+			}
+
+			// Start teleportation animation
+			spike.isTeleporting = true;
+			spike.teleportTimer = 0;
+			spike.teleportDestination = {
+				x: this.destinationX,
+				y: this.destinationY,
+			};
+			spike.teleportPhase = 0;
 
 			// Activate global cooldown
 			this.globalCooldown = this.globalCooldownDuration;
