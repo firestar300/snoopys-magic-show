@@ -69,6 +69,9 @@ export class Game {
       levelReady: false,
     };
 
+    // Life bonus tracking (every 100,000 points)
+    this.lastLifeBonusThreshold = 0;
+
     // Timer state
     this.timer = {
       elapsed: 0,
@@ -122,6 +125,7 @@ export class Game {
     this.state.level = CONFIG.DEV_MODE ? 0 : 1; // Start at level 0 in dev mode, level 1 otherwise
     this.state.currentState = GameState.PLAYING;
     this.state.levelReady = false;
+    this.lastLifeBonusThreshold = 0; // Reset life bonus tracking
     this.uiManager.setState(GameState.PLAYING);
 
     // Clear entities
@@ -789,7 +793,29 @@ export class Game {
    * Add score
    */
   addScore(points) {
+    const oldScore = this.state.score;
     this.state.score += points;
+
+    // Check if player reached a new 100,000 points threshold for bonus life
+    const LIFE_BONUS_THRESHOLD = 100000;
+    const oldThreshold = Math.floor(oldScore / LIFE_BONUS_THRESHOLD);
+    const newThreshold = Math.floor(this.state.score / LIFE_BONUS_THRESHOLD);
+
+    // If we crossed a new threshold, give a bonus life
+    if (newThreshold > oldThreshold) {
+      this.state.lives++;
+
+      // Play a sound for bonus life (using power-up god sound as it's celebratory)
+      if (this.audioManager) {
+        this.audioManager.playSfx('pause');
+      }
+
+      // Log in dev mode
+      if (CONFIG.DEV_MODE) {
+        console.log(`[BONUS] Life bonus! Score: ${this.state.score} - Lives: ${this.state.lives}`);
+      }
+    }
+
     this.updateUI();
   }
 
@@ -973,6 +999,7 @@ export class Game {
     this.state.level = levelNumber;
     this.state.levelReady = false;
     this.state.currentState = GameState.PLAYING;
+    this.lastLifeBonusThreshold = 0; // Reset life bonus tracking
     this.uiManager.setState(GameState.PLAYING);
 
     try {
