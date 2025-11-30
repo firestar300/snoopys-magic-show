@@ -564,6 +564,11 @@ export class Game {
     ];
 
     collectibles.forEach(entity => {
+      // Skip entities that are already dead (collected in a previous check this frame)
+      if (entity.isDead) {
+        return;
+      }
+
       if (this.isColliding(player, entity)) {
         entity.onCollideWithPlayer(player, this);
       }
