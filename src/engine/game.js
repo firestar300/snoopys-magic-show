@@ -514,6 +514,11 @@ export class Game {
       return;
     }
 
+    // Don't check if player is in god mode (dev only)
+    if (CONFIG.DEV_MODE && player.godMode) {
+      return;
+    }
+
     const spikes = this.entityManager.getByType('spike');
 
     spikes.forEach(spike => {
