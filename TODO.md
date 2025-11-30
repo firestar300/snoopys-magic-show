@@ -4,7 +4,7 @@
 
 **Objectif : 60 niveaux**
 
-### ✅ Niveaux Terminés (51/60)
+### ✅ Niveaux Terminés (56/60)
 
 - [x] Level 0 (Dev only)
 - [x] Level 1
@@ -57,10 +57,15 @@
 - [x] Level 48
 - [x] Level 49
 - [x] Level 50
+- [x] Level 51
+- [x] Level 52
+- [x] Level 53
+- [x] Level 54
+- [x] Level 55
 
 ### 🚧 Niveaux En Cours (0/60)
 
-### 📝 Niveaux Planifiés (9/60)
+### 📝 Niveaux Planifiés (4/60)
 
 #### Zone 1 : Introduction (Levels 1-10) ✅ 10/10 - COMPLÈTE
 
@@ -92,11 +97,16 @@ Combinaison de plusieurs mécaniques
 
 - [x] Level 41-50
 
-#### Zone 6 : Finale (Levels 51-60) 0/10
+#### Zone 6 : Finale (Levels 51-60) 5/10
 
 Boss levels, défis ultimes et maîtrise complète
 
-- [ ] Level 51-60
+- [x] Level 51 ✅
+- [x] Level 52 ✅
+- [x] Level 53 ✅
+- [x] Level 54 ✅
+- [x] Level 55 ✅
+- [ ] Level 56-60
 
 ## 🎯 Idées de Mécaniques par Zone
 
@@ -167,10 +177,11 @@ Boss levels, défis ultimes et maîtrise complète
 
 ## 📈 Statistiques
 
-- **Niveaux complétés :** 51/60 (85%) 🎯🎯
+- **Niveaux complétés :** 56/60 (93.3%) 🎯🎯🎯
 - **Niveaux en cours :** 0/60 (0%)
-- **Niveaux restants :** 9/60 (15%)
+- **Niveaux restants :** 4/60 (6.7%)
 - **Zones complètes :** 5/6 (Zone 1: Introduction, Zone 2: Toggle Blocks, Zone 3: Téléportation, Zone 4: Power-ups Avancés, Zone 5: Puzzles Complexes) 🎉🎉🎉🎉🎉
+- **Zone 6 en cours :** 5/10 niveaux complétés (Finale)
 
 ## 🆕 Nouvelles Fonctionnalités
 
@@ -217,6 +228,18 @@ Boss levels, défis ultimes et maîtrise complète
 - **Impact gameplay :** Permet de repositionner les blocs et créer des puzzles plus complexes
 - **Fichiers :** `src/engine/level-manager.js`
 
+### Protections et Mécaniques Avancées
+
+- **Date d'ajout :** 2025-11-29
+- **Protections :**
+  - Blocs poussables ne peuvent plus écraser les Woodstocks
+  - Portails jouent le son même si destination bloquée (bloc solide)
+- **Comportement portails :**
+  - Si destination = bloc solide → son de téléportation + cooldown mais pas de téléportation
+  - Si destination = libre → son + téléportation + cooldown
+- **Impact gameplay :** Ajoute une dimension stratégique et évite la perte de collectibles
+- **Fichiers :** `src/engine/level-manager.js`, `src/entities/portal.js`
+
 ## 🐛 Bugs Connus & Améliorations à Faire
 
 ### Collision Balle vs Bloc Poussable
@@ -229,4 +252,4 @@ Boss levels, défis ultimes et maîtrise complète
 - **Statut :** À corriger plus tard
 
 ---
-Dernière mise à jour : 2025-11-29 (Zone 5 COMPLÈTE! 🎉 - 85% des niveaux terminés)
+Dernière mise à jour : 2025-11-29 (Zone 6 à mi-parcours - 93.3% complété! Plus que 4 niveaux! 🎯)
