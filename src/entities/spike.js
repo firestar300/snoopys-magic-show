@@ -104,7 +104,7 @@ export class Spike extends Player {
 			if (tile >= 6 && tile <= 9) {
 				this.isOnArrowTile = true;
 				if (this.arrowTileDelay <= 0) {
-					this.handleArrowTile(tile);
+					this.handleArrowTile(tile, levelManager);
 					this.arrowTileDelay = this.arrowTileDelayDuration;
 				}
 			} else {
@@ -243,6 +243,50 @@ export class Spike extends Player {
 			case 'left': return [-1, 0];
 			case 'right': return [1, 0];
 			default: return [0, 0];
+		}
+	}
+
+	/**
+	 * Handle arrow tile (force movement in arrow direction)
+	 */
+	handleArrowTile(tile, levelManager) {
+		const gridX = this.getGridX();
+		const gridY = this.getGridY();
+
+		let forcedX = gridX;
+		let forcedY = gridY;
+		let targetDirection = null;
+
+		// Arrow tiles: 6=UP, 7=RIGHT, 8=DOWN, 9=LEFT
+		switch (tile) {
+			case 6: // ARROW_UP
+				forcedY--;
+				targetDirection = 'up';
+				this.directionIndex = 0;
+				break;
+			case 7: // ARROW_RIGHT
+				forcedX++;
+				targetDirection = 'right';
+				this.directionIndex = 3;
+				break;
+			case 8: // ARROW_DOWN
+				forcedY++;
+				targetDirection = 'down';
+				this.directionIndex = 1;
+				break;
+			case 9: // ARROW_LEFT
+				forcedX--;
+				targetDirection = 'left';
+				this.directionIndex = 2;
+				break;
+			default:
+				return; // Not on an arrow tile
+		}
+
+		// Force movement if the target is not solid
+		if (levelManager && !levelManager.isSolid(forcedX, forcedY)) {
+			this.direction = targetDirection;
+			this.startMovement(forcedX, forcedY);
 		}
 	}
 
