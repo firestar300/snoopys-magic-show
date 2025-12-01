@@ -23,6 +23,14 @@ export class UIManager {
       segmentSpeed: 0.08, // Time per segment (50ms - 2x faster)
       gameInstance: null
     };
+
+    // End screen background image
+    this.endBackground = new Image();
+    this.endBackground.src = '/sprites/end-background.png';
+    this.endBackgroundLoaded = false;
+    this.endBackground.onload = () => {
+      this.endBackgroundLoaded = true;
+    };
   }
 
   /**
@@ -248,9 +256,23 @@ export class UIManager {
     const centerX = CONFIG.CANVAS_WIDTH / 2;
     const centerY = CONFIG.CANVAS_HEIGHT / 2;
 
-    // Background
-    ctx.fillStyle = 'rgba(139, 172, 15, 0.95)';
-    ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+    // Background - Use end-background image if loaded, otherwise fallback
+    if (this.endBackgroundLoaded) {
+      // Draw the background image to fill the canvas
+      ctx.drawImage(
+        this.endBackground,
+        0, 0,
+        this.endBackground.width,
+        this.endBackground.height,
+        0, 0,
+        CONFIG.CANVAS_WIDTH,
+        CONFIG.CANVAS_HEIGHT
+      );
+    } else {
+      // Fallback background
+      ctx.fillStyle = 'rgba(139, 172, 15, 0.95)';
+      ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+    }
 
     // Victory text with animation
     const pulse = Math.sin(Date.now() / 200) * 3;
