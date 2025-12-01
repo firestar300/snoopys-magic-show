@@ -53,21 +53,6 @@
       "y": 2,
       "vx": -1,
       "vy": -1
-    },
-    {
-      "type": "powerup",
-      "x": 6,
-      "y": 2,
-      "powerType": "invincible",
-      "hidden": true,
-      "blockX": 6,
-      "blockY": 2,
-      "targets": {
-        "up": { "x": 8, "y": 4 },
-        "down": { "x": 8, "y": 4 },
-        "left": { "x": 8, "y": 4 },
-        "right": { "x": 8, "y": 4 }
-      }
     }
   ]
 }

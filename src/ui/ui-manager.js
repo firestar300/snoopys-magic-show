@@ -129,6 +129,12 @@ export class UIManager {
     ctx.fillText("SNOOPY'S", centerX, centerY - 90);
     ctx.fillText('MAGIC SHOW', centerX, centerY - 60);
 
+    // High Score display
+    ctx.font = '12px "Courier New", monospace';
+    ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
+    const highScore = this.game.state.highScore || 0;
+    ctx.fillText(`HIGH SCORE: ${highScore}`, centerX, centerY - 35);
+
     // Animated Snoopy sprite from title screen
     const spriteManager = this.game.spriteManager;
 
@@ -215,18 +221,27 @@ export class UIManager {
     ctx.fillStyle = CONFIG.COLORS.DARK;
     ctx.font = 'bold 28px "Courier New", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('GAME OVER', centerX, centerY - 30);
+    ctx.fillText('GAME OVER', centerX, centerY - 50);
+
+    // New Record message (if applicable)
+    if (this.game.state.isNewHighScore) {
+      ctx.font = 'bold 18px "Courier New", monospace';
+      const pulse = Math.abs(Math.sin(Date.now() / 300));
+      ctx.fillStyle = `rgba(155, 188, 15, ${0.5 + pulse * 0.5})`;
+      ctx.fillText('★ NEW RECORD! ★', centerX, centerY - 20);
+    }
 
     // Score
     ctx.font = '16px "Courier New", monospace';
     ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
     ctx.fillText(`Final Score: ${this.game.state.score}`, centerX, centerY + 10);
-    ctx.fillText(`Level Reached: ${this.game.state.level}`, centerX, centerY + 35);
+    ctx.fillText(`High Score: ${this.game.state.highScore}`, centerX, centerY + 35);
+    ctx.fillText(`Level Reached: ${this.game.state.level}`, centerX, centerY + 60);
 
     // Restart instruction
     ctx.font = '14px "Courier New", monospace';
     ctx.fillStyle = CONFIG.COLORS.LIGHT;
-    ctx.fillText('PRESS SPACE TO RESTART', centerX, centerY + 70);
+    ctx.fillText('PRESS SPACE TO RESTART', centerX, centerY + 95);
 
     ctx.textAlign = 'left';
   }
@@ -248,23 +263,32 @@ export class UIManager {
     ctx.fillStyle = CONFIG.COLORS.DARK;
     ctx.font = `bold ${24 + pulse}px "Courier New", monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('CONGRATULATIONS!', centerX, centerY - 40);
+    ctx.fillText('CONGRATULATIONS!', centerX, centerY - 50);
 
     ctx.font = '16px "Courier New", monospace';
-    ctx.fillText('You completed the show!', centerX, centerY - 10);
+    ctx.fillText('You completed the show!', centerX, centerY - 20);
+
+    // New Record message (if applicable)
+    if (this.game.state.isNewHighScore) {
+      ctx.font = 'bold 16px "Courier New", monospace';
+      const recordPulse = Math.abs(Math.sin(Date.now() / 300));
+      ctx.fillStyle = `rgba(48, 98, 48, ${0.6 + recordPulse * 0.4})`;
+      ctx.fillText('★ NEW RECORD! ★', centerX, centerY + 5);
+    }
 
     // Score
     ctx.font = '18px "Courier New", monospace';
     ctx.fillStyle = CONFIG.COLORS.MID_DARK;
-    ctx.fillText(`Final Score: ${this.game.state.score}`, centerX, centerY + 25);
+    ctx.fillText(`Final Score: ${this.game.state.score}`, centerX, centerY + 30);
+    ctx.fillText(`High Score: ${this.game.state.highScore}`, centerX, centerY + 55);
 
     // Stars
-    this.drawStars(centerX, centerY + 55);
+    this.drawStars(centerX, centerY + 85);
 
     // Restart
     ctx.font = '12px "Courier New", monospace';
     ctx.fillStyle = CONFIG.COLORS.DARK;
-    ctx.fillText('PRESS SPACE TO PLAY AGAIN', centerX, centerY + 90);
+    ctx.fillText('PRESS SPACE TO PLAY AGAIN', centerX, centerY + 120);
 
     ctx.textAlign = 'left';
   }

@@ -21,6 +21,7 @@ export class DevConsole {
       time: this.cmdTime.bind(this),
       lives: this.cmdLives.bind(this),
       score: this.cmdScore.bind(this),
+      resethighscore: this.cmdResetHighScore.bind(this),
       gamepad: this.cmdGamepad.bind(this),
       help: this.cmdHelp.bind(this),
       clear: this.cmdClear.bind(this),
@@ -266,6 +267,17 @@ export class DevConsole {
   }
 
   /**
+   * Command: /resethighscore
+   */
+  cmdResetHighScore(args) {
+    this.game.state.highScore = 0;
+    this.game.saveHighScore(0);
+    this.game.state.isNewHighScore = false;
+    this.game.updateUI();
+    this.addOutput('High score reset to 0', '#8bac0f');
+  }
+
+  /**
    * Command: /gamepad
    */
   cmdGamepad(args) {
@@ -320,15 +332,16 @@ export class DevConsole {
    */
   cmdHelp(args) {
     this.addOutput('Available commands:', '#9bbc0f');
-    this.addOutput('/level <n>      - Load level n', '#8bac0f');
-    this.addOutput('/god <on|off>   - Toggle god mode', '#8bac0f');
+    this.addOutput('/level <n>       - Load level n', '#8bac0f');
+    this.addOutput('/god <on|off>    - Toggle god mode', '#8bac0f');
     this.addOutput('/noclip <on|off> - Toggle noclip mode', '#8bac0f');
-    this.addOutput('/time <on|off>  - Toggle timer', '#8bac0f');
-    this.addOutput('/lives <n>      - Set lives', '#8bac0f');
-    this.addOutput('/score <n>      - Set score', '#8bac0f');
-    this.addOutput('/gamepad        - Show gamepad info', '#8bac0f');
-    this.addOutput('/clear          - Clear output', '#8bac0f');
-    this.addOutput('/help           - Show this help', '#8bac0f');
+    this.addOutput('/time <on|off>   - Toggle timer', '#8bac0f');
+    this.addOutput('/lives <n>       - Set lives', '#8bac0f');
+    this.addOutput('/score <n>       - Set score', '#8bac0f');
+    this.addOutput('/resethighscore  - Reset high score to 0', '#8bac0f');
+    this.addOutput('/gamepad         - Show gamepad info', '#8bac0f');
+    this.addOutput('/clear           - Clear output', '#8bac0f');
+    this.addOutput('/help            - Show this help', '#8bac0f');
   }
 
   /**

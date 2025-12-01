@@ -63,10 +63,12 @@ export class Game {
     // Game state
     this.state = {
       score: 0,
+      highScore: this.loadHighScore(), // Load from localStorage
       lives: 3,
       level: 1,
       currentState: GameState.MENU,
       levelReady: false,
+      isNewHighScore: false, // Flag to show "NEW RECORD!" message
     };
 
     // Life bonus tracking (every 50,000 points)
@@ -125,6 +127,7 @@ export class Game {
     this.state.level = CONFIG.DEV_MODE ? 0 : 1; // Start at level 0 in dev mode, level 1 otherwise
     this.state.currentState = GameState.PLAYING;
     this.state.levelReady = false;
+    this.state.isNewHighScore = false; // Reset high score flag
     this.lastLifeBonusThreshold = 0; // Reset life bonus tracking
     this.uiManager.setState(GameState.PLAYING);
 
@@ -792,6 +795,39 @@ export class Game {
     document.getElementById('score').textContent = `Score: ${this.state.score}`;
     document.getElementById('lives').textContent = `Lives: ${this.state.lives}`;
     document.getElementById('level').textContent = `Level: ${this.state.level}`;
+
+    // Update high score display if it exists
+    const highScoreElement = document.getElementById('high-score');
+    if (highScoreElement) {
+      highScoreElement.textContent = `High Score: ${this.state.highScore}`;
+    }
+  }
+
+  /**
+   * Load high score from localStorage
+   */
+  loadHighScore() {
+    try {
+      const saved = localStorage.getItem('snoopy-magic-show-highscore');
+      return saved ? parseInt(saved, 10) : 0;
+    } catch (error) {
+      console.warn('Failed to load high score from localStorage:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Save high score to localStorage
+   */
+  saveHighScore(score) {
+    try {
+      localStorage.setItem('snoopy-magic-show-highscore', score.toString());
+      if (CONFIG.DEV_MODE) {
+        console.log(`[HIGH SCORE] New record saved: ${score}`);
+      }
+    } catch (error) {
+      console.warn('Failed to save high score to localStorage:', error);
+    }
   }
 
   /**
@@ -800,6 +836,17 @@ export class Game {
   addScore(points) {
     const oldScore = this.state.score;
     this.state.score += points;
+
+    // Check if we beat the high score
+    if (this.state.score > this.state.highScore) {
+      this.state.highScore = this.state.score;
+      this.state.isNewHighScore = true;
+      this.saveHighScore(this.state.highScore);
+
+      if (CONFIG.DEV_MODE) {
+        console.log(`[HIGH SCORE] New record: ${this.state.highScore}`);
+      }
+    }
 
     // Check if player reached a new 50,000 points threshold for bonus life
     const LIFE_BONUS_THRESHOLD = 50000;
@@ -1004,6 +1051,7 @@ export class Game {
     this.state.level = levelNumber;
     this.state.levelReady = false;
     this.state.currentState = GameState.PLAYING;
+    this.state.isNewHighScore = false; // Reset high score flag
     this.lastLifeBonusThreshold = 0; // Reset life bonus tracking
     this.uiManager.setState(GameState.PLAYING);
 
