@@ -9,6 +9,7 @@ import { GameState } from '../ui/game-states.js';
 import { SpriteManager } from './sprite-manager.js';
 import { AudioManager } from './audio-manager.js';
 import { DevConsole } from '../ui/dev-console.js';
+import { devLog, devWarn, devError } from '../utils/dev-logger.js';
 
 /**
  * Main game class that orchestrates the game loop and systems
@@ -286,9 +287,26 @@ export class Game {
         break;
 
       case GameState.GAME_OVER:
-      case GameState.VICTORY:
         if (input.actionJustPressed || input.pauseJustPressed) {
           this.init();
+        }
+        break;
+
+      case GameState.VICTORY:
+        // Only allow returning to menu when background scroll animation is finished
+        if ((input.actionJustPressed || input.pauseJustPressed) && this.uiManager.endBackgroundScroll.scrollComplete) {
+          // Return to title screen instead of restarting the game
+          this.state.currentState = GameState.MENU;
+          this.uiManager.setState(GameState.MENU);
+          // Reset state for potential new game
+          this.state.score = 0;
+          this.state.lives = 3;
+          this.state.level = CONFIG.DEV_MODE ? 0 : 1;
+          this.state.isNewHighScore = false;
+          this.lastLifeBonusThreshold = 0;
+          // Clear entities
+          this.entityManager.clear();
+          this.player = null;
         }
         break;
 
@@ -690,8 +708,9 @@ export class Game {
   render() {
     this.renderer.clear();
 
-    // Only render game if not in menu
-    if (this.state.currentState !== GameState.MENU && this.levelManager.currentLevel) {
+    // Only render game if in PLAYING, PAUSED, or LEVEL_COMPLETE state
+    const renderGameStates = [GameState.PLAYING, GameState.PAUSED, GameState.LEVEL_COMPLETE];
+    if (renderGameStates.includes(this.state.currentState) && this.levelManager.currentLevel) {
       // Draw timer border
       this.renderer.drawTimerBorder(this.spriteManager, this.timer.filledSegments);
 
@@ -811,7 +830,7 @@ export class Game {
       const saved = localStorage.getItem('snoopy-magic-show-highscore');
       return saved ? parseInt(saved, 10) : 0;
     } catch (error) {
-      console.warn('Failed to load high score from localStorage:', error);
+      devWarn('Failed to load high score from localStorage:', error);
       return 0;
     }
   }
@@ -822,11 +841,9 @@ export class Game {
   saveHighScore(score) {
     try {
       localStorage.setItem('snoopy-magic-show-highscore', score.toString());
-      if (CONFIG.DEV_MODE) {
-        console.log(`[HIGH SCORE] New record saved: ${score}`);
-      }
+      devLog(`[HIGH SCORE] New record saved: ${score}`);
     } catch (error) {
-      console.warn('Failed to save high score to localStorage:', error);
+      devWarn('Failed to save high score to localStorage:', error);
     }
   }
 
@@ -843,9 +860,7 @@ export class Game {
       this.state.isNewHighScore = true;
       this.saveHighScore(this.state.highScore);
 
-      if (CONFIG.DEV_MODE) {
-        console.log(`[HIGH SCORE] New record: ${this.state.highScore}`);
-      }
+      devLog(`[HIGH SCORE] New record: ${this.state.highScore}`);
     }
 
     // Check if player reached a new 50,000 points threshold for bonus life
@@ -863,9 +878,7 @@ export class Game {
       }
 
       // Log in dev mode
-      if (CONFIG.DEV_MODE) {
-        console.log(`[BONUS] Life bonus! Score: ${this.state.score} - Lives: ${this.state.lives}`);
-      }
+      devLog(`[BONUS] Life bonus! Score: ${this.state.score} - Lives: ${this.state.lives}`);
     }
 
     this.updateUI();
@@ -945,7 +958,8 @@ export class Game {
 
     try {
       this.entityManager.clear();
-      await this.levelManager.loadLevel(this.state.level);
+      // Pass false to disable fallback level - if level doesn't exist, throw error
+      await this.levelManager.loadLevel(this.state.level, false);
 
       const startPos = this.levelManager.getStartPosition();
       this.player = new Player(startPos.x, startPos.y);
@@ -987,16 +1001,25 @@ export class Game {
 
     this.state.currentState = GameState.GAME_OVER;
     this.uiManager.setState(GameState.GAME_OVER);
-    console.log('Game Over! Final Score:', this.state.score);
+    devLog('Game Over! Final Score:', this.state.score);
   }
 
   /**
    * Victory (all levels complete)
    */
   victory() {
+    devLog('[VICTORY] Entering victory state...');
+
+    // Play ending music
+    this.audioManager.playMusic('ending');
+
     this.state.currentState = GameState.VICTORY;
+    devLog('[VICTORY] Game state set to:', this.state.currentState);
+
     this.uiManager.setState(GameState.VICTORY);
-    console.log('Victory! Final Score:', this.state.score);
+
+    devLog('[VICTORY] UIManager state set to:', this.uiManager.currentState);
+    devLog('[VICTORY] Final Score:', this.state.score);
   }
 
   /**
@@ -1025,14 +1048,14 @@ export class Game {
     if (!CONFIG.DEV_MODE || !this.player) return;
 
     this.player.godMode = !this.player.godMode;
-    console.log(`[DEV] God Mode: ${this.player.godMode ? 'ON' : 'OFF'}`);
+    devLog(`[DEV] God Mode: ${this.player.godMode ? 'ON' : 'OFF'}`);
   }
 
   /**
    * Load a specific level in dev mode
    */
   async loadDevLevel(levelNumber) {
-    console.log(`[DEV] Loading level ${levelNumber}...`);
+    devLog(`[DEV] Loading level ${levelNumber}...`);
 
     // Remove power-ups from current player before clearing
     if (this.player && this.player.hasPowerUp) {
@@ -1085,9 +1108,9 @@ export class Game {
       // Update UI
       this.updateUI();
 
-      console.log(`[DEV] Level ${levelNumber} loaded successfully!`);
+      devLog(`[DEV] Level ${levelNumber} loaded successfully!`);
     } catch (error) {
-      console.error(`[DEV] Failed to load level ${levelNumber}:`, error);
+      devError(`[DEV] Failed to load level ${levelNumber}:`, error);
     }
   }
 

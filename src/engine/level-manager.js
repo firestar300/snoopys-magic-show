@@ -1,5 +1,6 @@
 import { CONFIG } from '../config.js';
 import { TileType } from '../tiles/tile-types.js';
+import { devWarn, devError } from '../utils/dev-logger.js';
 
 /**
  * Manages levels, tiles, and level data
@@ -21,8 +22,10 @@ export class LevelManager {
 
   /**
    * Load a level by its number
+   * @param {number} levelNumber - The level number to load
+   * @param {boolean} useFallback - Whether to use fallback level if loading fails (default: true)
    */
-  async loadLevel(levelNumber) {
+  async loadLevel(levelNumber, useFallback = true) {
     try {
       // Reset all temporary states before loading new level
       this.resetLevelState();
@@ -34,9 +37,15 @@ export class LevelManager {
       // Parse tiles
       this.parseTiles();
     } catch (error) {
-      console.error(`Failed to load level ${levelNumber}:`, error);
-      // Load fallback level if level file doesn't exist
-      await this.loadFallbackLevel();
+      devError(`Failed to load level ${levelNumber}:`, error);
+
+      if (useFallback) {
+        // Load fallback level if level file doesn't exist
+        await this.loadFallbackLevel();
+      } else {
+        // Re-throw error to signal no more levels available
+        throw error;
+      }
     }
   }
 
@@ -68,7 +77,7 @@ export class LevelManager {
    */
   async loadFallbackLevel() {
     try {
-      console.warn('Loading fallback level...');
+      devWarn('Loading fallback level...');
 
       // Reset all temporary states
       this.resetLevelState();
@@ -81,7 +90,7 @@ export class LevelManager {
       this.parseTiles();
     } catch (error) {
       // If even the fallback level fails, create a minimal emergency level
-      console.error('Failed to load fallback level, creating emergency level:', error);
+      devError('Failed to load fallback level, creating emergency level:', error);
       this.createEmergencyLevel();
     }
   }

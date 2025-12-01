@@ -22,6 +22,7 @@ export class DevConsole {
       lives: this.cmdLives.bind(this),
       score: this.cmdScore.bind(this),
       resethighscore: this.cmdResetHighScore.bind(this),
+      ending: this.cmdEnding.bind(this),
       gamepad: this.cmdGamepad.bind(this),
       help: this.cmdHelp.bind(this),
       clear: this.cmdClear.bind(this),
@@ -278,6 +279,19 @@ export class DevConsole {
   }
 
   /**
+   * Command: /ending
+   */
+  cmdEnding(args) {
+    this.game.victory();
+
+    // Clear all input states to prevent immediate restart
+    this.game.inputManager.resetState();
+
+    this.addOutput('Triggering ending screen...', '#8bac0f');
+    this.toggle(); // Close console
+  }
+
+  /**
    * Command: /gamepad
    */
   cmdGamepad(args) {
@@ -339,6 +353,7 @@ export class DevConsole {
     this.addOutput('/lives <n>       - Set lives', '#8bac0f');
     this.addOutput('/score <n>       - Set score', '#8bac0f');
     this.addOutput('/resethighscore  - Reset high score to 0', '#8bac0f');
+    this.addOutput('/ending          - Trigger ending screen', '#8bac0f');
     this.addOutput('/gamepad         - Show gamepad info', '#8bac0f');
     this.addOutput('/clear           - Clear output', '#8bac0f');
     this.addOutput('/help            - Show this help', '#8bac0f');

@@ -1,3 +1,5 @@
+import { devLog, devError } from '../utils/dev-logger.js';
+
 /**
  * Manages sprite loading and rendering
  */
@@ -24,8 +26,10 @@ export class SpriteManager {
       { name: 'snoopy', path: '/sprites/snoopy.png' },
       { name: 'snoopy_victory', path: '/sprites/snoopy_victory.png' },
       { name: 'spike', path: '/sprites/spike.png' },
-      { name: 'title_screen_snoopy', path: '/title-screen-snoopy.png' },
+      { name: 'title_screen_snoopy', path: '/sprites/title-screen-snoopy.png' },
       { name: 'woodstock', path: '/sprites/woodstock.png' },
+      { name: 'end_woodstock', path: '/sprites/end-woodstock.png' },
+      { name: 'end_spike', path: '/sprites/end-spike.png' },
       { name: 'ball', path: '/sprites/ball.png' },
       { name: 'blocks', path: '/sprites/blocks.png' },
       { name: 'powerups', path: '/sprites/powerups.png' },
@@ -38,9 +42,9 @@ export class SpriteManager {
     try {
       await Promise.all(this.loadingPromises);
       this.loaded = true;
-      console.log('✅ All sprites loaded successfully');
+      devLog('✅ All sprites loaded successfully');
     } catch (error) {
-      console.error('❌ Error loading sprites:', error);
+      devError('❌ Error loading sprites:', error);
     }
   }
 
@@ -280,8 +284,9 @@ export class SpriteManager {
    * Draw title screen Snoopy sprite
    * Frame: 0-N (animation frames)
    * Sprite: 48x64px frames
+   * @param {boolean} flipX - Whether to flip the sprite horizontally
    */
-  drawTitleScreenSnoopy(renderer, frame, x, y, width, height) {
+  drawTitleScreenSnoopy(renderer, frame, x, y, width, height, flipX = false) {
     const sprite = this.sprites.title_screen_snoopy;
     if (!sprite) return;
 
@@ -290,7 +295,17 @@ export class SpriteManager {
     const sx = frame * frameWidth;
     const sy = 0;
 
-    renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, x, y, width, height);
+    if (flipX) {
+      // Save context, flip, draw, restore
+      const ctx = renderer.ctx;
+      ctx.save();
+      ctx.translate(x + width, y);
+      ctx.scale(-1, 1);
+      renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, 0, 0, width, height);
+      ctx.restore();
+    } else {
+      renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, x, y, width, height);
+    }
   }
 
   /**
@@ -301,6 +316,62 @@ export class SpriteManager {
     if (!sprite) return;
 
     renderer.drawSprite(sprite, 0, 0, 16, 16, x, y, width, height);
+  }
+
+  /**
+   * Draw ending Woodstock sprite
+   * Frame: 0-1 (dance), 2-3 (walk)
+   * Sprite: 32x40px frames
+   * @param {boolean} flipX - Whether to flip the sprite horizontally
+   */
+  drawEndWoodstock(renderer, frame, x, y, width, height, flipX = false) {
+    const sprite = this.sprites.end_woodstock;
+    if (!sprite) return;
+
+    const frameWidth = 32;
+    const frameHeight = 40;
+    const sx = frame * frameWidth;
+    const sy = 0;
+
+    if (flipX) {
+      // Save context, flip, draw, restore
+      const ctx = renderer.ctx;
+      ctx.save();
+      ctx.translate(x + width, y);
+      ctx.scale(-1, 1);
+      renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, 0, 0, width, height);
+      ctx.restore();
+    } else {
+      renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, x, y, width, height);
+    }
+  }
+
+  /**
+   * Draw ending Spike sprite
+   * Frame: 0-1 (dance), 2-4 (walk)
+   * Sprite: 56x56px frames
+   * @param {boolean} flipX - Whether to flip the sprite horizontally
+   */
+  drawEndSpike(renderer, frame, x, y, width, height, flipX = false) {
+    const sprite = this.sprites.end_spike;
+    if (!sprite) return;
+
+    const frameWidth = 56;
+    const frameHeight = 56;
+    const sx = frame * frameWidth;
+    const sy = 0;
+
+    if (flipX) {
+      // Save context, flip, draw, restore
+      const ctx = renderer.ctx;
+      ctx.save();
+      ctx.translate(x + width, y);
+      ctx.scale(-1, 1);
+      renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, 0, 0, width, height);
+      ctx.restore();
+    } else {
+      renderer.drawSprite(sprite, sx, sy, frameWidth, frameHeight, x, y, width, height);
+    }
   }
 
   /**

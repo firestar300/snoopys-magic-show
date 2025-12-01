@@ -1,5 +1,6 @@
 import { CONFIG } from '../config.js';
 import { TouchControls } from '../ui/touch-controls.js';
+import { devLog } from '../utils/dev-logger.js';
 
 /**
  * Manages keyboard, touch, and gamepad input for the game
@@ -30,8 +31,8 @@ export class InputManager {
 
     // Dev mode: Log gamepad API availability
     if (CONFIG.DEV_MODE) {
-      console.log('🎮 Gamepad API available:', 'getGamepads' in navigator);
-      console.log('💡 TIP: Click on the page and press a button on your controller to activate it');
+      devLog('🎮 Gamepad API available:', 'getGamepads' in navigator);
+      devLog('💡 TIP: Click on the page and press a button on your controller to activate it');
 
       let pollCount = 0;
       // Poll for gamepads every 2 seconds in dev mode
@@ -47,18 +48,34 @@ export class InputManager {
 
         if (connected.length > 0) {
           if (!this.gamepadConnected) {
-            console.log('🎮 Gamepads detected:', connected);
+            devLog('🎮 Gamepads detected:', connected);
           }
         } else {
           // Show periodic reminder
           if (pollCount % 5 === 0) {
-            console.log('🎮 No gamepads detected. Make sure to:');
-            console.log('   1. Click on the page');
-            console.log('   2. Press a button on your controller');
-            console.log('   3. Or type /gamepad in dev console while holding a button');
+            devLog('🎮 No gamepads detected. Make sure to:');
+            devLog('   1. Click on the page');
+            devLog('   2. Press a button on your controller');
+            devLog('   3. Or type /gamepad in dev console while holding a button');
           }
         }
       }, 2000);
+    }
+  }
+
+  /**
+   * Reset all input states (useful for preventing unwanted inputs after state changes)
+   */
+  resetState() {
+    this.keys = {};
+    this.previousKeys = {};
+    this.previousTouchAction = false;
+    this.previousGamepadButtons = {};
+    this.previousPause = false;
+
+    // Reset touch controls
+    if (this.touchControls) {
+      this.touchControls.reset();
     }
   }
 
@@ -85,7 +102,7 @@ export class InputManager {
    * Handle gamepad connected event
    */
   onGamepadConnected(event) {
-    console.log('🎮 Gamepad connected:', event.gamepad.id);
+    devLog('🎮 Gamepad connected:', event.gamepad.id);
     this.gamepadConnected = true;
   }
 
@@ -93,7 +110,7 @@ export class InputManager {
    * Handle gamepad disconnected event
    */
   onGamepadDisconnected(event) {
-    console.log('🎮 Gamepad disconnected:', event.gamepad.id);
+    devLog('🎮 Gamepad disconnected:', event.gamepad.id);
     this.gamepadConnected = false;
   }
 
@@ -111,7 +128,7 @@ export class InputManager {
 
         // Auto-detect connection if not already flagged
         if (!this.gamepadConnected) {
-          console.log('🎮 Gamepad detected:', gamepad.id);
+          devLog('🎮 Gamepad detected:', gamepad.id);
           this.gamepadConnected = true;
         }
         break;
@@ -121,7 +138,7 @@ export class InputManager {
     if (!gamepad) {
       // Auto-detect disconnection
       if (this.gamepadConnected) {
-        console.log('🎮 Gamepad disconnected');
+        devLog('🎮 Gamepad disconnected');
         this.gamepadConnected = false;
       }
 
@@ -144,11 +161,11 @@ export class InputManager {
     if (CONFIG.DEV_MODE && !this.gamepadDebugLogged) {
       for (let i = 0; i < gamepad.buttons.length; i++) {
         if (gamepad.buttons[i].pressed) {
-          console.log('🎮 Gamepad Debug:');
-          console.log('  ID:', gamepad.id);
-          console.log('  Buttons:', gamepad.buttons.length);
-          console.log('  Axes:', gamepad.axes.length);
-          console.log('  Button pressed:', i);
+          devLog('🎮 Gamepad Debug:');
+          devLog('  ID:', gamepad.id);
+          devLog('  Buttons:', gamepad.buttons.length);
+          devLog('  Axes:', gamepad.axes.length);
+          devLog('  Button pressed:', i);
           this.gamepadDebugLogged = true;
           break;
         }

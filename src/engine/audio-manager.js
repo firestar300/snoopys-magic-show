@@ -1,3 +1,5 @@
+import { devLog, devWarn } from '../utils/dev-logger.js';
+
 /**
  * Manages game audio (music and sound effects)
  */
@@ -68,6 +70,7 @@ export class AudioManager {
     this.loadMusic('miss', '/music/25-Jingle-11.mp3', false); // Don't loop defeat music
     this.loadMusic('game-over', '/music/26-Jingle-12.mp3', false); // Don't loop game over music
     this.loadMusic('stage-clear', '/music/24-BGM-14.mp3', false); // Generic stage clear music
+    this.loadMusic('ending', '/music/29-BGM-16.mp3', true); // Ending screen music (loops)
 
     // Stage music (all 9 stages)
     this.loadMusic('stage-bgm-2', '/music/02-BGM-02.mp3');
@@ -119,7 +122,7 @@ export class AudioManager {
   playMusic(name) {
     const audio = this.music[name];
     if (!audio) {
-      console.warn(`Music '${name}' not found`);
+      devWarn(`Music '${name}' not found`);
       return;
     }
 
@@ -145,7 +148,7 @@ export class AudioManager {
         // Restart at loop point
         audio.currentTime = this.loopPoints[name];
         audio.play().catch(error => {
-          console.warn(`Could not restart music '${name}' at loop point:`, error);
+          devWarn(`Could not restart music '${name}' at loop point:`, error);
         });
       };
 
@@ -162,10 +165,10 @@ export class AudioManager {
         playPromise
           .then(() => {
             // Playback started successfully
-            console.log(`Music '${name}' playing`);
+            devLog(`Music '${name}' playing`);
           })
           .catch(error => {
-            console.warn(`Could not play music '${name}':`, error);
+            devWarn(`Could not play music '${name}':`, error);
             // Clear current music if playback failed
             if (this.currentMusic === audio) {
               this.currentMusic = null;
@@ -181,10 +184,10 @@ export class AudioManager {
       attemptPlay();
     } else {
       // Audio not ready yet, wait for it to load
-      console.log(`Waiting for music '${name}' to load...`);
+      devLog(`Waiting for music '${name}' to load...`);
 
       const onCanPlay = () => {
-        console.log(`Music '${name}' loaded, playing now`);
+        devLog(`Music '${name}' loaded, playing now`);
         attemptPlay();
         audio.removeEventListener('canplay', onCanPlay);
       };
@@ -194,7 +197,7 @@ export class AudioManager {
       // Fallback timeout (5 seconds - enough for optimized files)
       setTimeout(() => {
         if (audio.readyState < 3) {
-          console.warn(`Music '${name}' failed to load in time`);
+          devWarn(`Music '${name}' failed to load in time`);
           audio.removeEventListener('canplay', onCanPlay);
           if (this.currentMusic === audio) {
             this.currentMusic = null;
@@ -242,7 +245,7 @@ export class AudioManager {
   resumeMusic() {
     if (this.currentMusic) {
       this.currentMusic.play().catch(error => {
-        console.warn('Could not resume music:', error);
+        devWarn('Could not resume music:', error);
       });
     }
   }
@@ -253,13 +256,13 @@ export class AudioManager {
   playSfx(name) {
     const audio = this.sfx[name];
     if (!audio) {
-      console.warn(`Sound effect '${name}' not found`);
+      devWarn(`Sound effect '${name}' not found`);
       return;
     }
 
     // Check if audio is ready (readyState >= 3 means we have enough data)
     if (audio.readyState < 3) {
-      console.warn(`Sound effect '${name}' not ready yet (readyState: ${audio.readyState})`);
+      devWarn(`Sound effect '${name}' not ready yet (readyState: ${audio.readyState})`);
       return;
     }
 
@@ -267,7 +270,7 @@ export class AudioManager {
     const sfxInstance = audio.cloneNode();
     sfxInstance.volume = this.sfxVolume;
     sfxInstance.play().catch(error => {
-      console.warn(`Could not play sound effect '${name}':`, error);
+      devWarn(`Could not play sound effect '${name}':`, error);
     });
   }
 
