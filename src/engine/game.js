@@ -69,7 +69,7 @@ export class Game {
       levelReady: false,
     };
 
-    // Life bonus tracking (every 100,000 points)
+    // Life bonus tracking (every 50,000 points)
     this.lastLifeBonusThreshold = 0;
 
     // Timer state
@@ -801,8 +801,8 @@ export class Game {
     const oldScore = this.state.score;
     this.state.score += points;
 
-    // Check if player reached a new 100,000 points threshold for bonus life
-    const LIFE_BONUS_THRESHOLD = 100000;
+    // Check if player reached a new 50,000 points threshold for bonus life
+    const LIFE_BONUS_THRESHOLD = 50000;
     const oldThreshold = Math.floor(oldScore / LIFE_BONUS_THRESHOLD);
     const newThreshold = Math.floor(this.state.score / LIFE_BONUS_THRESHOLD);
 
