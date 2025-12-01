@@ -297,6 +297,39 @@ Répliques des niveaux 51-60 avec Spike - Boss levels ultimes
   - ✅ Seuil ajusté : 100 000 → 50 000 points pour bonus de vie plus fréquents
 - **Fichiers :** `src/engine/game.js`, `src/entities/woodstock.js`, `src/entities/powerup.js`
 
+### 🏆 Système de High Score
+
+- **Description :** Système de meilleur score persistant avec localStorage
+- **Fonctionnalités :**
+  - ✅ Chargement automatique du high score au démarrage
+  - ✅ Sauvegarde automatique lors d'un nouveau record
+  - ✅ Stockage dans `localStorage` avec clé `'snoopy-magic-show-highscore'`
+  - ✅ Flag `isNewHighScore` pour détecter les nouveaux records
+  - ✅ Persistance entre les sessions de jeu
+- **Affichage UI :**
+  - ✅ HUD : High Score affiché sous le score actuel
+  - ✅ Menu principal : HIGH SCORE affiché sous le titre
+  - ✅ Game Over :
+    - High Score affiché avec le score final
+    - Message animé "★ NEW RECORD! ★" si record battu (pulse effect)
+  - ✅ Victory :
+    - High Score affiché avec le score final
+    - Message animé "★ NEW RECORD! ★" si record battu (pulse effect)
+- **Dev Console :**
+  - ✅ Commande `/resethighscore` : Réinitialise le high score à 0
+  - ✅ Mise à jour automatique de l'UI après reset
+- **Logique :**
+  - Vérification à chaque `addScore()` si le score dépasse le high score
+  - Sauvegarde immédiate du nouveau record dans localStorage
+  - Réinitialisation du flag `isNewHighScore` au début de chaque nouvelle partie
+  - Méthodes : `loadHighScore()`, `saveHighScore()`
+- **Implémentation 2025-12-01 :**
+  - ✅ Système complet et fonctionnel
+  - ✅ Gestion d'erreurs pour localStorage (try/catch)
+  - ✅ Effets visuels pour célébrer les nouveaux records
+  - ✅ Compatible avec tous les écrans du jeu
+- **Fichiers :** `src/engine/game.js`, `src/ui/ui-manager.js`, `src/ui/dev-console.js`, `index.html`
+
 ## 🐛 Bugs Connus & Améliorations à Faire
 
 ### Collision Balle vs Bloc Poussable
@@ -323,5 +356,7 @@ Dernière mise à jour : 2025-12-01 (Snoopy's Magic Show - JEU COMPLET!)
 - **Spike** : Ennemi intelligent avec IA fluide, interactions complexes et comportements avancés
 - **Mécaniques complètes** : Blocs cassables/poussables/toggle, flèches, téléportation, portails entités, power-ups
 - **Système audio complet** : Musiques, effets sonores, loops personnalisés
+- **Système de scoring** : Points, bonus de vie tous les 50 000 points, high score persistant
+- **High Score avec localStorage** : Meilleur score sauvegardé entre les sessions
 - **Dev console avancée** : Outils de debug et commandes de développement
 - **Protections multiples** : Snoopy, Woodstocks, interactions Spike, portails bloqués
