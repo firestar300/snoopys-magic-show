@@ -277,7 +277,7 @@ export class Spike extends Player {
 			if (levelManager.tryPushBlock(newGridX, newGridY, direction, entityManager, audioManager)) {
 				this.startMovement(newGridX, newGridY);
 			}
-		} else if (!levelManager.isSolid(newGridX, newGridY)) {
+		} else if (!levelManager.isSolid(newGridX, newGridY) && !levelManager.isBlockedByAnimatingBlock(newGridX, newGridY)) {
 			this.startMovement(newGridX, newGridY);
 		}
 	}

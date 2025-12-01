@@ -508,23 +508,38 @@ export class LevelManager {
             player.bounceBack();
           }
         }
-        // Check continuously if there's a ball at destination (only after 30% to avoid instant bounce)
+        // Check continuously if there's a ball or Spike at destination (only after 30% to avoid instant bounce)
         else if (block.progress >= 0.3 && block.progress < 1 && entityManager && !block.bouncingChecked && !block.willBounce) {
           const balls = entityManager.getEntitiesByType('ball');
-          let ballAtDestination = false;
+          const spikes = entityManager.getEntitiesByType('spike');
+          let entityAtDestination = false;
 
+          // Check for balls
           for (const ball of balls) {
             const ballGridX = ball.getGridX();
             const ballGridY = ball.getGridY();
 
             if (ballGridX === block.destX && ballGridY === block.destY) {
-              ballAtDestination = true;
+              entityAtDestination = true;
               break;
             }
           }
 
-          // If ball detected, start bouncing back
-          if (ballAtDestination) {
+          // Check for Spike
+          if (!entityAtDestination) {
+            for (const spike of spikes) {
+              const spikeGridX = spike.getGridX();
+              const spikeGridY = spike.getGridY();
+
+              if (spikeGridX === block.destX && spikeGridY === block.destY) {
+                entityAtDestination = true;
+                break;
+              }
+            }
+          }
+
+          // If ball or Spike detected, start bouncing back
+          if (entityAtDestination) {
             // Store the actual position where we're bouncing from
             const t = this.easeInOutQuad(block.progress);
             block.bounceFromX = block.fromX + (block.toX - block.fromX) * t;
