@@ -129,12 +129,6 @@ export class UIManager {
     ctx.fillText("SNOOPY'S", centerX, centerY - 90);
     ctx.fillText('MAGIC SHOW', centerX, centerY - 60);
 
-    // High Score display
-    ctx.font = '12px "Courier New", monospace';
-    ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
-    const highScore = this.game.state.highScore || 0;
-    ctx.fillText(`HIGH SCORE: ${highScore}`, centerX, centerY - 35);
-
     // Animated Snoopy sprite from title screen
     const spriteManager = this.game.spriteManager;
 

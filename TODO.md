@@ -308,7 +308,6 @@ Répliques des niveaux 51-60 avec Spike - Boss levels ultimes
   - ✅ Persistance entre les sessions de jeu
 - **Affichage UI :**
   - ✅ HUD : High Score affiché sous le score actuel
-  - ✅ Menu principal : HIGH SCORE affiché sous le titre
   - ✅ Game Over :
     - High Score affiché avec le score final
     - Message animé "★ NEW RECORD! ★" si record battu (pulse effect)
