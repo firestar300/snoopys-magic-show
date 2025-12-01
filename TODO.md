@@ -279,6 +279,24 @@ Répliques des niveaux 51-60 avec Spike - Boss levels ultimes
 - **Sprite :** `/sprites/spike.png` (même layout que snoopy.png)
 - **Fichiers :** `src/entities/spike.js`, `src/engine/game.js`, `src/engine/sprite-manager.js`, `src/entities/portal.js`, `src/engine/level-manager.js`
 
+### 🎯 Système de Scoring et Bonus de Vie
+
+- **Description :** Système de points et récompenses pour prolonger le gameplay
+- **Valeurs des collectibles :**
+  - ✅ Woodstock : 1000 points
+  - ✅ Power-up : Points variables selon le type
+- **Bonus de vie automatique :**
+  - ✅ 50 000 points → +1 vie 🎉
+  - ✅ 100 000 points → +1 vie 🎉
+  - ✅ 150 000 points → +1 vie 🎉
+  - ✅ Et ainsi de suite tous les 50 000 points
+- **Effet sonore :** Son 'pause' joué lors de chaque bonus de vie
+- **Corrections 2025-12-01 :**
+  - ✅ Bug double collecte corrigé : Woodstocks donnent bien 1000 points (pas 2000)
+  - ✅ Vérification `isDead` ajoutée pour éviter les doubles comptages
+  - ✅ Seuil ajusté : 100 000 → 50 000 points pour bonus de vie plus fréquents
+- **Fichiers :** `src/engine/game.js`, `src/entities/woodstock.js`, `src/entities/powerup.js`
+
 ## 🐛 Bugs Connus & Améliorations à Faire
 
 ### Collision Balle vs Bloc Poussable
@@ -293,7 +311,7 @@ Répliques des niveaux 51-60 avec Spike - Boss levels ultimes
 ---
 🎊🎉🏆 **JEU COMPLET : 120/120 NIVEAUX TERMINÉS !** 🏆🎉🎊
 
-Dernière mise à jour : 2025-11-30 (Snoopy's Magic Show - JEU COMPLET!)
+Dernière mise à jour : 2025-12-01 (Snoopy's Magic Show - JEU COMPLET!)
 
 **Les deux parties sont complètes ! 60 niveaux classiques + 60 niveaux avec Spike ! Félicitations pour cette réalisation incroyable ! 🎮✨🐾**
 
