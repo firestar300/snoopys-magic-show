@@ -7,14 +7,89 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg">
 </head>
 <body>
-  <div id="app">
-    <canvas id="gameCanvas"></canvas>
+  <div class="wrapper" id="app">
     <div id="ui">
       <div id="score">Score: 0</div>
       <div id="high-score">High Score: 0</div>
       <div id="lives">Lives: 3</div>
       <div id="level">Level: 1</div>
     </div>
+
+    <!-- GameBoy -->
+    <div class="gameboy" aria-hidden="true">
+      <!-- Cartridge -->
+      <div class="cartbridge" aria-hidden="true">
+        <div class="cartbridge__top"></div>
+        <div class="cartbridge__logo-container">
+          <div class="cartbridge__top-left">
+            <div class="cartbridge__line"></div>
+            <div class="cartbridge__line"></div>
+            <div class="cartbridge__line"></div>
+            <div class="cartbridge__line"></div>
+          </div>
+          <div class="cartbridge__top-right">
+            <div class="cartbridge__line"></div>
+            <div class="cartbridge__line"></div>
+            <div class="cartbridge__line"></div>
+            <div class="cartbridge__line"></div>
+          </div>
+        </div>
+        <div class="cartbridge__sticker-container"></div>
+        <div class="cartbridge__left"></div>
+        <div class="cartbridge__right"></div>
+        <div class="cartbridge__arrow"></div>
+      </div>
+      <!-- /Cartridge -->
+      <div class="side one"></div>
+      <div class="side two">
+        <div class="deep">◄Off•On►</div>
+        <div class="line"></div>
+        <div class="line small"></div>
+        <div class="line small b"></div>
+        <div class="display">
+          <div class="line"></div>
+          <div class="line t"><span>DOT MATRIX WITH STEREO SOUND</span></div>
+          <div class="line d"></div>
+          <div class="line e"></div>
+          <div class="pwbtn"><span>BATTERY</span></div>
+          <div class="innerdisplay">
+            <!-- Game Canvas -->
+            <canvas id="gameCanvas"></canvas>
+            <!-- /Game Canvas -->
+          </div>
+        </div>
+        <div class="gbtext">Nintendo<span>GAME BOY<p>TM</p></span>
+        </div>
+        <div class="crossa"></div>
+        <div class="crossb"></div>
+        <div class="select"><span>SELECT</span></div>
+        <div class="start"><span>START</span></div>
+        <div class="btnb"><span>B</span></div>
+        <div class="btna"><span>A</span></div>
+        <div class="sline a"></div>
+        <div class="sline b"></div>
+        <div class="sline c"></div>
+        <div class="sline d"></div>
+        <div class="sline e"></div>
+        <div class="sline f"></div>
+        <div class="deep b">PHOMES</div>
+      </div>
+      <div class="side three">
+        <div class="connector"></div>
+      </div>
+      <div class="side four">
+        <div class="powerbtn"></div>
+        <div class="line top"></div>
+      </div>
+      <div class="side five">
+        <div class="connector"></div>
+        <div class="volume"></div>
+      </div>
+      <div class="side six">
+        <div class="headphones"></div>
+      </div>
+    </div>
+    <!-- /GameBoy -->
 
     <!-- Touch Controls (Mobile Only) -->
     <div id="touch-controls" class="touch-controls hidden">

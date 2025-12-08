@@ -288,7 +288,18 @@ export class Game {
 
       case GameState.GAME_OVER:
         if (input.actionJustPressed || input.pauseJustPressed) {
-          this.init();
+          // Return to title screen instead of restarting the game
+          this.state.currentState = GameState.MENU;
+          this.uiManager.setState(GameState.MENU);
+          // Reset state for potential new game
+          this.state.score = 0;
+          this.state.lives = 3;
+          this.state.level = CONFIG.DEV_MODE ? 0 : 1;
+          this.state.isNewHighScore = false;
+          this.lastLifeBonusThreshold = 0;
+          // Clear entities
+          this.entityManager.clear();
+          this.player = null;
         }
         break;
 

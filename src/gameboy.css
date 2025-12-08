@@ -1,0 +1,380 @@
+@import url(https://fonts.googleapis.com/css?family=Press+Start+2P);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:500,500italic);
+
+*{backface-visibility:hidden;}
+
+.hover{
+  font-family: 'Press Start 2P', cursive;
+  font-size:37px;
+  color:#f2f2f2;
+  padding:110px;
+  width:44%;
+  line-height:73px;
+  text-align:center;
+}
+
+.gameboy{
+  position:absolute;
+  left: 50%;
+  bottom: 0;
+  margin:auto;
+  transform: translate3d(-50%, 80%, 0);
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  height: 1101px;
+  width: 660px;
+  will-change: transform;
+}
+
+.cube:hover .pwbtn{
+  background:darkred;
+  box-shadow: inset 4px 4px 18px 0px rgba(0,0,0,0.50);
+}
+
+.cube:hover .nintendo{
+  top:110px;
+}
+.cube:hover .byrune{
+  top:147px;
+}
+
+.side{
+  position:absolute;
+  border:4px solid rgba(0,0,0,0.05);
+  opacity:1;
+  filter:alpha(opacity=NaN);
+  left:0;right:0;top:0;bottom:0;
+  margin:auto;
+  height:367px;
+  width:367px;
+  transform-style: preserve-3d;
+}
+
+.side.one{
+  background:#a09f9c;
+  border-radius:37px;
+  border-bottom-right-radius:110px;
+  height:1101px;
+  width:660px;
+  transform: translateZ( -92px );
+}
+.side.two{
+  background: linear-gradient(-55deg, #a09f9c 89%, #6d6b6b 100%);
+  border-radius:37px;
+  border-bottom-right-radius:110px;
+  height:1101px;
+  width:660px;
+  transform: translateZ( 92px );
+
+}
+.side.three{
+  background:#a09f9c;
+  height:1028px;
+  width:183px;
+  top:37px;
+  bottom:37px;
+  transform: rotateY( -90deg ) translateZ( 330px );
+}
+.side.four{
+  background:#a09f9c;
+  height:183px;
+  width:605px;
+  transform: rotateX( 90deg ) translateZ( 550px );
+}
+.side.five{
+  background:#a09f9c;
+  height:973px;
+  width:183px;
+  bottom:92px;
+  top:37px;
+  transform: rotateY( 90deg ) translateZ( 330px );
+}
+.side.six{
+  background:#a09f9c;
+  height:183px;
+  width:532px;
+  right:92px;
+  left:37px;
+  transform: rotateX( -90deg ) translateZ( 550px );
+}
+
+.deep, .deep.b{
+  position:absolute;
+  text-align:center;
+  left:73px;
+  height:29px;
+  width:92px;
+  background:#b5b4b0;
+  border-radius:37px;
+  box-shadow: inset 0px 11px 18px 0px rgba(0,0,0,0.22);
+  font-size:18px;
+  line-height:29px;
+  color:#a09f9c
+}
+.deep.b{
+  bottom:4px;
+  left:294px;
+}
+
+.line{
+  position:absolute;
+  top:37px;
+  width:100%;
+  height:7px;
+  background:#d5d4ce;
+  box-shadow: 4px 4px 4px grey;
+  opacity:.3;
+  filter:alpha(opacity=30);
+}
+
+.line.small, .line.small.b{
+  width:7px;
+  height:33px;
+  top:0;
+  left:37px;
+  box-shadow: 4px 0px 15px;
+}
+
+.line.small.b{
+  left:initial;
+  right:37px;
+}
+
+.display .line{
+  background:#800050;
+   box-shadow: 0px 0px 0px;
+  width:147px;
+  height:7px;
+  top:18px;
+  left:18px;
+}
+.display .line.t{
+  background:#0e0050;
+  box-shadow: 0px 0px 0px;
+  width:147px;
+  height:7px;
+  top:29px;
+  left:18px;
+}
+
+.display .line.t span{
+  position:absolute;
+  width:367px;
+  left:165px;
+  top:-11px;
+  font-size:15px;
+  color:lightgray;
+  font-weight:100;
+}
+
+.display .line.d{
+  width:84px;
+  left:initial;
+  right:18px;
+}
+
+.display .line.e{
+  background:#0e0050;
+  width:84px;
+  top:29px;
+  left:initial;
+  right:18px;
+}
+
+.display{
+  position:absolute;
+  left:0;right:0;top:92px;margin:auto;
+  border: 4px solid gray;
+  border-radius:18px;
+  border-bottom-right-radius:110px;
+  height:422px;
+  width:550px;
+  background:#535360;
+}
+
+.pwbtn{
+  position:absolute;
+  left:26px;
+  top:110px;
+  height:18px;
+  width:18px;
+  border-radius:18px;
+  background-color:#222;
+}
+
+.pwbtn span{
+  font-size:15px;
+  color:gray;
+  margin-left:-7px;
+  transform: translate3d(0, 30px, 0);
+  display: block;
+}
+
+.innerdisplay{
+  position:absolute;
+  top:0;bottom:0;left:0;right:0;margin:auto;
+  border: 4px solid black;
+  height:296px;
+  width:328px;
+  background:#606d01;
+  box-shadow: inset 37px 26px 18px -22px rgba(0,0,0,0.45);
+  text-align:center;
+  overflow:hidden;
+}
+
+.nintendo, .byrune{
+  position:absolute;
+  width:257px;
+  height:62px;
+  left:0;right:0;top:-73px;margin:auto;
+  font-family: 'Press Start 2P', cursive;
+  font-size:26px;
+  color:#222;
+  border-radius:37px;
+}
+.byrune{
+  top:-37px;
+  font-size:22px;
+}
+
+.gbtext{
+  position:absolute;
+  display:inline-block;
+  top:521px;
+  left:55px;
+  font-size:33px;
+  color:#170079;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.gbtext span{
+  font-size:40px;
+  font-family: 'Ubuntu', sans-serif;
+  font-style:italic;
+}
+
+.gbtext span p{
+  position:absolute;
+  bottom:-18px;
+  right:-29px;
+  font-size:18px;
+  font-style:initial;
+}
+
+.crossa, .crossb{
+  position:absolute;
+  border-radius:11px;
+  box-shadow:4px 4px 4px ;
+  width:147px;
+  height:55px;
+  background:#111;
+  bottom:341px;
+  left:55px;
+  transform:translateZ(15px);
+}
+
+.select, .start{
+  position:absolute;
+  bottom:165px;
+  left:238px;
+  width:73px;
+  height:15px;
+  background:grey;
+  font-size:18px;
+  transform:rotate(-15deg);
+  box-shadow: 0px 0px 18px #222;
+  transform:translateZ(15px) rotate(-15deg);
+}
+
+.select span, .start span{
+  color:#170079;
+  position:absolute;
+  top:26px;
+  left:7px;
+}
+
+.start{
+  left:349px;
+}
+
+.crossb{
+  bottom:294px;
+  left:99px;
+  height:147px;
+  width:55px;
+}
+
+.btna, .btnb{
+  position:absolute;
+  right:37px;
+  bottom:330px;
+  height:103px;
+  width:103px;
+  border-radius:73px;
+  background:#7a2859;
+  box-shadow: inset 7px 7px 18px 0px rgba(255,255,255,0.21);
+}
+
+.btnb{
+  right:176px;
+  bottom:283px;
+}
+.btna span, .btnb span{
+  color:#170079;
+  position:absolute;
+  top:110px;
+  left:81px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size:33px;
+  transform:rotate(-28deg);
+  text-shadow: 4px 4px 7px grey;
+}
+
+.sline{
+  position:absolute;
+  height:7px;
+  width:95px;
+  border-radius:7px;
+  background:gray;
+  bottom:48px;
+  right:110px;
+  transform:rotate(55deg);
+}
+
+.sline.b{right:88px;bottom:66px;}
+.sline.c{right:66px;bottom:81px;}
+.sline.d{right:44px;bottom:99px;}
+.sline.e{right:22px;bottom:114px;}
+.sline.f{right:0px;bottom:132px;}
+
+.powerbtn{
+  position:absolute;
+  height:37px;
+  width:37px;
+  background:grey;
+  bottom:73px;
+  right:37px;
+  border-radius:37px;
+}
+
+.volume, .connector{
+  position:absolute;
+  left:92px;
+  top:257px;
+  height:73px;
+  width:37px;
+  background:#000;
+}
+
+.volume{
+  top:147px;
+  width:18px;
+}
+
+.headphones{
+  height:37px;
+  width:37px;
+  border-radius:37px;
+  background:#222;
+  top:0;left:0;right:0;margin:auto;
+}

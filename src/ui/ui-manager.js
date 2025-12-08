@@ -649,10 +649,12 @@ export class UIManager {
     ctx.font = '14px "Courier New", monospace';
     const blinkOpacity = Math.abs(Math.sin(Date.now() / 500));
     ctx.fillStyle = `rgba(155, 188, 15, ${blinkOpacity})`;
-    ctx.fillText('PRESS SPACE TO START', centerX, centerY + 100);
+    // Show "START" if gamepad is connected, "SPACE" otherwise
+    const buttonText = this.game.inputManager.isGamepadConnected() ? 'START' : 'SPACE';
+    ctx.fillText(`PRESS ${buttonText} TO START`, centerX, centerY + 100);
 
     // Credits
-    ctx.font = '8px "Courier New", monospace';
+    ctx.font = '12px "Courier New", monospace';
     ctx.fillStyle = CONFIG.COLORS.MID_DARK;
     ctx.fillText('Game Boy Style Recreation', centerX, CONFIG.CANVAS_HEIGHT - 10);
 
@@ -728,7 +730,8 @@ export class UIManager {
     // Restart instruction
     ctx.font = '14px "Courier New", monospace';
     ctx.fillStyle = CONFIG.COLORS.LIGHT;
-    ctx.fillText('PRESS SPACE TO RESTART', centerX, centerY + 95);
+    const restartButtonText = this.game.inputManager.isGamepadConnected() ? 'START' : 'SPACE';
+    ctx.fillText(`PRESS ${restartButtonText} TO RESTART`, centerX, centerY + 95);
 
     ctx.textAlign = 'left';
   }
@@ -834,7 +837,8 @@ export class UIManager {
       ctx.font = '14px "Courier New", monospace';
       ctx.fillStyle = CONFIG.COLORS.LIGHT;
       const messageY = this.game.state.isNewHighScore ? bottomY - 50 : bottomY - 25;
-      ctx.fillText('PRESS SPACE TO CONTINUE', centerX, messageY);
+      const continueButtonText = this.game.inputManager.isGamepadConnected() ? 'START' : 'SPACE';
+      ctx.fillText(`PRESS ${continueButtonText} TO CONTINUE`, centerX, messageY);
 
       ctx.textAlign = 'left';
     }
@@ -901,7 +905,8 @@ export class UIManager {
       ctx.font = 'bold 16px "Courier New", monospace';
       const blinkOpacity = 0.5 + Math.abs(Math.sin(Date.now() / 400)) * 0.5;
       ctx.fillStyle = `rgba(155, 188, 15, ${blinkOpacity})`;
-      ctx.fillText('PRESS SPACE TO CONTINUE', centerX, centerY + 35);
+      const levelContinueButtonText = this.game.inputManager.isGamepadConnected() ? 'START' : 'SPACE';
+      ctx.fillText(`PRESS ${levelContinueButtonText} TO CONTINUE`, centerX, centerY + 35);
     }
 
     ctx.textAlign = 'left';
