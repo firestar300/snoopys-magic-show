@@ -3,9 +3,8 @@ import { defineConfig } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig({
   // Base path for GitHub Pages deployment
-  // Use '/' for custom domain (snoopys-magic-show.firestar300.github.io)
-  // Change to '/repo-name/' if deploying to firestar300.github.io/repo-name/
-  base: '/',
+  // For project pages: /repo-name/
+  base: '/snoopys-magic-show/',
 
   build: {
     // Output directory
