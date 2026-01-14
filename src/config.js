@@ -34,8 +34,8 @@ export const CONFIG = {
     LIGHT: '#9bbc0f',
   },
 
-  // Developer mode
-  DEV_MODE: true,
+  // Developer mode (automatically disabled in production builds)
+  DEV_MODE: import.meta.env.DEV,
 
   // Game settings
   FPS: 60,
