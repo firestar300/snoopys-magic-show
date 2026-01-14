@@ -1,6 +1,7 @@
 import { CONFIG } from '../config.js';
 import { GameState } from './game-states.js';
 import { devLog } from '../utils/dev-logger.js';
+import { getAssetPath } from '../utils/asset-path.js';
 
 /**
  * Manages UI overlays and screens
@@ -27,7 +28,7 @@ export class UIManager {
 
     // End screen background image
     this.endBackground = new Image();
-    this.endBackground.src = '/sprites/end-background.png';
+    this.endBackground.src = getAssetPath('sprites/end-background.png');
     this.endBackgroundLoaded = false;
     this.endBackgroundProcessed = null; // Will hold the Game Boy palette version
 

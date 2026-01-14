@@ -1,4 +1,5 @@
 import { devLog, devWarn } from '../utils/dev-logger.js';
+import { getAssetPath } from '../utils/asset-path.js';
 
 /**
  * Manages game audio (music and sound effects)
@@ -60,60 +61,60 @@ export class AudioManager {
    */
   loadAll() {
     // UI music
-    this.loadMusic('title', '/music/01-BGM-01.mp3');
+    this.loadMusic('title', getAssetPath('music/01-BGM-01.mp3'));
 
     // Power-up music
-    this.loadMusic('invincible', '/music/22-BGM-12.mp3');
-    this.loadMusic('frozen-time', '/music/23-BGM-13.mp3');
+    this.loadMusic('invincible', getAssetPath('music/22-BGM-12.mp3'));
+    this.loadMusic('frozen-time', getAssetPath('music/23-BGM-13.mp3'));
 
     // Game state music
-    this.loadMusic('miss', '/music/25-Jingle-11.mp3', false); // Don't loop defeat music
-    this.loadMusic('game-over', '/music/26-Jingle-12.mp3', false); // Don't loop game over music
-    this.loadMusic('stage-clear', '/music/24-BGM-14.mp3', false); // Generic stage clear music
-    this.loadMusic('ending', '/music/29-BGM-16.mp3', true); // Ending screen music (loops)
+    this.loadMusic('miss', getAssetPath('music/25-Jingle-11.mp3'), false); // Don't loop defeat music
+    this.loadMusic('game-over', getAssetPath('music/26-Jingle-12.mp3'), false); // Don't loop game over music
+    this.loadMusic('stage-clear', getAssetPath('music/24-BGM-14.mp3'), false); // Generic stage clear music
+    this.loadMusic('ending', getAssetPath('music/29-BGM-16.mp3'), true); // Ending screen music (loops)
 
     // Stage music (all 9 stages)
-    this.loadMusic('stage-bgm-2', '/music/02-BGM-02.mp3');
-    this.loadMusic('stage-clear-1', '/music/03-Jingle-01.mp3', false);
+    this.loadMusic('stage-bgm-2', getAssetPath('music/02-BGM-02.mp3'));
+    this.loadMusic('stage-clear-1', getAssetPath('music/03-Jingle-01.mp3'), false);
 
-    this.loadMusic('stage-bgm-3', '/music/04-BGM-03.mp3');
-    this.loadMusic('stage-clear-2', '/music/05-Jingle-02.mp3', false);
+    this.loadMusic('stage-bgm-3', getAssetPath('music/04-BGM-03.mp3'));
+    this.loadMusic('stage-clear-2', getAssetPath('music/05-Jingle-02.mp3'), false);
 
-    this.loadMusic('stage-bgm-4', '/music/06-BGM-04.mp3');
-    this.loadMusic('stage-clear-3', '/music/07-Jingle-03.mp3', false);
+    this.loadMusic('stage-bgm-4', getAssetPath('music/06-BGM-04.mp3'));
+    this.loadMusic('stage-clear-3', getAssetPath('music/07-Jingle-03.mp3'), false);
 
-    this.loadMusic('stage-bgm-5', '/music/08-BGM-05.mp3');
-    this.loadMusic('stage-clear-4', '/music/09-Jingle-04.mp3', false);
+    this.loadMusic('stage-bgm-5', getAssetPath('music/08-BGM-05.mp3'));
+    this.loadMusic('stage-clear-4', getAssetPath('music/09-Jingle-04.mp3'), false);
 
-    this.loadMusic('stage-bgm-6', '/music/10-BGM-06.mp3');
-    this.loadMusic('stage-clear-5', '/music/11-Jingle-05.mp3', false);
+    this.loadMusic('stage-bgm-6', getAssetPath('music/10-BGM-06.mp3'));
+    this.loadMusic('stage-clear-5', getAssetPath('music/11-Jingle-05.mp3'), false);
 
-    this.loadMusic('stage-bgm-7', '/music/12-BGM-07.mp3');
-    this.loadMusic('stage-clear-6', '/music/13-Jingle-06.mp3', false);
+    this.loadMusic('stage-bgm-7', getAssetPath('music/12-BGM-07.mp3'));
+    this.loadMusic('stage-clear-6', getAssetPath('music/13-Jingle-06.mp3'), false);
 
-    this.loadMusic('stage-bgm-8', '/music/14-BGM-08.mp3');
-    this.loadMusic('stage-clear-7', '/music/15-Jingle-07.mp3', false);
+    this.loadMusic('stage-bgm-8', getAssetPath('music/14-BGM-08.mp3'));
+    this.loadMusic('stage-clear-7', getAssetPath('music/15-Jingle-07.mp3'), false);
 
-    this.loadMusic('stage-bgm-9', '/music/16-BGM-09.mp3');
-    this.loadMusic('stage-clear-8', '/music/17-Jingle-08.mp3', false);
+    this.loadMusic('stage-bgm-9', getAssetPath('music/16-BGM-09.mp3'));
+    this.loadMusic('stage-clear-8', getAssetPath('music/17-Jingle-08.mp3'), false);
 
-    this.loadMusic('stage-bgm-10', '/music/18-BGM-10.mp3');
-    this.loadMusic('stage-clear-9', '/music/19-Jingle-09.mp3', false);
+    this.loadMusic('stage-bgm-10', getAssetPath('music/18-BGM-10.mp3'));
+    this.loadMusic('stage-clear-9', getAssetPath('music/19-Jingle-09.mp3'), false);
 
     // stage-bgm-11 with custom loop point
-    this.loadMusic('stage-bgm-11', '/music/20-BGM-11.mp3', true, 1.75  );
-    this.loadMusic('stage-clear-10', '/music/21-Jingle-10.mp3', false);
+    this.loadMusic('stage-bgm-11', getAssetPath('music/20-BGM-11.mp3'), true, 1.75);
+    this.loadMusic('stage-clear-10', getAssetPath('music/21-Jingle-10.mp3'), false);
 
     // Sound effects
-    this.loadSfx('powerup-time', '/sfx/34.mp3');
-    this.loadSfx('powerup-god', '/sfx/34.mp3');
-    this.loadSfx('ball-collision', '/sfx/35.mp3');
-    this.loadSfx('woodstock-collect', '/sfx/36.mp3');
-    this.loadSfx('block-break', '/sfx/37.mp3');
-    this.loadSfx('block-break-item', '/sfx/38.mp3');
-    this.loadSfx('pause', '/sfx/39.mp3');
-    this.loadSfx('timer', '/sfx/40.mp3');
-    this.loadSfx('teleport', '/sfx/41.mp3');
+    this.loadSfx('powerup-time', getAssetPath('sfx/34.mp3'));
+    this.loadSfx('powerup-god', getAssetPath('sfx/34.mp3'));
+    this.loadSfx('ball-collision', getAssetPath('sfx/35.mp3'));
+    this.loadSfx('woodstock-collect', getAssetPath('sfx/36.mp3'));
+    this.loadSfx('block-break', getAssetPath('sfx/37.mp3'));
+    this.loadSfx('block-break-item', getAssetPath('sfx/38.mp3'));
+    this.loadSfx('pause', getAssetPath('sfx/39.mp3'));
+    this.loadSfx('timer', getAssetPath('sfx/40.mp3'));
+    this.loadSfx('teleport', getAssetPath('sfx/41.mp3'));
   }
 
   /**

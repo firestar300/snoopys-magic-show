@@ -1,4 +1,5 @@
 import { devLog, devError } from '../utils/dev-logger.js';
+import { getAssetPath } from '../utils/asset-path.js';
 
 /**
  * Manages sprite loading and rendering
@@ -23,18 +24,18 @@ export class SpriteManager {
    */
   async loadAll() {
     const spriteFiles = [
-      { name: 'snoopy', path: '/sprites/snoopy.png' },
-      { name: 'snoopy_victory', path: '/sprites/snoopy_victory.png' },
-      { name: 'spike', path: '/sprites/spike.png' },
-      { name: 'title_screen_snoopy', path: '/sprites/title-screen-snoopy.png' },
-      { name: 'woodstock', path: '/sprites/woodstock.png' },
-      { name: 'end_woodstock', path: '/sprites/end-woodstock.png' },
-      { name: 'end_spike', path: '/sprites/end-spike.png' },
-      { name: 'ball', path: '/sprites/ball.png' },
-      { name: 'blocks', path: '/sprites/blocks.png' },
-      { name: 'powerups', path: '/sprites/powerups.png' },
-      { name: 'timer', path: '/sprites/timer.png' },
-      { name: 'ready_go', path: '/sprites/ready-go.png' },
+      { name: 'snoopy', path: getAssetPath('sprites/snoopy.png') },
+      { name: 'snoopy_victory', path: getAssetPath('sprites/snoopy_victory.png') },
+      { name: 'spike', path: getAssetPath('sprites/spike.png') },
+      { name: 'title_screen_snoopy', path: getAssetPath('sprites/title-screen-snoopy.png') },
+      { name: 'woodstock', path: getAssetPath('sprites/woodstock.png') },
+      { name: 'end_woodstock', path: getAssetPath('sprites/end-woodstock.png') },
+      { name: 'end_spike', path: getAssetPath('sprites/end-spike.png') },
+      { name: 'ball', path: getAssetPath('sprites/ball.png') },
+      { name: 'blocks', path: getAssetPath('sprites/blocks.png') },
+      { name: 'powerups', path: getAssetPath('sprites/powerups.png') },
+      { name: 'timer', path: getAssetPath('sprites/timer.png') },
+      { name: 'ready_go', path: getAssetPath('sprites/ready-go.png') },
     ];
 
     this.loadingPromises = spriteFiles.map(sprite => this.loadSprite(sprite.name, sprite.path));

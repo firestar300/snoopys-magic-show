@@ -28,7 +28,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url(./images/cartbridge-texture.avif);
+    background-image: url(./assets/images/cartbridge-texture.avif);
     mix-blend-mode: multiply;
 }
 
@@ -125,7 +125,7 @@
     top: 113px;
     left: 45px;
     background-color: #847B82;
-    background-image: url(./images/gb-sticker.png);
+    background-image: url(./assets/images/gb-sticker.png);
     background-size: cover;
     width: 321px;
     height: 282px;
