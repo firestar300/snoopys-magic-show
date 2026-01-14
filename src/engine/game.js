@@ -114,6 +114,13 @@ export class Game {
   }
 
   /**
+   * Check if game is running
+   */
+  isRunning() {
+    return this.animationFrameId !== null;
+  }
+
+  /**
    * Initialize/Reset the game
    */
   async init() {
@@ -822,15 +829,15 @@ export class Game {
    * Update UI elements
    */
   updateUI() {
-    document.getElementById('score').textContent = `Score: ${this.state.score}`;
-    document.getElementById('lives').textContent = `Lives: ${this.state.lives}`;
-    document.getElementById('level').textContent = `Level: ${this.state.level}`;
+    const scoreValue = document.querySelector('#score .ui-value');
+    const livesValue = document.querySelector('#lives .ui-value');
+    const levelValue = document.querySelector('#level .ui-value');
+    const highScoreValue = document.querySelector('#high-score .ui-value');
 
-    // Update high score display if it exists
-    const highScoreElement = document.getElementById('high-score');
-    if (highScoreElement) {
-      highScoreElement.textContent = `High Score: ${this.state.highScore}`;
-    }
+    if (scoreValue) scoreValue.textContent = this.state.score;
+    if (livesValue) livesValue.textContent = this.state.lives;
+    if (levelValue) levelValue.textContent = this.state.level;
+    if (highScoreValue) highScoreValue.textContent = this.state.highScore;
   }
 
   /**
