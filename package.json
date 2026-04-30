@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^7.2.4"
+    "vite": "^8.0.10"
+  },
+  "volta": {
+    "node": "24.15.0"
   }
 }
