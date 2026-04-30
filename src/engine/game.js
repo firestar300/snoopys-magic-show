@@ -886,20 +886,25 @@ export class Game {
     const oldThreshold = Math.floor(oldScore / LIFE_BONUS_THRESHOLD);
     const newThreshold = Math.floor(this.state.score / LIFE_BONUS_THRESHOLD);
 
-    // If we crossed a new threshold, give a bonus life
+    // If we crossed a new threshold, give a bonus life (with celebratory SFX)
     if (newThreshold > oldThreshold) {
-      this.state.lives++;
-
-      // Play a sound for bonus life (using power-up god sound as it's celebratory)
-      if (this.audioManager) {
-        this.audioManager.playSfx('pause');
-      }
-
-      // Log in dev mode
+      this.gainLife({ playBonusSfx: true });
       devLog(`[BONUS] Life bonus! Score: ${this.state.score} - Lives: ${this.state.lives}`);
     }
 
     this.updateUI();
+  }
+
+  /**
+   * Add one life.
+   * @param {{ playBonusSfx?: boolean }} [options] - If playBonusSfx is false, skip the bonus-life SFX (e.g. level clear reward).
+   */
+  gainLife(options = {}) {
+    const playBonusSfx = options.playBonusSfx !== false;
+    this.state.lives++;
+    if (playBonusSfx && this.audioManager) {
+      this.audioManager.playSfx('pause');
+    }
   }
 
   /**
@@ -956,6 +961,8 @@ export class Game {
    * Mark level as complete
    */
   levelComplete() {
+    this.gainLife({ playBonusSfx: false });
+    this.updateUI();
     this.state.currentState = GameState.LEVEL_COMPLETE;
     this.uiManager.setState(GameState.LEVEL_COMPLETE, {
       game: this
