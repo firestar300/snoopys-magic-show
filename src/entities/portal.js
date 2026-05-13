@@ -15,6 +15,9 @@ export class Portal extends Entity {
 		// Hidden state (portal inside a block)
 		this.hidden = hidden;
 
+		/** True only if the level placed this portal inside a block (can be covered again after reveal). */
+		this.embeddedInBlockInitially = hidden;
+
 		// Activation delay (prevents immediate teleportation when revealed)
 		this.activationDelay = 0;
 		this.activationDelayDuration = 0.3; // 300ms delay after reveal before portal becomes active

@@ -574,6 +574,7 @@ export class LevelManager {
           // Set the final tile at destination (convert to opposite pushable type for bidirectional pushing)
           const oppositeTileType = this.getOppositePushableType(block.tileType);
           this.setTileAt(block.destX, block.destY, oppositeTileType);
+          this.tryHidePortalUnderPushableBlock(block.destX, block.destY, entityManager);
 
           // Remove from animation array
           this.animatingBlocks.splice(i, 1);
@@ -586,6 +587,7 @@ export class LevelManager {
           // Bounce complete, restore block at original position
           block.bounceProgress = 1;
           this.setTileAt(block.fromX, block.fromY, block.tileType);
+          this.tryHidePortalUnderPushableBlock(block.fromX, block.fromY, entityManager);
 
           // Remove from animation array
           this.animatingBlocks.splice(i, 1);
@@ -754,6 +756,29 @@ export class LevelManager {
   hidePortalInBlock(gridX, gridY, portal) {
     const key = `${gridX},${gridY}`;
     this.hiddenPortals.set(key, portal);
+  }
+
+  /**
+   * When a pushable block settles on a cell, re-hide a portal that was revealed from under a block
+   * so it does not draw above the tile (entities render after the level grid).
+   */
+  tryHidePortalUnderPushableBlock(gridX, gridY, entityManager) {
+    if (!entityManager || !this.isPushable(gridX, gridY)) {
+      return;
+    }
+
+    for (const portal of entityManager.getEntitiesByType('portal')) {
+      if (!portal.embeddedInBlockInitially || portal.hidden) {
+        continue;
+      }
+      if (portal.getGridX() !== gridX || portal.getGridY() !== gridY) {
+        continue;
+      }
+
+      portal.hidden = true;
+      this.hidePortalInBlock(gridX, gridY, portal);
+      break;
+    }
   }
 
   /**
