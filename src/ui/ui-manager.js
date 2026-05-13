@@ -118,7 +118,6 @@ export class UIManager {
       }
     ];
 
-    // End screen Spike animation
     this.endingSpike = {
       frame: 2, // Start with walk animation (frames 2-4)
       frameTimer: 0,
@@ -140,6 +139,27 @@ export class UIManager {
       totalTimer: 0,
       active: false
     };
+
+    /** @type {'main' | 'password'} */
+    this.menuScreen = 'main';
+    /** 0 = Game Start, 1 = Password */
+    this.menuSelection = 0;
+    /** Four password characters (original GB uses 4-letter codes) */
+    this.passwordSlots = ['', '', '', ''];
+    this.passwordCursor = 0;
+    /** Timestamp (ms) until which invalid-password feedback is shown */
+    this.passwordInvalidUntil = 0;
+  }
+
+  /**
+   * Reset title menu to the main entry screen (used when opening the menu)
+   */
+  resetTitleMenuState() {
+    this.menuScreen = 'main';
+    this.menuSelection = 0;
+    this.passwordSlots = ['', '', '', ''];
+    this.passwordCursor = 0;
+    this.passwordInvalidUntil = 0;
   }
 
   /**
@@ -212,6 +232,7 @@ export class UIManager {
     // Start title screen music when entering MENU
     if (state === GameState.MENU && previousState !== GameState.MENU) {
       audioManager.playMusic('title');
+      this.resetTitleMenuState();
     }
 
     // Stop title screen music when leaving MENU
@@ -608,6 +629,11 @@ export class UIManager {
    * Render the main menu
    */
   renderMenu() {
+    if (this.menuScreen === 'password') {
+      this.renderPasswordScreen();
+      return;
+    }
+
     const ctx = this.renderer.ctx;
     const centerX = CONFIG.CANVAS_WIDTH / 2;
     const centerY = CONFIG.CANVAS_HEIGHT / 2;
@@ -620,8 +646,8 @@ export class UIManager {
     ctx.fillStyle = CONFIG.COLORS.LIGHT;
     ctx.font = 'bold 24px "Courier New", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText("SNOOPY'S", centerX, centerY - 90);
-    ctx.fillText('MAGIC SHOW', centerX, centerY - 60);
+    ctx.fillText("SNOOPY'S", centerX, centerY - 110);
+    ctx.fillText('MAGIC SHOW', centerX, centerY - 80);
 
     // Animated Snoopy sprite from title screen
     const spriteManager = this.game.spriteManager;
@@ -631,7 +657,7 @@ export class UIManager {
       const spriteWidth = 48 * 2;
       const spriteHeight = 64 * 2;
       const spriteX = centerX - spriteWidth / 2;
-      const spriteY = centerY - spriteHeight / 2 + 20;
+      const spriteY = centerY - spriteHeight / 2;
 
       spriteManager.drawTitleScreenSnoopy(
         this.renderer,
@@ -646,20 +672,83 @@ export class UIManager {
       this.drawMenuSnoopy(centerX, centerY + 10);
     }
 
-    // Instructions with blink effect
+    const padConnected = this.game.inputManager.isGamepadConnected();
+    const yBase = centerY + 86;
+    const items = ['GAME START', 'PASSWORD'];
+
     ctx.font = '14px "Courier New", monospace';
-    const blinkOpacity = Math.abs(Math.sin(Date.now() / 500));
-    ctx.fillStyle = `rgba(155, 188, 15, ${blinkOpacity})`;
-    // Show "START" if gamepad is connected, "SPACE" otherwise
-    const buttonText = this.game.inputManager.isGamepadConnected() ? 'START' : 'SPACE';
-    ctx.fillText(`PRESS ${buttonText} TO START`, centerX, centerY + 100);
-
-    // Credits
-    ctx.font = '12px "Courier New", monospace';
-    ctx.fillStyle = CONFIG.COLORS.MID_DARK;
-    ctx.fillText('Game Boy Style Recreation', centerX, CONFIG.CANVAS_HEIGHT - 10);
-
     ctx.textAlign = 'left';
+    const maxW = Math.max(
+      ctx.measureText(`> ${items[0]}`).width,
+      ctx.measureText(`> ${items[1]}`).width
+    );
+    const menuX = centerX - maxW / 2;
+
+    for (let i = 0; i < items.length; i++) {
+      const selected = this.menuSelection === i;
+      ctx.fillStyle = selected ? CONFIG.COLORS.LIGHT : CONFIG.COLORS.MID_LIGHT;
+      ctx.fillText(`${selected ? '>' : ' '} ${items[i]}`, menuX, yBase + i * 18);
+    }
+
+    ctx.textAlign = 'center';
+    ctx.font = '11px "Courier New", monospace';
+    const navHint = padConnected ? 'D-PAD UP/DOWN  A TO CHOOSE  START TO CONFIRM' : 'ARROWS UP/DOWN  SPACE TO CONFIRM';
+    ctx.fillText(navHint, centerX, CONFIG.CANVAS_HEIGHT - 12);
+  }
+
+  /**
+   * Password entry screen (original 4-character level codes)
+   */
+  renderPasswordScreen() {
+    const ctx = this.renderer.ctx;
+    const centerX = CONFIG.CANVAS_WIDTH / 2;
+    const centerY = CONFIG.CANVAS_HEIGHT / 2;
+
+    ctx.fillStyle = 'rgba(15, 56, 15, 0.9)';
+    ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+
+    const invalid = performance.now() < this.passwordInvalidUntil;
+    ctx.fillStyle = CONFIG.COLORS.LIGHT;
+    ctx.font = 'bold 18px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('PASSWORD', centerX, centerY - 72);
+
+    ctx.font = 'bold 22px "Courier New", monospace';
+    const slotW = 28;
+    const totalW = 4 * slotW + 3 * 6;
+    const startX = centerX - totalW / 2;
+    const slotY = centerY - 28;
+
+    for (let i = 0; i < 4; i++) {
+      const x = startX + i * (slotW + 6);
+      const ch = this.passwordSlots[i] || '_';
+      const cursorHere = this.passwordCursor === i;
+      ctx.strokeStyle = cursorHere ? CONFIG.COLORS.LIGHT : CONFIG.COLORS.MID_DARK;
+      ctx.lineWidth = cursorHere ? 2 : 1;
+      ctx.strokeRect(x, slotY, slotW, 32);
+      ctx.fillStyle = CONFIG.COLORS.LIGHT;
+      ctx.fillText(ch === '' ? '_' : ch, x + slotW / 2, slotY + 24);
+    }
+
+    ctx.font = '11px "Courier New", monospace';
+    ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
+    ctx.textAlign = 'center';
+    const pad = this.game.inputManager.isGamepadConnected();
+    const hintLines = pad
+      ? ['D-PAD L/R: MOVE CURSOR', 'D-PAD U/D: CHANGE CHAR', 'START: OK   SELECT: BACK']
+      : ['KEYS: A-Z 0-9', 'BACKSPACE: DELETE', 'ENTER OR SPACE: OK', 'ESC: BACK'];
+    const hintY = centerY + 24;
+    const lineGap = 20;
+    hintLines.forEach((line, i) => {
+      ctx.fillText(line, centerX, hintY + i * lineGap);
+    });
+
+    const invalidY = hintY + hintLines.length * lineGap + 6;
+    if (invalid) {
+      ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
+      ctx.font = '12px "Courier New", monospace';
+      ctx.fillText('INVALID PASSWORD', centerX, invalidY);
+    }
   }
 
   /**

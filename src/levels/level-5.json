@@ -53,13 +53,23 @@
       "y": 5,
       "powerType": "invincible",
       "hidden": true,
-      "blockX": 7,
-      "blockY": 5,
       "targets": {
-        "up": { "x": 7, "y": 2 },
-        "down": { "x": 6, "y": 7 },
-        "left": { "x": 4, "y": 5 },
-        "right": { "x": 8, "y": 5 }
+        "up": {
+          "x": 7,
+          "y": 2
+        },
+        "down": {
+          "x": 6,
+          "y": 7
+        },
+        "left": {
+          "x": 4,
+          "y": 5
+        },
+        "right": {
+          "x": 8,
+          "y": 5
+        }
       }
     }
   ]

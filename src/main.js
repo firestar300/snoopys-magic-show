@@ -6,7 +6,7 @@ import { powerState } from './power-state.js';
 
 // Get the canvas element
 const canvas = document.getElementById('gameCanvas');
-const ui = document.getElementById('ui');
+const hudStack = document.getElementById('hud-stack');
 
 // Initialize power state (creates off screen)
 powerState.init(canvas);
@@ -17,9 +17,9 @@ const cartridgeDrag = initCartridgeDrag();
 // Show/hide UI based on power state
 powerState.onStateChange((state) => {
   if (state === 'on') {
-    ui?.classList.add('visible');
+    hudStack?.classList.add('visible');
   } else {
-    ui?.classList.remove('visible');
+    hudStack?.classList.remove('visible');
   }
 });
 

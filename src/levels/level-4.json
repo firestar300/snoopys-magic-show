@@ -53,13 +53,23 @@
       "y": 2,
       "powerType": "time",
       "hidden": true,
-      "blockX": 0,
-      "blockY": 2,
       "targets": {
-        "up": { "x": 3, "y": 2 },
-        "down": { "x": 0, "y": 5 },
-        "left": { "x": 0, "y": 5 },
-        "right": { "x": 0, "y": 5 }
+        "up": {
+          "x": 3,
+          "y": 2
+        },
+        "down": {
+          "x": 0,
+          "y": 5
+        },
+        "left": {
+          "x": 0,
+          "y": 5
+        },
+        "right": {
+          "x": 0,
+          "y": 5
+        }
       }
     }
   ]

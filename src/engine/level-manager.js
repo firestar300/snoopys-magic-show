@@ -21,6 +21,17 @@ export class LevelManager {
   }
 
   /**
+   * Load level from an in-memory object (e.g. validated custom JSON import).
+   * @param {object} levelData
+   */
+  loadLevelFromData(levelData) {
+    this.resetLevelState();
+    this.currentLevel =
+      typeof structuredClone === 'function' ? structuredClone(levelData) : JSON.parse(JSON.stringify(levelData));
+    this.parseTiles();
+  }
+
+  /**
    * Load a level by its number
    * @param {number} levelNumber - The level number to load
    * @param {boolean} useFallback - Whether to use fallback level if loading fails (default: true)

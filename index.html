@@ -9,26 +9,44 @@
 </head>
 <body>
   <div class="wrapper" id="app">
-    <div id="ui">
-      <div id="score" class="ui-item">
-        <span class="ui-icon">✦</span>
-        <span class="ui-label">SCORE</span>
-        <span class="ui-value" data-value="score">0</span>
+    <div id="hud-stack" class="hud-stack">
+      <div id="ui">
+        <div id="score" class="ui-item">
+          <span class="ui-icon">✦</span>
+          <span class="ui-label">SCORE</span>
+          <span class="ui-value" data-value="score">0</span>
+        </div>
+        <div id="high-score" class="ui-item">
+          <span class="ui-icon">★</span>
+          <span class="ui-label">BEST</span>
+          <span class="ui-value" data-value="high-score">0</span>
+        </div>
+        <div id="lives" class="ui-item">
+          <span class="ui-icon">♥</span>
+          <span class="ui-label">LIVES</span>
+          <span class="ui-value" data-value="lives">3</span>
+        </div>
+        <div id="level" class="ui-item">
+          <span class="ui-icon">▶</span>
+          <span class="ui-label">LEVEL</span>
+          <span class="ui-value" data-value="level">1</span>
+        </div>
       </div>
-      <div id="high-score" class="ui-item">
-        <span class="ui-icon">★</span>
-        <span class="ui-label">BEST</span>
-        <span class="ui-value" data-value="high-score">0</span>
-      </div>
-      <div id="lives" class="ui-item">
-        <span class="ui-icon">♥</span>
-        <span class="ui-label">LIVES</span>
-        <span class="ui-value" data-value="lives">3</span>
-      </div>
-      <div id="level" class="ui-item">
-        <span class="ui-icon">▶</span>
-        <span class="ui-label">LEVEL</span>
-        <span class="ui-value" data-value="level">1</span>
+      <div
+        id="custom-level-toolbar"
+        class="custom-level-toolbar"
+        aria-label="Import a custom level from JSON"
+      >
+        <span class="custom-level-toolbar__label">Custom level</span>
+        <input
+          type="file"
+          id="custom-level-import"
+          class="visually-hidden"
+          accept=".json,application/json"
+          tabindex="-1"
+        />
+        <label for="custom-level-import" class="custom-level-toolbar__btn">Choose JSON…</label>
+        <p id="custom-level-import-status" class="custom-level-import-status" role="status" aria-live="polite"></p>
       </div>
     </div>
 

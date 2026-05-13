@@ -7,8 +7,8 @@
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Unique identifier for the level",
-      "minimum": 0
+      "description": "Unique identifier for the level (editor exports may use -1 for untitled)",
+      "minimum": -1
     },
     "name": {
       "type": "string",
@@ -133,12 +133,12 @@
               },
               "x": {
                 "type": "integer",
-                "description": "X coordinate on the grid",
+                "description": "Grid X. When hidden is true, this is the block cell containing the power-up (same as visible spawn cell before reveal).",
                 "minimum": 0
               },
               "y": {
                 "type": "integer",
-                "description": "Y coordinate on the grid",
+                "description": "Grid Y. When hidden is true, this is the block cell containing the power-up (same as visible spawn cell before reveal).",
                 "minimum": 0
               },
               "powerType": {
@@ -148,18 +148,20 @@
               },
               "hidden": {
                 "type": "boolean",
-                "description": "Whether the power-up is initially hidden",
+                "description": "Whether the power-up is initially hidden inside the block at (x, y)",
                 "default": false
               },
-              "blockX": {
-                "type": "integer",
-                "description": "X coordinate of the block containing this power-up (if hidden)",
-                "minimum": 0
-              },
-              "blockY": {
-                "type": "integer",
-                "description": "Y coordinate of the block containing this power-up (if hidden)",
-                "minimum": 0
+              "targets": {
+                "type": "object",
+                "description": "Optional per-direction reveal target grid positions (see README). Keys: up, down, left, right.",
+                "additionalProperties": {
+                  "type": "object",
+                  "required": ["x", "y"],
+                  "properties": {
+                    "x": { "type": "integer", "minimum": 0 },
+                    "y": { "type": "integer", "minimum": 0 }
+                  }
+                }
               }
             }
           },
@@ -236,32 +238,14 @@
   },
   "definitions": {
     "tileTypes": {
-      "description": "Available tile types",
-      "enum": {
-        "0": "Empty space",
-        "1": "Basic block (gray)",
-        "2": "Blue block",
-        "3": "Green block",
-        "4": "Red block (destructible)",
-        "5": "Cyan block",
-        "6": "Orange/yellow gradient left",
-        "7": "Orange/yellow gradient middle",
-        "8": "Orange/yellow gradient middle-right",
-        "9": "Orange/yellow gradient right",
-        "A": "Purple block",
-        "B": "Dark blue block",
-        "C": "Teal block",
-        "D": "Pink block",
-        "E": "Stone/gray block"
-      }
+      "description": "Single tile character per cell: 0 empty; 1–9, A–E blocks (see game tile map / README).",
+      "type": "string",
+      "enum": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E"]
     },
     "powerTypes": {
-      "description": "Available power-up types",
-      "enum": {
-        "invincible": "Makes player invincible temporarily",
-        "time": "Freezes time/enemies temporarily",
-        "speed": "Increases player movement speed"
-      }
+      "description": "Power-up kind: invincible, time (freeze), or speed.",
+      "type": "string",
+      "enum": ["invincible", "time", "speed"]
     }
   }
 }

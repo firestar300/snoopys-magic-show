@@ -73,6 +73,9 @@ export class InputManager {
     this.previousGamepadButtons = {};
     this.previousPause = false;
 
+    // Reset menu navigation edge detection
+    this._menuNavPrevious = { up: false, down: false, left: false, right: false };
+
     // Reset touch controls
     if (this.touchControls) {
       this.touchControls.reset();
@@ -278,17 +281,35 @@ export class InputManager {
     // Get gamepad state
     const gamepadState = this.getGamepadState();
 
+    const up = this.isPressed('UP') || touchState.up || gamepadState.up;
+    const down = this.isPressed('DOWN') || touchState.down || gamepadState.down;
+    const left = this.isPressed('LEFT') || touchState.left || gamepadState.left;
+    const right = this.isPressed('RIGHT') || touchState.right || gamepadState.right;
+
+    const prevNav = this._menuNavPrevious || { up: false, down: false, left: false, right: false };
+
+    const keysJustPressed = Object.keys(this.keys).filter(
+      (k) => this.keys[k] && !this.previousKeys[k]
+    );
+
     const state = {
-      up: this.isPressed('UP') || touchState.up || gamepadState.up,
-      down: this.isPressed('DOWN') || touchState.down || gamepadState.down,
-      left: this.isPressed('LEFT') || touchState.left || gamepadState.left,
-      right: this.isPressed('RIGHT') || touchState.right || gamepadState.right,
+      up,
+      down,
+      left,
+      right,
+      upJustPressed: up && !prevNav.up,
+      downJustPressed: down && !prevNav.down,
+      leftJustPressed: left && !prevNav.left,
+      rightJustPressed: right && !prevNav.right,
+      keysJustPressed,
       action: this.isPressed('ACTION') || touchState.action || gamepadState.action,
       actionJustPressed: this.isJustPressed('ACTION') || (touchState.action && !this.previousTouchAction) || this.isGamepadButtonJustPressed(0) || this.isGamepadButtonJustPressed(1),
       pause: gamepadState.pause, // Start button on gamepad (held)
       pauseJustPressed: this.isPauseButtonJustPressed(), // Any pause button just pressed
       restart: gamepadState.restart || false, // L1/LB button on gamepad
     };
+
+    this._menuNavPrevious = { up, down, left, right };
 
     // Store previous state for next frame
     this.previousKeys = { ...this.keys };

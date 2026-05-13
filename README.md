@@ -158,12 +158,10 @@ Les niveaux sont définis en JSON avec un système de caractères :
     { "type": "powerup", "x": 2, "y": 4, "powerType": "speed" },
     {
       "type": "powerup",
-      "x": 1,
-      "y": 1,
+      "x": 3,
+      "y": 2,
       "powerType": "time",
       "hidden": true,
-      "blockX": 3,
-      "blockY": 2,
       "targets": {
         "up": { "x": 3, "y": 0 },
         "down": { "x": 5, "y": 5 },
@@ -179,8 +177,7 @@ Les niveaux sont définis en JSON avec un système de caractères :
 
 Les power-ups peuvent être cachés dans des blocs cassables (`3`) ou poussables (`2`, `A`, `B`, `C`, `D`). Paramètres disponibles :
 
-- `"hidden": true` - Le power-up est caché
-- `"blockX"` et `"blockY"` - Position du bloc contenant le power-up
+- `"hidden": true` - Le power-up est caché dans le bloc à la case **`"x"` / `"y"`** (plus besoin de dupliquer avec `blockX` / `blockY`).
 - `"targets"` (optionnel) - Positions cibles selon la direction de Snoopy
   - Format: `{ "up": {x, y}, "down": {x, y}, "left": {x, y}, "right": {x, y} }`
   - Si non spécifié : le power-up se déplace automatiquement de 3 cases dans la direction de Snoopy

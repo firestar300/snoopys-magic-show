@@ -10,6 +10,9 @@ import { SpriteManager } from './sprite-manager.js';
 import { AudioManager } from './audio-manager.js';
 import { DevConsole } from '../ui/dev-console.js';
 import { devLog, devWarn, devError } from '../utils/dev-logger.js';
+import { getLevelFromPassword, cyclePasswordChar } from '../data/gb-passwords.js';
+import { takeQueuedWorldJsonString } from '../level/editor-launch-bridge.js';
+import { validateImportedLevel } from '../level/validate-imported-level.js';
 
 /**
  * Main game class that orchestrates the game loop and systems
@@ -70,7 +73,14 @@ export class Game {
       currentState: GameState.MENU,
       levelReady: false,
       isNewHighScore: false, // Flag to show "NEW RECORD!" message
+      /** When true, custom JSON campaign is active (see importedCampaignLevels). */
+      isCustomImportedLevel: false,
     };
+
+    /** @type {object[] | null} Cloned levels from last import (single-level = length 1). */
+    this.importedCampaignLevels = null;
+    /** 0-based index into importedCampaignLevels while playing an import. */
+    this.importedCampaignIndex = 0;
 
     // Life bonus tracking (every 50,000 points)
     this.lastLifeBonusThreshold = 0;
@@ -109,8 +119,106 @@ export class Game {
     // Start title screen music
     this.audioManager.playMusic('title');
 
+    this.setupCustomLevelFileImport();
+    this.tryConsumeQueuedEditorWorld();
+
     // Start game loop immediately (menu will show first)
     this.start();
+  }
+
+  /**
+   * Show import feedback under the page HUD (DOM).
+   * @param {string} message
+   * @param {'neutral' | 'error' | 'success'} [variant]
+   */
+  setCustomLevelImportStatus(message, variant = 'neutral') {
+    const el = document.getElementById('custom-level-import-status');
+    if (!el) return;
+    el.textContent = message;
+    if (variant === 'error') el.dataset.variant = 'error';
+    else if (variant === 'success') el.dataset.variant = 'success';
+    else delete el.dataset.variant;
+  }
+
+  /**
+   * If the level editor stored a world JSON in localStorage, validate and start play.
+   */
+  tryConsumeQueuedEditorWorld() {
+    const raw = takeQueuedWorldJsonString();
+    if (!raw) return;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      this.setCustomLevelImportStatus('Editor "Play now" payload was not valid JSON.', 'error');
+      return;
+    }
+
+    const result = validateImportedLevel(parsed);
+    if (!result.ok) {
+      const lines = result.errors.slice(0, 4);
+      const extra = result.errors.length > 4 ? ` (+${result.errors.length - 4} more)` : '';
+      this.setCustomLevelImportStatus(lines.join(' | ') + extra, 'error');
+      if (this.audioManager) this.audioManager.playSfx('block-break');
+      return;
+    }
+
+    this.setCustomLevelImportStatus('');
+    this.inputManager.resetState();
+    void this.initFromCustomCampaign(result.levels, result.worldName).catch((err) => devError(err));
+  }
+
+  /**
+   * Hidden file input: parse JSON, validate against level schema + import rules, then start play.
+   */
+  setupCustomLevelFileImport() {
+    const fileInput = document.getElementById('custom-level-import');
+    if (!fileInput) return;
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      fileInput.value = '';
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        let parsed;
+        try {
+          parsed = JSON.parse(String(reader.result));
+        } catch {
+          this.setCustomLevelImportStatus('Invalid JSON file.', 'error');
+          if (this.audioManager) this.audioManager.playSfx('block-break');
+          return;
+        }
+
+        const result = validateImportedLevel(parsed);
+        if (!result.ok) {
+          const lines = result.errors.slice(0, 4);
+          const extra = result.errors.length > 4 ? ` (+${result.errors.length - 4} more)` : '';
+          this.setCustomLevelImportStatus(lines.join(' | ') + extra, 'error');
+          if (this.audioManager) this.audioManager.playSfx('block-break');
+          return;
+        }
+
+        this.setCustomLevelImportStatus('');
+        this.inputManager.resetState();
+        void this.initFromCustomCampaign(result.levels, result.worldName).catch((err) => devError(err));
+      };
+
+      reader.onerror = () => {
+        this.setCustomLevelImportStatus('Could not read file.', 'error');
+        if (this.audioManager) this.audioManager.playSfx('block-break');
+      };
+
+      reader.readAsText(file);
+    });
+  }
+
+  clearCustomImportedLevel() {
+    this.state.isCustomImportedLevel = false;
+    this.importedCampaignLevels = null;
+    this.importedCampaignIndex = 0;
   }
 
   /**
@@ -128,6 +236,9 @@ export class Game {
     if (this.player && this.player.hasPowerUp) {
       this.player.removePowerUp(this);
     }
+
+    this.clearCustomImportedLevel();
+    this.setCustomLevelImportStatus('');
 
     // Reset state
     this.state.score = 0;
@@ -173,8 +284,134 @@ export class Game {
   }
 
   /**
-   * Initialize timer for the level
+   * Start the game at a level reached via the original GB password screen.
+   * @param {number} levelNumber
    */
+  async initFromPasswordLevel(levelNumber) {
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
+
+    this.clearCustomImportedLevel();
+    this.setCustomLevelImportStatus('');
+
+    this.state.score = 0;
+    this.state.lives = 3;
+    this.state.level = levelNumber;
+    this.state.currentState = GameState.PLAYING;
+    this.state.levelReady = false;
+    this.state.isNewHighScore = false;
+    this.lastLifeBonusThreshold = 0;
+    this.uiManager.setState(GameState.PLAYING);
+
+    this.entityManager.clear();
+
+    await this.levelManager.loadLevel(this.state.level);
+
+    const startPos = this.levelManager.getStartPosition();
+    this.player = new Player(startPos.x, startPos.y);
+    this.entityManager.add(this.player);
+
+    this.spawnLevelEntities();
+
+    this.state.levelReady = true;
+
+    this.initTimer();
+    this.startReadyGo();
+
+    const levelMusic = this.levelManager.currentLevel?.music;
+    if (levelMusic) {
+      this.audioManager.playMusic(levelMusic);
+    }
+
+    this.updateUI();
+  }
+
+  /**
+   * Load current imported stage into LevelManager, spawn entities, timer, Ready Go, music.
+   */
+  bootstrapCurrentImportedStage() {
+    this.state.levelReady = false;
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
+
+    this.entityManager.clear();
+
+    const level = this.importedCampaignLevels[this.importedCampaignIndex];
+    this.levelManager.loadLevelFromData(level);
+
+    const startPos = this.levelManager.getStartPosition();
+    this.player = new Player(startPos.x, startPos.y);
+    this.entityManager.add(this.player);
+
+    this.spawnLevelEntities();
+
+    this.state.levelReady = true;
+    this.state.level = this.importedCampaignIndex + 1;
+
+    this.initTimer();
+    this.startReadyGo();
+
+    const levelMusic = this.levelManager.currentLevel?.music;
+    if (levelMusic) {
+      this.audioManager.playMusic(levelMusic);
+    }
+
+    this.state.currentState = GameState.PLAYING;
+    this.uiManager.setState(GameState.PLAYING);
+    this.updateUI();
+  }
+
+  /**
+   * Start play from validated custom level(s): one level object or a world with multiple stages.
+   * @param {object[]} levels - Non-empty cloned levels from {@link validateImportedLevel}
+   * @param {string} [worldName] - World display name when applicable
+   */
+  async initFromCustomCampaign(levels, worldName = '') {
+    if (!levels?.length) return;
+
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
+
+    this.state.isCustomImportedLevel = true;
+    this.importedCampaignLevels = levels;
+    this.importedCampaignIndex = 0;
+
+    this.state.score = 0;
+    this.state.lives = 3;
+    this.state.currentState = GameState.PLAYING;
+    this.state.levelReady = false;
+    this.state.isNewHighScore = false;
+    this.lastLifeBonusThreshold = 0;
+    this.uiManager.setState(GameState.PLAYING);
+
+    this.bootstrapCurrentImportedStage();
+
+    const n = levels.length;
+    const w = typeof worldName === 'string' ? worldName.trim() : '';
+    const firstName = typeof levels[0].name === 'string' ? levels[0].name.trim() : '';
+    if (n > 1) {
+      this.setCustomLevelImportStatus(w ? `Loaded world "${w}" (${n} stages)` : `Loaded ${n} stages`, 'success');
+    } else {
+      const label = w || firstName || 'Custom level';
+      this.setCustomLevelImportStatus(`Loaded: ${label}`, 'success');
+    }
+  }
+
+  /**
+   * Reload tiles for the current run (numbered level file or imported JSON snapshot).
+   * @param {boolean} [useFallback=true] - Only used for built-in levels.
+   */
+  async loadLevelForCurrentRun(useFallback = true) {
+    if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length) {
+      this.levelManager.loadLevelFromData(this.importedCampaignLevels[this.importedCampaignIndex]);
+      return;
+    }
+    await this.levelManager.loadLevel(this.state.level, useFallback);
+  }
+
   initTimer() {
     const border = CONFIG.TIMER_BORDER;
     const width = CONFIG.CANVAS_WIDTH;
@@ -276,6 +513,82 @@ export class Game {
   }
 
   /**
+   * Title menu: main options or password entry
+   * @param {object} input - Current frame input from InputManager.getState()
+   */
+  handleMenuInput(input) {
+    const ui = this.uiManager;
+
+    if (ui.menuScreen === 'main') {
+      const menuMax = 1;
+      if (input.upJustPressed) ui.menuSelection = Math.max(0, ui.menuSelection - 1);
+      if (input.downJustPressed) ui.menuSelection = Math.min(menuMax, ui.menuSelection + 1);
+      if (input.actionJustPressed || input.pauseJustPressed) {
+        if (ui.menuSelection === 0) {
+          void this.init().catch((err) => devError(err));
+        } else {
+          this.inputManager.resetState();
+          ui.menuScreen = 'password';
+          ui.passwordSlots = ['', '', '', ''];
+          ui.passwordCursor = 0;
+        }
+      }
+      return;
+    }
+
+    if (input.keysJustPressed.includes('Escape') || this.inputManager.isGamepadButtonJustPressed(8)) {
+      this.inputManager.resetState();
+      ui.menuScreen = 'main';
+      return;
+    }
+
+    if (input.leftJustPressed && ui.passwordCursor > 0) ui.passwordCursor -= 1;
+    if (input.rightJustPressed && ui.passwordCursor < 3) ui.passwordCursor += 1;
+
+    if (input.upJustPressed) {
+      ui.passwordSlots[ui.passwordCursor] = cyclePasswordChar(ui.passwordSlots[ui.passwordCursor], -1);
+    }
+    if (input.downJustPressed) {
+      ui.passwordSlots[ui.passwordCursor] = cyclePasswordChar(ui.passwordSlots[ui.passwordCursor], 1);
+    }
+
+    if (input.keysJustPressed.includes('Backspace')) {
+      if (ui.passwordSlots[ui.passwordCursor]) {
+        ui.passwordSlots[ui.passwordCursor] = '';
+      } else if (ui.passwordCursor > 0) {
+        ui.passwordCursor -= 1;
+        ui.passwordSlots[ui.passwordCursor] = '';
+      }
+    } else {
+      for (const k of input.keysJustPressed) {
+        if (k.length === 1 && /^[a-zA-Z0-9]$/.test(k)) {
+          ui.passwordSlots[ui.passwordCursor] = k.toUpperCase();
+          if (ui.passwordCursor < 3) ui.passwordCursor += 1;
+        }
+      }
+    }
+
+    const pwdComplete = ui.passwordSlots.every((s) => s.length === 1);
+    const submit =
+      pwdComplete &&
+      (input.keysJustPressed.includes('Enter') ||
+        input.keysJustPressed.includes(' ') ||
+        this.inputManager.isGamepadButtonJustPressed(9));
+
+    if (submit) {
+      const code = ui.passwordSlots.join('');
+      const level = getLevelFromPassword(code);
+      if (level === null) {
+        ui.passwordInvalidUntil = performance.now() + 900;
+        if (this.audioManager) this.audioManager.playSfx('block-break');
+      } else {
+        this.inputManager.resetState();
+        void this.initFromPasswordLevel(level).catch((err) => devError(err));
+      }
+    }
+  }
+
+  /**
    * Handle input for state transitions
    */
   handleStateInput() {
@@ -288,9 +601,7 @@ export class Game {
 
     switch (this.state.currentState) {
       case GameState.MENU:
-        if (input.actionJustPressed || input.pauseJustPressed) {
-          this.init();
-        }
+        this.handleMenuInput(input);
         break;
 
       case GameState.GAME_OVER:
@@ -304,6 +615,7 @@ export class Game {
           this.state.level = CONFIG.DEV_MODE ? 0 : 1;
           this.state.isNewHighScore = false;
           this.lastLifeBonusThreshold = 0;
+          this.clearCustomImportedLevel();
           // Clear entities
           this.entityManager.clear();
           this.player = null;
@@ -322,6 +634,7 @@ export class Game {
           this.state.level = CONFIG.DEV_MODE ? 0 : 1;
           this.state.isNewHighScore = false;
           this.lastLifeBonusThreshold = 0;
+          this.clearCustomImportedLevel();
           // Clear entities
           this.entityManager.clear();
           this.player = null;
@@ -778,7 +1091,13 @@ export class Game {
         ctx.fillStyle = CONFIG.COLORS.LIGHT;
         ctx.font = 'bold 12px "Courier New", monospace';
         ctx.textAlign = 'left';
-        ctx.fillText(`LEVEL: ${this.state.level}`, 20, 28);
+        const levelLabel =
+          this.state.isCustomImportedLevel && this.importedCampaignLevels?.length > 1
+            ? `${this.importedCampaignIndex + 1}/${this.importedCampaignLevels.length}`
+            : this.state.isCustomImportedLevel
+              ? '★'
+              : this.state.level;
+        ctx.fillText(`LEVEL: ${levelLabel}`, 20, 28);
 
         // Snoopy position
         if (this.player) {
@@ -836,7 +1155,15 @@ export class Game {
 
     if (scoreValue) scoreValue.textContent = this.state.score;
     if (livesValue) livesValue.textContent = this.state.lives;
-    if (levelValue) levelValue.textContent = this.state.level;
+    if (levelValue) {
+      if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length > 1) {
+        levelValue.textContent = `${this.importedCampaignIndex + 1}/${this.importedCampaignLevels.length}`;
+      } else if (this.state.isCustomImportedLevel) {
+        levelValue.textContent = '★';
+      } else {
+        levelValue.textContent = this.state.level;
+      }
+    }
     if (highScoreValue) highScoreValue.textContent = this.state.highScore;
   }
 
@@ -934,7 +1261,7 @@ export class Game {
     this.entityManager.clear();
 
     // Reload the level to reset all tiles (toggle blocks, etc.)
-    await this.levelManager.loadLevel(this.state.level);
+    await this.loadLevelForCurrentRun();
 
     // Respawn all level entities
     this.spawnLevelEntities();
@@ -973,6 +1300,17 @@ export class Game {
    * Continue to next level after level complete screen
    */
   async continueToNextLevel() {
+    if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length) {
+      const next = this.importedCampaignIndex + 1;
+      if (next >= this.importedCampaignLevels.length) {
+        this.victory();
+        return;
+      }
+      this.importedCampaignIndex = next;
+      this.bootstrapCurrentImportedStage();
+      return;
+    }
+
     this.state.level++;
     this.state.levelReady = false;
 
@@ -1086,6 +1424,9 @@ export class Game {
     if (this.player && this.player.hasPowerUp) {
       this.player.removePowerUp(this);
     }
+
+    this.clearCustomImportedLevel();
+    this.setCustomLevelImportStatus('');
 
     // Stop any current music
     this.audioManager.stopMusic();

@@ -43,13 +43,23 @@
       "y": 6,
       "powerType": "invincible",
       "hidden": true,
-      "blockX": 8,
-      "blockY": 6,
       "targets": {
-        "up": { "x": 7, "y": 2 },
-        "down": { "x": 6, "y": 7 },
-        "left": { "x": 4, "y": 5 },
-        "right": { "x": 8, "y": 5 }
+        "up": {
+          "x": 7,
+          "y": 2
+        },
+        "down": {
+          "x": 6,
+          "y": 7
+        },
+        "left": {
+          "x": 4,
+          "y": 5
+        },
+        "right": {
+          "x": 8,
+          "y": 5
+        }
       }
     },
     {
@@ -58,13 +68,23 @@
       "y": 6,
       "powerType": "time",
       "hidden": true,
-      "blockX": 6,
-      "blockY": 6,
       "targets": {
-        "up": { "x": 7, "y": 2 },
-        "down": { "x": 6, "y": 7 },
-        "left": { "x": 4, "y": 5 },
-        "right": { "x": 8, "y": 5 }
+        "up": {
+          "x": 7,
+          "y": 2
+        },
+        "down": {
+          "x": 6,
+          "y": 7
+        },
+        "left": {
+          "x": 4,
+          "y": 5
+        },
+        "right": {
+          "x": 8,
+          "y": 5
+        }
       }
     },
     {
@@ -73,13 +93,23 @@
       "y": 6,
       "powerType": "speed",
       "hidden": true,
-      "blockX": 7,
-      "blockY": 6,
       "targets": {
-        "up": { "x": 7, "y": 2 },
-        "down": { "x": 6, "y": 7 },
-        "left": { "x": 4, "y": 5 },
-        "right": { "x": 8, "y": 5 }
+        "up": {
+          "x": 7,
+          "y": 2
+        },
+        "down": {
+          "x": 6,
+          "y": 7
+        },
+        "left": {
+          "x": 4,
+          "y": 5
+        },
+        "right": {
+          "x": 8,
+          "y": 5
+        }
       }
     },
     {
@@ -90,10 +120,22 @@
       "blockX": 8,
       "blockY": 6,
       "targets": {
-        "up": { "x": 7, "y": 2 },
-        "down": { "x": 6, "y": 7 },
-        "left": { "x": 4, "y": 5 },
-        "right": { "x": 8, "y": 5 }
+        "up": {
+          "x": 7,
+          "y": 2
+        },
+        "down": {
+          "x": 6,
+          "y": 7
+        },
+        "left": {
+          "x": 4,
+          "y": 5
+        },
+        "right": {
+          "x": 8,
+          "y": 5
+        }
       }
     },
     {
