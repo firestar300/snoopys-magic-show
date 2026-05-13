@@ -95,24 +95,11 @@ export class Spike extends Player {
 			this.updateMovement(dt, levelManager, game);
 		}
 
-		// Check if on arrow tile
-		if (!this.isMoving) {
-			const gridX = this.getGridX();
-			const gridY = this.getGridY();
-			const tile = levelManager.getTileAt(gridX, gridY);
+		// Arrow tiles: only `think()` handles them (forced direction + perpendicular when blocked),
+		// like the player — do not call `handleArrowTile` here or Spike keeps retrying the blocked
+		// forced move every frame and never uses the lateral escape from `think()`.
 
-			if (tile >= 6 && tile <= 9) {
-				this.isOnArrowTile = true;
-				if (this.arrowTileDelay <= 0) {
-					this.handleArrowTile(tile, levelManager);
-					this.arrowTileDelay = this.arrowTileDelayDuration;
-				}
-			} else {
-				this.isOnArrowTile = false;
-			}
-		}
-
-		// Update arrow tile delay
+		// Update arrow tile delay (still used when landing after movement; keeps parity with player)
 		if (this.arrowTileDelay > 0) {
 			this.arrowTileDelay -= dt;
 		}
@@ -158,16 +145,20 @@ export class Spike extends Player {
 			const newY = myGridY + dy;
 
 			// Check if the forced direction is valid (not blocked)
-			if (levelManager.isInBounds(newX, newY) &&
-			    (!levelManager.isSolid(newX, newY) || levelManager.isPushable(newX, newY))) {
-				// Direction is valid, execute it
-				this.currentDirection = forcedDirection;
-				this.movesInDirection = 1;
-				this.maxMovesInDirection = 1; // Reset to ensure we re-check next time
+			if (
+				levelManager.isInBounds(newX, newY) &&
+				(!levelManager.isSolid(newX, newY) || levelManager.isPushable(newX, newY)) &&
+				!levelManager.isBlockedByAnimatingBlock(newX, newY)
+			) {
 				this.executeAIMove(forcedDirection, levelManager, game);
-				return;
+				if (this.isMoving) {
+					this.currentDirection = forcedDirection;
+					this.movesInDirection = 1;
+					this.maxMovesInDirection = 1;
+					return;
+				}
 			}
-			// If forced direction is blocked, allow lateral movement (continue to normal AI logic)
+			// Forced direction blocked or push failed — fall through (lateral escape, like the player)
 		}
 
 		// Try to continue in current direction first (for smooth movement)
@@ -177,12 +168,16 @@ export class Spike extends Player {
 			const newY = myGridY + dy;
 
 			// Check if can continue in this direction
-			if (levelManager.isInBounds(newX, newY) &&
-			    (!levelManager.isSolid(newX, newY) || levelManager.isPushable(newX, newY))) {
-				// Continue in same direction
-				this.movesInDirection++;
+			if (
+				levelManager.isInBounds(newX, newY) &&
+				(!levelManager.isSolid(newX, newY) || levelManager.isPushable(newX, newY)) &&
+				!levelManager.isBlockedByAnimatingBlock(newX, newY)
+			) {
 				this.executeAIMove(this.currentDirection, levelManager, game);
-				return;
+				if (this.isMoving) {
+					this.movesInDirection++;
+					return;
+				}
 			}
 		}
 
@@ -217,6 +212,7 @@ export class Spike extends Player {
 			// Check if movement is valid
 			if (!levelManager.isInBounds(newX, newY)) return false;
 			if (levelManager.isSolid(newX, newY) && !levelManager.isPushable(newX, newY)) return false;
+			if (levelManager.isBlockedByAnimatingBlock(newX, newY)) return false;
 
 			return true;
 		});
@@ -292,50 +288,6 @@ export class Spike extends Player {
 			case 'left': return [-1, 0];
 			case 'right': return [1, 0];
 			default: return [0, 0];
-		}
-	}
-
-	/**
-	 * Handle arrow tile (force movement in arrow direction)
-	 */
-	handleArrowTile(tile, levelManager) {
-		const gridX = this.getGridX();
-		const gridY = this.getGridY();
-
-		let forcedX = gridX;
-		let forcedY = gridY;
-		let targetDirection = null;
-
-		// Arrow tiles: 6=UP, 7=RIGHT, 8=DOWN, 9=LEFT
-		switch (tile) {
-			case 6: // ARROW_UP
-				forcedY--;
-				targetDirection = 'up';
-				this.directionIndex = 0;
-				break;
-			case 7: // ARROW_RIGHT
-				forcedX++;
-				targetDirection = 'right';
-				this.directionIndex = 3;
-				break;
-			case 8: // ARROW_DOWN
-				forcedY++;
-				targetDirection = 'down';
-				this.directionIndex = 1;
-				break;
-			case 9: // ARROW_LEFT
-				forcedX--;
-				targetDirection = 'left';
-				this.directionIndex = 2;
-				break;
-			default:
-				return; // Not on an arrow tile
-		}
-
-		// Force movement if the target is not solid
-		if (levelManager && !levelManager.isSolid(forcedX, forcedY)) {
-			this.direction = targetDirection;
-			this.startMovement(forcedX, forcedY);
 		}
 	}
 
