@@ -161,6 +161,10 @@ export class AudioManager {
 
     // Function to attempt playback
     const attemptPlay = () => {
+      if (this.currentMusic !== audio) {
+        return;
+      }
+
       const playPromise = audio.play();
 
       if (playPromise !== undefined) {
@@ -189,9 +193,12 @@ export class AudioManager {
       devLog(`Waiting for music '${name}' to load...`);
 
       const onCanPlay = () => {
+        audio.removeEventListener('canplay', onCanPlay);
+        if (this.currentMusic !== audio) {
+          return;
+        }
         devLog(`Music '${name}' loaded, playing now`);
         attemptPlay();
-        audio.removeEventListener('canplay', onCanPlay);
       };
 
       audio.addEventListener('canplay', onCanPlay);

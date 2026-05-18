@@ -120,11 +120,13 @@ export class Game {
     this.timestep = 1000 / CONFIG.FPS;
     this.animationFrameId = null;
 
-    // Start title screen music
-    this.audioManager.playMusic('title');
-
     this.setupCustomLevelFileImport();
     this.tryConsumeQueuedEditorWorld();
+
+    // Title music only when staying on the menu (skip if editor queued a world from localStorage)
+    if (this.state.currentState === GameState.MENU) {
+      this.audioManager.playMusic('title');
+    }
 
     // Start game loop immediately (menu will show first)
     this.start();
