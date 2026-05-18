@@ -81,6 +81,8 @@ export class Game {
     this.importedCampaignLevels = null;
     /** 0-based index into importedCampaignLevels while playing an import. */
     this.importedCampaignIndex = 0;
+    /** Display name for the active imported world (used on the custom complete menu). */
+    this.importedCampaignWorldName = '';
 
     // Life bonus tracking (every 50,000 points)
     this.lastLifeBonusThreshold = 0;
@@ -221,6 +223,7 @@ export class Game {
     this.state.isCustomImportedLevel = false;
     this.importedCampaignLevels = null;
     this.importedCampaignIndex = 0;
+    this.importedCampaignWorldName = '';
   }
 
   /**
@@ -380,6 +383,7 @@ export class Game {
     this.state.isCustomImportedLevel = true;
     this.importedCampaignLevels = levels;
     this.importedCampaignIndex = 0;
+    this.importedCampaignWorldName = typeof worldName === 'string' ? worldName.trim() : '';
 
     this.state.score = 0;
     this.state.lives = 3;
@@ -520,6 +524,21 @@ export class Game {
    */
   handleMenuInput(input) {
     const ui = this.uiManager;
+
+    if (ui.menuScreen === 'custom_complete') {
+      const menuMax = 1;
+      if (input.upJustPressed) ui.menuSelection = Math.max(0, ui.menuSelection - 1);
+      if (input.downJustPressed) ui.menuSelection = Math.min(menuMax, ui.menuSelection + 1);
+      if (input.actionJustPressed || input.pauseJustPressed) {
+        this.inputManager.resetState();
+        if (ui.menuSelection === 0) {
+          void this.replayCustomCampaign().catch((err) => devError(err));
+        } else {
+          void this.startNewGameFromCustomComplete().catch((err) => devError(err));
+        }
+      }
+      return;
+    }
 
     if (ui.menuScreen === 'main') {
       const menuMax = 1;
@@ -1292,6 +1311,43 @@ export class Game {
   }
 
   /**
+   * Show Replay / New Game menu after the last stage of a custom imported world.
+   */
+  showCustomWorldCompleteMenu() {
+    if (this.player && this.player.hasPowerUp) {
+      this.player.removePowerUp(this);
+    }
+
+    this.entityManager.clear();
+    this.player = null;
+    this.state.isCustomImportedLevel = false;
+    this.state.levelReady = false;
+
+    this.state.currentState = GameState.MENU;
+    this.uiManager.setState(GameState.MENU, { menuScreen: 'custom_complete' });
+  }
+
+  /**
+   * Restart the current custom imported world from the first stage.
+   */
+  async replayCustomCampaign() {
+    const levels = this.importedCampaignLevels;
+    if (!levels?.length) {
+      return;
+    }
+
+    await this.initFromCustomCampaign(levels, this.importedCampaignWorldName);
+  }
+
+  /**
+   * Leave custom world complete menu and start the built-in campaign at level 1.
+   */
+  async startNewGameFromCustomComplete() {
+    this.inputManager.resetState();
+    await this.init();
+  }
+
+  /**
    * Mark level as complete
    */
   levelComplete() {
@@ -1323,7 +1379,7 @@ export class Game {
       if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length) {
         const next = this.importedCampaignIndex + 1;
         if (next >= this.importedCampaignLevels.length) {
-          this.victory();
+          this.showCustomWorldCompleteMenu();
           return;
         }
         this.importedCampaignIndex = next;

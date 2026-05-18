@@ -140,7 +140,7 @@ export class UIManager {
       active: false
     };
 
-    /** @type {'main' | 'password'} */
+    /** @type {'main' | 'password' | 'custom_complete'} */
     this.menuScreen = 'main';
     /** 0 = Game Start, 1 = Password */
     this.menuSelection = 0;
@@ -229,10 +229,16 @@ export class UIManager {
     // Handle music based on state changes
     const audioManager = this.game.audioManager;
 
-    // Start title screen music when entering MENU
+    // Start menu music when entering MENU
     if (state === GameState.MENU && previousState !== GameState.MENU) {
-      audioManager.playMusic('title');
-      this.resetTitleMenuState();
+      if (data?.menuScreen === 'custom_complete') {
+        this.menuScreen = 'custom_complete';
+        this.menuSelection = 0;
+        audioManager.playMusic('custom-world-complete');
+      } else {
+        this.resetTitleMenuState();
+        audioManager.playMusic('title');
+      }
     }
 
     // Stop title screen music when leaving MENU
@@ -626,7 +632,7 @@ export class UIManager {
   }
 
   /**
-   * Render the main menu
+   * Render the main menu or custom world complete menu
    */
   renderMenu() {
     if (this.menuScreen === 'password') {
@@ -634,26 +640,42 @@ export class UIManager {
       return;
     }
 
+    if (this.menuScreen === 'custom_complete') {
+      this.renderTitleScreenMenu(['REPLAY', 'NEW GAME']);
+      return;
+    }
+
+    this.renderTitleScreenMenu(['GAME START', 'PASSWORD']);
+  }
+
+  /**
+   * Shared title-screen layout (main menu and custom world complete).
+   * @param {string[]} items - Menu option labels
+   * @param {{ subtitle?: string }} [options]
+   */
+  renderTitleScreenMenu(items, options = {}) {
     const ctx = this.renderer.ctx;
     const centerX = CONFIG.CANVAS_WIDTH / 2;
     const centerY = CONFIG.CANVAS_HEIGHT / 2;
 
-    // Semi-transparent background
     ctx.fillStyle = 'rgba(15, 56, 15, 0.9)';
     ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
 
-    // Title
     ctx.fillStyle = CONFIG.COLORS.LIGHT;
     ctx.font = 'bold 24px "Courier New", monospace';
     ctx.textAlign = 'center';
     ctx.fillText("SNOOPY'S", centerX, centerY - 110);
     ctx.fillText('MAGIC SHOW', centerX, centerY - 80);
 
-    // Animated Snoopy sprite from title screen
+    if (options.subtitle) {
+      ctx.font = 'bold 14px "Courier New", monospace';
+      ctx.fillStyle = CONFIG.COLORS.MID_LIGHT;
+      ctx.fillText(options.subtitle, centerX, centerY - 58);
+    }
+
     const spriteManager = this.game.spriteManager;
 
     if (spriteManager && spriteManager.isLoaded()) {
-      // Sprite is 48x64, scale 2x for better visibility
       const spriteWidth = 48 * 2;
       const spriteHeight = 64 * 2;
       const spriteX = centerX - spriteWidth / 2;
@@ -668,20 +690,15 @@ export class UIManager {
         spriteHeight
       );
     } else {
-      // Fallback to simple Snoopy if sprites not loaded
       this.drawMenuSnoopy(centerX, centerY + 10);
     }
 
     const padConnected = this.game.inputManager.isGamepadConnected();
     const yBase = centerY + 86;
-    const items = ['GAME START', 'PASSWORD'];
 
     ctx.font = '14px "Courier New", monospace';
     ctx.textAlign = 'left';
-    const maxW = Math.max(
-      ctx.measureText(`> ${items[0]}`).width,
-      ctx.measureText(`> ${items[1]}`).width
-    );
+    const maxW = Math.max(...items.map((label) => ctx.measureText(`> ${label}`).width));
     const menuX = centerX - maxW / 2;
 
     for (let i = 0; i < items.length; i++) {

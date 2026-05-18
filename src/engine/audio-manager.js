@@ -70,6 +70,7 @@ export class AudioManager {
     // Game state music
     this.loadMusic('miss', getAssetPath('music/25-Jingle-11.mp3'), false); // Don't loop defeat music
     this.loadMusic('game-over', getAssetPath('music/26-Jingle-12.mp3'), false); // Don't loop game over music
+    this.loadMusic('custom-world-complete', getAssetPath('music/26-Jingle-12.mp3'), false);
     this.loadMusic('stage-clear', getAssetPath('music/24-BGM-14.mp3'), false); // Generic stage clear music
     this.loadMusic('ending', getAssetPath('music/29-BGM-16.mp3'), true); // Ending screen music (loops)
 
