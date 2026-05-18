@@ -106,6 +106,8 @@ export class Game {
     this.levelKeyPressed = false;
     this.hideDevInfoKeyPressed = false;
     this.restartKeyPressed = false;
+    /** Prevents double level advance while continueToNextLevel() is in progress. */
+    this.isContinuingToNextLevel = false;
 
     // Dev mode UI visibility (hidden by default, press H to show)
     this.showDevInfo = false;
@@ -643,8 +645,13 @@ export class Game {
 
       case GameState.LEVEL_COMPLETE:
         // Only allow continuing when time bonus animation is finished
-        if ((input.actionJustPressed || input.pauseJustPressed) && !this.uiManager.timeBonusAnimation.active) {
-          this.continueToNextLevel();
+        if (
+          !this.isContinuingToNextLevel &&
+          (input.actionJustPressed || input.pauseJustPressed) &&
+          !this.uiManager.timeBonusAnimation.active
+        ) {
+          this.inputManager.resetState();
+          void this.continueToNextLevel();
         }
         break;
 
@@ -1300,26 +1307,37 @@ export class Game {
    * Continue to next level after level complete screen
    */
   async continueToNextLevel() {
-    if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length) {
-      const next = this.importedCampaignIndex + 1;
-      if (next >= this.importedCampaignLevels.length) {
-        this.victory();
-        return;
-      }
-      this.importedCampaignIndex = next;
-      this.bootstrapCurrentImportedStage();
+    if (this.isContinuingToNextLevel) {
       return;
     }
 
-    this.state.level++;
+    this.isContinuingToNextLevel = true;
+    this.inputManager.resetState();
+
+    // Leave level-complete immediately so rapid Enter/Space cannot advance twice.
+    this.state.currentState = GameState.PLAYING;
+    this.uiManager.setState(GameState.PLAYING);
     this.state.levelReady = false;
 
-    // Remove power-ups from current player before clearing
-    if (this.player && this.player.hasPowerUp) {
-      this.player.removePowerUp(this);
-    }
-
     try {
+      if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length) {
+        const next = this.importedCampaignIndex + 1;
+        if (next >= this.importedCampaignLevels.length) {
+          this.victory();
+          return;
+        }
+        this.importedCampaignIndex = next;
+        this.bootstrapCurrentImportedStage();
+        return;
+      }
+
+      this.state.level++;
+
+      // Remove power-ups from current player before clearing
+      if (this.player && this.player.hasPowerUp) {
+        this.player.removePowerUp(this);
+      }
+
       this.entityManager.clear();
       // Pass false to disable fallback level - if level doesn't exist, throw error
       await this.levelManager.loadLevel(this.state.level, false);
@@ -1346,12 +1364,11 @@ export class Game {
       }
 
       this.updateUI();
-
-      this.state.currentState = GameState.PLAYING;
-      this.uiManager.setState(GameState.PLAYING);
     } catch (error) {
       // No more levels, player wins!
       this.victory();
+    } finally {
+      this.isContinuingToNextLevel = false;
     }
   }
 
