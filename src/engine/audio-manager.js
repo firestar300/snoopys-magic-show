@@ -16,6 +16,23 @@ export class AudioManager {
     // When a music with loop point ends, it will restart at this time instead of 0
     this.loopPoints = {};
     this.loopListeners = {}; // Store event listeners for cleanup
+    /** @type {Record<string, () => void>} Pending canplay handlers per track */
+    this.canPlayHandlers = {};
+    /** Bumped on each play/stop to ignore stale async load callbacks */
+    this.musicSession = 0;
+  }
+
+  /**
+   * Remove pending canplay listeners (prevents stale tracks from starting).
+   */
+  clearCanPlayHandlers() {
+    for (const [name, handler] of Object.entries(this.canPlayHandlers)) {
+      const audio = this.music[name];
+      if (audio && handler) {
+        audio.removeEventListener('canplay', handler);
+      }
+    }
+    this.canPlayHandlers = {};
   }
 
   /**
@@ -131,6 +148,8 @@ export class AudioManager {
     // Stop current music if playing
     this.stopMusic();
 
+    const session = ++this.musicSession;
+
     // Reset and prepare for playback
     audio.currentTime = 0;
     audio.playbackRate = 1.0; // Reset playback speed to normal
@@ -161,7 +180,7 @@ export class AudioManager {
 
     // Function to attempt playback
     const attemptPlay = () => {
-      if (this.currentMusic !== audio) {
+      if (this.musicSession !== session || this.currentMusic !== audio) {
         return;
       }
 
@@ -192,15 +211,21 @@ export class AudioManager {
       // Audio not ready yet, wait for it to load
       devLog(`Waiting for music '${name}' to load...`);
 
+      if (this.canPlayHandlers[name]) {
+        audio.removeEventListener('canplay', this.canPlayHandlers[name]);
+      }
+
       const onCanPlay = () => {
         audio.removeEventListener('canplay', onCanPlay);
-        if (this.currentMusic !== audio) {
+        delete this.canPlayHandlers[name];
+        if (this.musicSession !== session || this.currentMusic !== audio) {
           return;
         }
         devLog(`Music '${name}' loaded, playing now`);
         attemptPlay();
       };
 
+      this.canPlayHandlers[name] = onCanPlay;
       audio.addEventListener('canplay', onCanPlay);
 
       // Fallback timeout (5 seconds - enough for optimized files)
@@ -208,7 +233,8 @@ export class AudioManager {
         if (audio.readyState < 3) {
           devWarn(`Music '${name}' failed to load in time`);
           audio.removeEventListener('canplay', onCanPlay);
-          if (this.currentMusic === audio) {
+          delete this.canPlayHandlers[name];
+          if (this.musicSession === session && this.currentMusic === audio) {
             this.currentMusic = null;
           }
         }
@@ -220,6 +246,9 @@ export class AudioManager {
    * Stop current music
    */
   stopMusic() {
+    this.musicSession++;
+    this.clearCanPlayHandlers();
+
     // Remove all loop listeners before stopping
     Object.keys(this.loopListeners).forEach(musicName => {
       const audio = this.music[musicName];
@@ -229,12 +258,10 @@ export class AudioManager {
       }
     });
 
-    // Stop all music (not just currentMusic) to prevent race conditions
-    Object.values(this.music).forEach(audio => {
-      if (!audio.paused) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    // Stop every music element (including tracks still loading via canplay)
+    Object.values(this.music).forEach((audio) => {
+      audio.pause();
+      audio.currentTime = 0;
     });
     this.currentMusic = null;
   }

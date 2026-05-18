@@ -12,6 +12,7 @@ import { DevConsole } from '../ui/dev-console.js';
 import { devLog, devWarn, devError } from '../utils/dev-logger.js';
 import { getLevelFromPassword, cyclePasswordChar } from '../data/gb-passwords.js';
 import { takeQueuedWorldJsonString } from '../level/editor-launch-bridge.js';
+import { powerState } from '../power-state.js';
 import { validateImportedLevel } from '../level/validate-imported-level.js';
 
 /**
@@ -110,6 +111,8 @@ export class Game {
     this.restartKeyPressed = false;
     /** Prevents double level advance while continueToNextLevel() is in progress. */
     this.isContinuingToNextLevel = false;
+    /** When true, do not start title screen music on boot (editor / custom launch). */
+    this.skipTitleMusicOnStart = false;
 
     // Dev mode UI visibility (hidden by default, press H to show)
     this.showDevInfo = false;
@@ -123,8 +126,8 @@ export class Game {
     this.setupCustomLevelFileImport();
     this.tryConsumeQueuedEditorWorld();
 
-    // Title music only when staying on the menu (skip if editor queued a world from localStorage)
-    if (this.state.currentState === GameState.MENU) {
+    // Title music only on the title screen (not after editor "Play now" or custom boot)
+    if (this.state.currentState === GameState.MENU && !this.skipTitleMusicOnStart) {
       this.audioManager.playMusic('title');
     }
 
@@ -150,7 +153,7 @@ export class Game {
    * If the level editor stored a world JSON in localStorage, validate and start play.
    */
   tryConsumeQueuedEditorWorld() {
-    const raw = takeQueuedWorldJsonString();
+    const raw = powerState.takePendingEditorWorldJson() ?? takeQueuedWorldJsonString();
     if (!raw) return;
 
     let parsed;
@@ -172,6 +175,7 @@ export class Game {
 
     this.setCustomLevelImportStatus('');
     this.inputManager.resetState();
+    this.skipTitleMusicOnStart = true;
     void this.initFromCustomCampaign(result.levels, result.worldName).catch((err) => devError(err));
   }
 
@@ -377,6 +381,9 @@ export class Game {
    */
   async initFromCustomCampaign(levels, worldName = '') {
     if (!levels?.length) return;
+
+    this.skipTitleMusicOnStart = true;
+    this.audioManager.stopMusic();
 
     if (this.player && this.player.hasPowerUp) {
       this.player.removePowerUp(this);
