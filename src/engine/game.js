@@ -83,6 +83,8 @@ export class Game {
     this.importedCampaignIndex = 0;
     /** Display name for the active imported world (used on the custom complete menu). */
     this.importedCampaignWorldName = '';
+    /** Validated custom campaign waiting for editor launch menu (Play now from level editor). */
+    this.pendingEditorCampaign = null;
 
     // Life bonus tracking (every 50,000 points)
     this.lastLifeBonusThreshold = 0;
@@ -170,7 +172,41 @@ export class Game {
 
     this.setCustomLevelImportStatus('');
     this.inputManager.resetState();
-    void this.initFromCustomCampaign(result.levels, result.worldName).catch((err) => devError(err));
+    this.showEditorLaunchMenu(result.levels, result.worldName);
+  }
+
+  /**
+   * Editor "Play now": stay on title music and show a Start gate before custom play.
+   * @param {object[]} levels
+   * @param {string} [worldName]
+   */
+  showEditorLaunchMenu(levels, worldName = '') {
+    this.pendingEditorCampaign = { levels, worldName };
+    this.uiManager.menuScreen = 'editor_launch';
+    this.uiManager.menuSelection = 0;
+
+    const n = levels.length;
+    const w = typeof worldName === 'string' ? worldName.trim() : '';
+    const firstName = typeof levels[0].name === 'string' ? levels[0].name.trim() : '';
+    if (n > 1) {
+      this.setCustomLevelImportStatus(w ? `World "${w}" (${n} stages)` : `${n} stages ready`, 'success');
+    } else {
+      const label = w || firstName || 'Custom level';
+      this.setCustomLevelImportStatus(`Ready: ${label}`, 'success');
+    }
+  }
+
+  /**
+   * Begin the custom campaign queued from the level editor launch menu.
+   */
+  async startPendingEditorCampaign() {
+    const pending = this.pendingEditorCampaign;
+    if (!pending?.levels?.length) {
+      return;
+    }
+
+    this.pendingEditorCampaign = null;
+    await this.initFromCustomCampaign(pending.levels, pending.worldName);
   }
 
   /**
@@ -376,6 +412,8 @@ export class Game {
   async initFromCustomCampaign(levels, worldName = '') {
     if (!levels?.length) return;
 
+    this.pendingEditorCampaign = null;
+
     if (this.player && this.player.hasPowerUp) {
       this.player.removePowerUp(this);
     }
@@ -524,6 +562,14 @@ export class Game {
    */
   handleMenuInput(input) {
     const ui = this.uiManager;
+
+    if (ui.menuScreen === 'editor_launch') {
+      if (input.actionJustPressed || input.pauseJustPressed) {
+        this.inputManager.resetState();
+        void this.startPendingEditorCampaign().catch((err) => devError(err));
+      }
+      return;
+    }
 
     if (ui.menuScreen === 'custom_complete') {
       const menuMax = 1;

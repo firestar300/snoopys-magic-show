@@ -140,7 +140,7 @@ export class UIManager {
       active: false
     };
 
-    /** @type {'main' | 'password' | 'custom_complete'} */
+    /** @type {'main' | 'password' | 'editor_launch' | 'custom_complete'} */
     this.menuScreen = 'main';
     /** 0 = Game Start, 1 = Password */
     this.menuSelection = 0;
@@ -640,12 +640,14 @@ export class UIManager {
       return;
     }
 
-    if (this.menuScreen === 'custom_complete') {
-      this.renderTitleScreenMenu(['REPLAY', 'NEW GAME']);
-      return;
-    }
+    const titleMenuItems =
+      this.menuScreen === 'editor_launch'
+        ? ['START']
+        : this.menuScreen === 'custom_complete'
+          ? ['REPLAY', 'NEW GAME']
+          : ['GAME START', 'PASSWORD'];
 
-    this.renderTitleScreenMenu(['GAME START', 'PASSWORD']);
+    this.renderTitleScreenMenu(titleMenuItems);
   }
 
   /**
@@ -709,7 +711,9 @@ export class UIManager {
 
     ctx.textAlign = 'center';
     ctx.font = '11px "Courier New", monospace';
-    const navHint = padConnected ? 'D-PAD UP/DOWN  A TO CHOOSE  START TO CONFIRM' : 'ARROWS UP/DOWN  SPACE TO CONFIRM';
+    const navHint = padConnected
+      ? 'D-PAD UP/DOWN  A TO CHOOSE  START TO CONFIRM'
+      : 'ARROWS UP/DOWN  SPACE TO CONFIRM';
     ctx.fillText(navHint, centerX, CONFIG.CANVAS_HEIGHT - 12);
   }
 
