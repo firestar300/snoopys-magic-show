@@ -19,32 +19,6 @@ class PowerState {
     this.canvas = null;
     this.offScreen = null;
     this.listeners = [];
-    /** @type {string | null} World JSON from editor "Play now", held until Game boots */
-    this.pendingEditorWorldJson = null;
-    this._creatingGame = false;
-  }
-
-  /**
-   * @param {string} jsonString
-   */
-  setPendingEditorWorldJson(jsonString) {
-    this.pendingEditorWorldJson = jsonString;
-  }
-
-  /**
-   * @returns {string | null}
-   */
-  takePendingEditorWorldJson() {
-    const raw = this.pendingEditorWorldJson;
-    this.pendingEditorWorldJson = null;
-    return raw;
-  }
-
-  /**
-   * @returns {boolean}
-   */
-  hasPendingEditorWorld() {
-    return this.pendingEditorWorldJson != null;
   }
 
   /**
@@ -154,23 +128,11 @@ class PowerState {
    * Create the game instance
    */
   createGame() {
-    if (this.game || this._creatingGame) {
-      return;
-    }
-
-    this._creatingGame = true;
-
     // Import Game dynamically to avoid circular dependencies
-    import('./engine/game.js')
-      .then(({ Game }) => {
-        if (!this.game) {
-          this.game = new Game(this.canvas);
-          window.game = this.game; // For debugging
-        }
-      })
-      .finally(() => {
-        this._creatingGame = false;
-      });
+    import('./engine/game.js').then(({ Game }) => {
+      this.game = new Game(this.canvas);
+      window.game = this.game; // For debugging
+    });
   }
 
   /**
