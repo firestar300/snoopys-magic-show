@@ -1357,7 +1357,7 @@ export class Game {
   }
 
   /**
-   * Show Replay / New Game menu after the last stage of a custom imported world.
+   * Show Replay / New Game menu after a custom world ends (last stage cleared or game over).
    */
   showCustomWorldCompleteMenu() {
     if (this.player && this.player.hasPowerUp) {
@@ -1478,7 +1478,12 @@ export class Game {
    * Game over
    */
   gameOver() {
-    // Play game over music
+    if (this.state.isCustomImportedLevel && this.importedCampaignLevels?.length) {
+      devLog('Game Over (custom world)! Final Score:', this.state.score);
+      this.showCustomWorldCompleteMenu();
+      return;
+    }
+
     this.audioManager.playMusic('game-over');
 
     this.state.currentState = GameState.GAME_OVER;
